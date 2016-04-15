@@ -7,9 +7,17 @@
 
   // Node.js specific:
   if (typeof module !== 'undefined' && module.exports) {
-    var ROT = require('rot-js') //< Use node module.
+    //Use Node modules: 
+    var ROT = require('rot-js'),
+        _ = require('underscore'), 
+        uuid = require('node-uuid'), 
+        math = require('mathjs')
   } else {
-    var ROT = window.ROT //< Use script tag.
+    //Use browser script tags: 
+    var ROT = window.ROT,
+        _ = window._,    
+        uuid = window.uuid, 
+        math = window.mathjs //not tested.
   }
 
   gg.isArrowKey = function(keyCode) {
@@ -24,7 +32,6 @@
   }
 
   gg.move = function(grid, enty, direction) {
-
     function nextCell(grid, enty, direction) {
       //Returns the cell # for the nearest cell in the given direction:
       var nextCell,
@@ -35,7 +42,7 @@
             nextCell = 'map edge'
             break
           }
-          nextCell = enty.cell - grid.height
+          nextCell = enty.cell - grid.width
           break
         case 'east':
           if( enty.cell % grid.width == grid.width - 1) {
@@ -49,7 +56,7 @@
             nextCell = 'map edge'
             break
           }
-          nextCell = enty.cell + grid.height
+          nextCell = enty.cell + grid.width
           break
         case 'west':
           if( enty.cell % grid.width == 0) {
@@ -62,86 +69,117 @@
       return nextCell
     }
 
+    //enty = gg.revise(enty) //Mark as revised so it's re-rendered next step.
+    //console.log(enty._rev)
+    enty.revised = true
+
+    enty.direction = direction //< Update enty's direction.
+
+    //Check if we are on a map edge:
     var intendedPosition = nextCell(grid, enty, direction)
-    if(intendedPosition == 'map edge') return enty;
+    if(intendedPosition == 'map edge') {
+      enty.onMapEdge = true
+      return enty
+    }
+    enty.onMapEdge = false //Otherwise set the flag down.
 
     //Prevent movement (but update facing) if the object we are facing is impassable:
     enty.facing = this.examine(grid, intendedPosition)
     if(enty.facing && enty.facing.passable === false) return enty //< (unchanged)
 
-    //Otherwise modify the enty's cell to simulate the movement:
+    //Check if we are in a doorway:
+    //if(enty.facing && enty.facing.group == 'doorway') enty.inDoorway = true
+
+    //Modify the enty's cell to simulate the movement:
     enty.cell = intendedPosition
 
     //Then update this enty's facing property again:
     enty.facing = this.examine( grid, nextCell(grid, enty, direction) )
+
+    //Also update the direction enty is pointed:
+    enty.direction = direction
+    return enty
+  }
+
+  gg.revise = function(enty) {
+    enty._rev = uuid.v4() //< Creates a unique revision stamp.    
     return enty
   }
 
   //Assign a unique id based on group:
-  gg.indexIt = function(enty) {
-    //Initialize a groups variable for the gg object:
-    if(!this.groups) this.groups = {}
+  gg.indexIt = function(grid, enty) {
+    //Initialize a groups variable if not already existing: 
+    if(!grid.groups) grid.groups = {}
     //Find if the group has been established:
-    if(!this.groups[enty.group]) {
-      this.groups[enty.group] = {
+    if(!grid.groups[enty.group]) {
+      grid.groups[enty.group] = {
         counter : -1
       }
     }
-    enty.groupid = this.groups[enty.group].counter + 1
+    enty.groupid = grid.groups[enty.group].counter + 1
     //Increment the counter:
-    this.groups[enty.group].counter++;
-    //Then make the id a valid DOM selector:
-    enty._id = 'e-' + enty.group + '[groupid="' + enty.groupid + '"]'
-    return enty;
-  }
-
-  gg.examine = function(grid, cell) {
-    var enty = _.find(grid.enties, function(enty) { return enty.cell == cell })
-    if(_.isUndefined(enty)) enty = null
+    grid.groups[enty.group].counter++;
+    //Give it a unique ID and revision property: 
+    enty._id = uuid.v4()
     return enty
   }
 
-  gg.createGrid = function(width, height, type) {
+  gg.examine = function(grid, cell) {
+    var entyOrEnties = _.where(grid.enties, { cell :  cell })    
+    if(_.isUndefined(entyOrEnties)) return null
+    if( entyOrEnties.length == 1 ) return entyOrEnties[0]
+    return entyOrEnties //< Returns an array. 
+  }
+
+  gg.createGrid = function(width, height, type, name) {
+    var id
+    if(name) id = name
+    else id = 'grid_0'
     var grid = {
-      _id : 'grid_0',
+      _id : id,
       width: width,
       height: height,
       enties: []
     }
+    if(!type) return grid
     var rotMap
     //Accommodate for additional params:
-    if(type == 'Cellular') {
-      rotMap = new ROT.Map[type](width, height)
+    if(type == 'Rogue') {
+      rotMap = new ROT.Map[type](height, width)
       //This map type has a special randomize function:
       rotMap.randomize(0.5)
     }
+    if(type == 'Cellular') {
+      rotMap = new ROT.Map[type](width, height)
+      //This map type has a special randomize function:
+      rotMap.randomize(0.3)
+    }    
     else if(type == 'Digger') {
-      rotMap = new ROT.Map[type](width, height, { dugPercentage : 0.6 })
+      rotMap = new ROT.Map[type](height, width, { dugPercentage : 0.9 })
     }
     else if(type == 'Uniform') {
-      rotMap = new ROT.Map[type](width, height, { roomDugPercentage: 0.9 })
+      rotMap = new ROT.Map[type](height, width, { roomDugPercentage: 0.9 })
     }
     else {
-      rotMap = new ROT.Map[type](width, height)
+      rotMap = new ROT.Map[type](height, width)
     }
-
     var cellCount = 0;
     rotMap.create(function(x, y, value) {
-      console.log([x, y, value].join(', '))
       //For each value generated by rotMap, spit out a block:
-      var blockenty = {
-        group: 'thing',
+      var blockEnty = {
+        group: 'block',
         cell: cellCount,
-        css : ['block'],
+        //css : ['gray'],
         passable : false
       }
-      if(value) grid.enties.push(blockenty)
+      if(value) grid.enties.push(blockEnty)
       cellCount++;
     })
     //Do an inventory of enties in the grid:
-    grid.enties.forEach(function(enty) {
-      enty = gg.indexIt(enty)
-    })
+    // grid.enties.forEach(function(enty) {
+    //   enty = gg.indexIt(grid, enty)
+    // })
+    //Each grid must have an exit...
     return grid;
   }
 
@@ -166,16 +204,80 @@
     }
   }
 
-  gg.insertEnty = function(grid, cell, group, css) {
-    //Params: obj, int, str, arr
-    var enty = {
-      group: group,
-      cell: cell,
+  gg.insertEnty = function(grid, cellOrEnty, group, css, extras) {
+    //Params: obj, int, str, arr, obj
+
+    var enty
+    //If the second param is an object, it's already an enty object:
+    if(_.isObject(cellOrEnty)) {
+      enty = cellOrEnty
+    } else {
+      enty = { //Otherwise create an enty object from the params:
+        group: group,
+        cell: cellOrEnty
+      }
     }
-    if(css) enty.css = css
-    enty = this.indexIt(enty)
+    //Apply any additional properties:
+    if(extras) enty = _.extend(enty, extras )
+    //^^ Idea: hit an API-like function which can get extra data from a JSON file on the file system (API so that we can abstract the difference in handling for browser vs NW; browser needs a server where NW can just load the file direct)
+
+    //Merge/add CSS:
+    if(css) enty.css = enty.css.concat( css )
+
+    enty = this.indexIt(grid, enty)
     grid.enties.push(enty)
     return grid
+  }
+
+  gg.removeEnty = function(grid, cellOrEnty) {
+    var enty
+    //console.log(cellOrEnty)
+    //Find the enty based on the cell
+    if( _.isNumber(cellOrEnty)) {
+      console.log(grid.enties)     
+      var entyOrEnties = gg.examine(grid.enties, cellOrEnty)
+      //TODO: Test this to make sure it works after these changes were made: 
+      //Accommodate for array result:       
+      if( _.isArray(entyOrEnties)) enty = entyOrEnties[0]
+      else enty = entyOrEnties
+      // /changes 
+      console.log('Number lookup yielded this enty:')
+      console.log(enty)
+    } else if( _.isObject(cellOrEnty)) {
+      enty = cellOrEnty
+      // console.log('Supplied an enty:')
+      // console.log(enty)
+    } else if(_.isUndefined(cellOrEnty) || _.isNull(cellOrEnty)) {
+      console.log('gg error (gg.removEnty): No valid cell or enty provided.  This is what was provided: ')
+      console.log(cellOrEnty)
+      return
+    }
+    grid.enties = _.without(grid.enties, enty)
+    return grid
+  }
+
+  //Returns an array of cell numbers representing a region of the grid:
+  gg.makeRegion = function(grid, startCell, width, height) {
+    var region = []
+    //var endCell = Math.round(startCell * grid.width * (height -1) / 36) //< Whoa math!
+    var endCell = Math.round(63 * grid.width * (height -1) / 36) //< 63 seems to be the magic number.
+
+    startCell = parseInt(startCell)
+    endCell = parseInt(endCell) 
+
+    //Loop over each row:
+    _.range(startCell, endCell, grid.width).forEach(function(rowStart) {
+      //And populate each cell of the row with a block:
+      _.range(rowStart, rowStart + width).forEach(function(cell) {
+        region.push(cell)
+      })
+    })
+    return region
+  }
+
+  gg.randomMapEdge = function(min, max, grid) {
+    var randomNum = _.random(min, max)
+    return randomNum - math.mod(randomNum, grid.width) 
   }
 
   // Node.js specific:
@@ -186,5 +288,4 @@
   else {
       root.gg = gg
   }
-
 }());

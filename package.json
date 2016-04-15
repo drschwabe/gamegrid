@@ -1,0 +1,18 @@
+{
+  "name": "gg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gg.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Derrick Schwabe <admin@nerdbusiness.com>",
+  "license": "ISC",
+  "private": true,
+  "dependencies": {
+    "mathjs": "^2.3.0",
+    "node-uuid": "^1.4.3",
+    "rot-js": "^0.6.0",
+    "underscore": "^1.8.3"
+  }
+}
