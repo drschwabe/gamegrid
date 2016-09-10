@@ -65,6 +65,12 @@
           }
           nextCell = enty.cell - 1
           break
+        default : 
+          //If no direction supplied, just do a linear increment...
+          if(enty.cell == gridSize) nextCell = 0
+          //unless we are at the last cell, in which case we set the new position to 0 (ie: looping around a track)  
+          else nextCell = enty.cell + 1       
+          break
       }
       return nextCell
     }
@@ -76,12 +82,12 @@
     enty.direction = direction //< Update enty's direction.
 
     //Check if we are on a map edge:
+    enty.onMapEdge = false //< false by default.    
     var intendedPosition = nextCell(grid, enty, direction)
     if(intendedPosition == 'map edge') {
       enty.onMapEdge = true
-      return enty
+      return grid
     }
-    enty.onMapEdge = false //Otherwise set the flag down.
 
     //Prevent movement (but update facing) if the object we are facing is impassable:
     enty.facing = this.examine(grid, intendedPosition)
@@ -98,8 +104,17 @@
 
     //Also update the direction enty is pointed:
     enty.direction = direction
-    return enty
+
+    //Replace the current enty as is in current grid: 
+    //grid = grid.replaceEnty(enty.cell, enty)
+
+    //return enty 
+    return grid
   }
+
+  // gg.replaceEnty = function(grid, cell, enty) {
+  //   _.findWhere(grid.enties, { cell: cell })
+  // }
 
   gg.revise = function(enty) {
     enty._rev = uuid.v4() //< Creates a unique revision stamp.    
@@ -279,6 +294,13 @@
     var randomNum = _.random(min, max)
     return randomNum - math.mod(randomNum, grid.width) 
   }
+
+
+  // gg.findEnty = function(grid, enty) {
+  //   //Find the player...
+  //   var playerEnty = _.findWhere(GS.localGrid.enties, { player_number : 0 })    
+  // }
+
 
   // Node.js specific:
   if (typeof module !== 'undefined' && module.exports) {
