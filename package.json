@@ -1,13 +1,9 @@
 {
   "name": "gg",
-  "version": "1.0.0",
+  "version": "0.0.1-alpha.1",
   "description": "",
   "main": "gg.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Derrick Schwabe <admin@nerdbusiness.com>",
-  "license": "ISC",
   "private": true,
   "dependencies": {
     "mathjs": "^2.3.0",
