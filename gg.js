@@ -221,14 +221,24 @@ gg.removeEnty = function(grid, cellOrEnty) {
     else enty = entyOrEnties
 
   } else if( _.isObject(cellOrEnty)) {
+    console.log('is object')
     enty = cellOrEnty
 
-  } else if(_.isUndefined(cellOrEnty) || _.isNull(cellOrEnty)) {
-    console.log('gg error (gg.removEnty): No valid cell or enty provided.  This is what was provided: ')
+  } else if(_.isString(cellOrEnty)) {
+    console.log('is a string')
+    //remove the enty based on that string 
+    enty = _.findWhere(grid.enties, { _id : cellOrEnty })
+    console.log('TARGET ENTRY')
+  } else if(_.isUndefined(cellOrEnty) || _.isNull(cellOrEnty) ) {
+    console.log('is undefined or null or a string')
+    console.log('gg error (gg.removeEnty): No valid cell or enty provided.  This is what was provided: ')
     console.log(cellOrEnty)
     return
   }
   grid.enties = _.without(grid.enties, enty)
+
+  //Update the counter for the group... though not sure why not just use length... maybe axe counter feature
+
   return grid
 }
 
