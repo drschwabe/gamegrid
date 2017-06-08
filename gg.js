@@ -267,5 +267,17 @@ gg.randomMapEdge = function(min, max, grid) {
   return randomNum - math.mod(randomNum, grid.width) 
 }
 
+gg.populateCells = (grid) => {
+  grid.cells = _.map(_.range(grid.width * grid.height), (cell, index) => {
+    cell = {
+      type : 'cell',
+      enties : _.where(grid.enties, { cell: index })
+    }
+    if(!cell.enties) delete cell.enties
+    return cell
+  })
+  return grid
+}
+
 module.exports = gg
 
