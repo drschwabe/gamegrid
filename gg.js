@@ -59,6 +59,8 @@ gg.move = function(grid, enty, direction) {
     return nextCell
   }
 
+  if(_.isString(enty)) enty = _.findWhere(grid.enties, { name: enty })
+
   //Mark as revised so it's re-rendered next step.
   enty.revised = true
   enty.direction = direction //< Update enty's direction.
