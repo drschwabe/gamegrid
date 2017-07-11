@@ -116,7 +116,7 @@ gg.indexIt = function(grid, enty) {
 
 gg.examine = function(grid, cell) {
   var entyOrEnties = _.where(grid.enties, { cell :  cell })    
-  if(_.isUndefined(entyOrEnties)) return null
+  if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
   if( entyOrEnties.length == 1 ) return entyOrEnties[0]
   return entyOrEnties //< Returns an array. 
 }
