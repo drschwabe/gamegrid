@@ -1,6 +1,6 @@
 var gg = require('./gg.js'), 
     test = require('tape'), 
-    _ = require('underscore')
+    _ = require('underscore') 
 
 test('Grid is created', (t) => {
   t.plan(4)
@@ -21,4 +21,13 @@ test('Can insert an enty', (t) => {
   t.equals(grid.enties[0].name, 'mushroom', "enty's name is correct")
   t.equals(grid.enties[0].cell, 3, "enty was inserted into the correct cell")
   t.ok(_.isString(grid.enties[0]._id), "enty has an _id string" )
+})
+
+test('Can determine a linear cell # based on xy coordinates', (t) => {
+  var grid = gg.createGrid(3,3)
+  t.equals( gg.xy(grid, 2, 2), 8)
+  // col0 col1 col2
+  // [x,   x,   x   <-- row0
+  //  x,   x,   x   <-- row1
+  //  x,   x,   8]   <-- row2
 })

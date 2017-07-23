@@ -281,33 +281,10 @@ gg.populateCells = (grid) => {
   return grid
 }
 
+var ArrayGrid = require('array-grid')
+
 gg.xy = (grid, row, col) => {
-  //var cell = (xPos * grid.width) + (yPos * grid.height) //0
-  //var cell = math.ceil((xPos  /  grid.width) + (yPos / grid.height)) //0, 1
-  //0, 1, 2
-  //var cell = math.round((xPos + (xPos  /  grid.width)) + (yPos + (yPos / grid.height)))  
-  //0, 1, 2, 3
-  //var cell =  math.mod(row /  grid.width, 9 * 2) + math.mod(col / grid.height, 9 * 2)
-
-  var currentRow = 0
-  var currentCol = 0
-  //var cells = _.range(grid.width * grid.height)
-  var cells = []
-
-  while(currentRow != row && currentCol != col) {
-    cells.push(null)
-    //cells.forEach((cell) => columns++)
-    if(currentCol != grid.width) currentCol++
-    else if(currentCol == grid.width) {
-      currentRow++
-      currentCol = 0
-    }
-    if(cells.length == (grid.width * grid.height -1) ) return console.log('done')
-  }
-  return cells.length
+  return ArrayGrid(grid.cells, [grid.width, grid.height]).index(row,col)
 }
 
 module.exports = gg
-
-
-  //var cell =  math.mod(row /  grid.width, 9 * 2) + math.mod(col / grid.height, 9 * 2)
