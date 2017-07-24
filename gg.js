@@ -201,6 +201,9 @@ gg.insertEnty = function(grid, cellOrEnty, group, css, extras) {
       cell: cellOrEnty
     }
   }
+  //Convert to linear number if an array ([row,col]) was provided as cell: 
+  if(_.isArray(enty.cell)) enty.cell = gg.xy(grid, enty.cell)
+    
   //Apply any additional properties:
   if(extras) enty = _.extend(enty, extras )
 
@@ -283,7 +286,16 @@ gg.populateCells = (grid) => {
 
 var ArrayGrid = require('array-grid')
 
-gg.xy = (grid, row, col) => {
+gg.xy = (grid, param1, param2) => {
+  var row, col //<^ Accept either an array [row,col] or row, col as plain numbers
+  if(_.isArray(param1)) {
+    row = param1[0]
+    col = param1[1]
+  } else {
+    row = param1
+    col = param2
+  }
+  //Do the thing!:
   return ArrayGrid(grid.cells, [grid.width, grid.height]).index(row,col)
 }
 
