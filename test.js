@@ -32,3 +32,13 @@ test('Can determine a linear cell # based on xy coordinates', (t) => {
   //  x,   x,   x   <-- row1
   //  x,   x,   8]   <-- row2
 })
+
+test('Can find the next open cell', (t) => {
+  t.plan(1)
+  var grid = gg.createGrid(3,3) 
+  grid = gg.insertEnty(grid, { name : 'apple', cell : 0 })
+  grid = gg.insertEnty(grid, { name : 'pear', cell : 1 })
+  grid = gg.insertEnty(grid, { name : 'apple', cell : 3 })
+  grid = gg.populateCells(grid)
+  t.equals( gg.nextOpenCell(grid), 2, 'found the next open cell')
+})

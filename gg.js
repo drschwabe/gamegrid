@@ -299,4 +299,18 @@ gg.xy = (grid, param1, param2) => {
   return ArrayGrid(grid.cells, [grid.width, grid.height]).index(row,col)
 }
 
+gg.nextOpenCell = (grid) => {
+  //Return the cell # of the next open cell (a cell that does not contain any enties)
+  var openCell 
+  grid.cells.some( (cell, index) => {
+    if(cell.enties.length) {
+      return false
+    } else {
+      openCell = index 
+      return true 
+    }
+  })
+  return openCell
+}
+
 module.exports = gg
