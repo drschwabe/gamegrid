@@ -313,4 +313,34 @@ gg.nextOpenCell = (grid) => {
   return openCell
 }
 
+gg.nextOpenCellDown = (grid, startCell) => {
+  //Return the cell # of the next open cell down (same column)
+  var nextOpenCellDown 
+  var nextCell = startCell
+  while (_.isUndefined(nextOpenCellDown)) {
+    nextCell = nextCell + grid.width
+    //Subtract the wdith cause nextRow adds it again: 
+    if(_.isNull(gg.nextRow(grid, nextCell - grid.width))) nextOpenCellDown = nextCell
+    //if(!nextCell.enties.length) nextOpenCellDown = nextCell
+  }
+  return nextOpenCellDown
+}
+
+gg.nextCol = (grid, cell) => {
+  //Return the value of the cell one column to the right...
+  var entyOrEnties = _.where(grid.enties, { cell :  cell + 1})    
+  if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
+  if( entyOrEnties.length == 1 ) return entyOrEnties[0]
+  return entyOrEnties //< Returns an array. 
+}
+
+gg.nextRow = (grid, cell) => {
+  //Return the value of the cell one row below...
+  var entyOrEnties = _.where(grid.enties, { cell :  cell + grid.width })    
+  if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
+  if( entyOrEnties.length == 1 ) return entyOrEnties[0]
+  return entyOrEnties //< Returns an array. 
+}
+
+
 module.exports = gg
