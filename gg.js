@@ -300,18 +300,9 @@ gg.xyToIndex = (grid, param1, param2) => {
 }
 
 gg.indexToXy = (grid, index) => {
- // if(!index) return [0,0]  
-  //var x = math.ceil( (index -1) / grid.width ), 
-  var //x = index % grid.width, 
-        x = math.floor( index / grid.width ), 
-      //y = math.floor ( (index -1) % grid.width + 1 )
-      //y = index / grid.width 
-        y = math.floor( index % grid.width )
+  var x = math.floor( index / grid.width ), 
+      y = math.floor( index % grid.width )
   return [x, y]
-
-//x = i % width;    // % is the "modulo operator", the remainder of i / width;
-//y = i / width; 
-
 }
 
 gg.nextOpenCell = (grid) => {
@@ -358,10 +349,22 @@ gg.nextRow = (grid, cell) => {
 }
 
 gg.expandGrid = (oldGrid) => {
-  //Perform a single cell top-left diagonal expansion): 
+  //Perform a single cell top-left diagonal expansion)...
+  //store reference to original x and y coordinates: 
+  oldGrid.enties = _.map(oldGrid.enties, (enty) => {
+    enty.xy = gg.indexToXy(oldGrid, enty.cell)
+    return enty
+  })
+
+  //create a blank new, larger grid: 
   var newGrid = gg.createGrid(oldGrid.height + 1 , oldGrid.width + 1)
-  newGrid.enties = _.clone(oldGrid.enties)
-  //newGrid = gg.populateCells(gg.populateCells(newGrid))
+
+  //apply original x and y coordinates; correcting cell numbers: 
+  newGrid.enties = _.chain(oldGrid.enties).clone().map((enty) => {
+    enty.cell = gg.xyToIndex(newGrid, enty.xy)
+    return enty
+  }).value()
+
   return newGrid
 }
 

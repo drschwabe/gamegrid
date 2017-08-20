@@ -95,6 +95,47 @@ test('Return accurate xy coordinates from a given index', (t) => {
   expect = [2,2]
   t.ok( _.isEqual(cellEight, expect), 'Index 8 ok')
   console.log('Expect: ' + expect + ' actual: ' + cellFive)    
+})
 
 
+test('Can expand a grid and enties remain in same place', (t) => {
+  //(top-left diagonal expansion)
+  t.plan(4)
+  let smallGrid = gg.createGrid(2,2)
+
+  var row = 1, 
+      column = 1
+
+  smallGrid = gg.insertEnty(smallGrid, {name: 'frog', cell : gg.xyToIndex(smallGrid, [row, column])})
+
+  t.equals(3, _.findWhere(smallGrid.enties, { name: 'frog'}).cell)
+
+  console.log('\n#### smallGrid ####')
+  console.log(smallGrid)
+
+  //2x2 grid structure with frog at cell [2,2] (cell 3): 
+  // col0 col1  
+  // [0,   1] <-- row0
+  //  2, frog] <-- row1
+
+  //Now if we increase the size of the grid, 
+  //the xy can stay the same but the cell # needs to update.
+
+  //4 x 4 grid structure with frog remaining at cell [2,2] (now cell 4): 
+  // col0 col1 col2
+  // [0,   1,   2   <-- row0
+  //  3,  frog, 5   <-- row1
+  //  6,   7,   8]   <-- row2
+
+  let bigGrid = gg.expandGrid(smallGrid)
+
+  console.log('-----------------')
+  console.log('#### bigGrid ####')
+  console.log(bigGrid)
+
+  t.equals(4, _.findWhere(bigGrid.enties, { name: 'frog'}).cell, "Frog's cell is updated correctly")
+
+  t.equals(gg.xyToIndex(bigGrid, [row, column]), _.findWhere(smallGrid.enties, { name: 'frog'}).cell, "Frog's cell is updated correctly (based on gg.xyToIndex)")
+
+  t.ok(bigGrid.width == 3 && bigGrid.height == 3, 'Grid width and height are increased by 1')
 })
