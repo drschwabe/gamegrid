@@ -286,7 +286,7 @@ gg.populateCells = (grid) => {
 
 var ArrayGrid = require('array-grid')
 
-gg.xy = (grid, param1, param2) => {
+gg.xyToIndex = (grid, param1, param2) => {
   var row, col //<^ Accept either an array [row,col] or row, col as plain numbers
   if(_.isArray(param1)) {
     row = param1[0]
@@ -295,8 +295,23 @@ gg.xy = (grid, param1, param2) => {
     row = param1
     col = param2
   }
-  //Do the thing!:
+  //Return the cell num: 
   return ArrayGrid(grid.cells, [grid.width, grid.height]).index(row,col)
+}
+
+gg.indexToXy = (grid, index) => {
+ // if(!index) return [0,0]  
+  //var x = math.ceil( (index -1) / grid.width ), 
+  var //x = index % grid.width, 
+        x = math.floor( index / grid.width ), 
+      //y = math.floor ( (index -1) % grid.width + 1 )
+      //y = index / grid.width 
+        y = math.floor( index % grid.width )
+  return [x, y]
+
+//x = i % width;    // % is the "modulo operator", the remainder of i / width;
+//y = i / width; 
+
 }
 
 gg.nextOpenCell = (grid) => {
@@ -340,6 +355,14 @@ gg.nextRow = (grid, cell) => {
   if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
   if( entyOrEnties.length == 1 ) return entyOrEnties[0]
   return entyOrEnties //< Returns an array. 
+}
+
+gg.expandGrid = (oldGrid) => {
+  //Perform a single cell top-left diagonal expansion): 
+  var newGrid = gg.createGrid(oldGrid.height + 1 , oldGrid.width + 1)
+  newGrid.enties = _.clone(oldGrid.enties)
+  //newGrid = gg.populateCells(gg.populateCells(newGrid))
+  return newGrid
 }
 
 
