@@ -114,8 +114,11 @@ gg.indexIt = function(grid, enty) {
   return enty
 }
 
-gg.examine = function(grid, cell) {
-  var entyOrEnties = _.where(grid.enties, { cell :  cell })    
+gg.examine = function(grid, cellOrXy) {
+  var cell 
+  if(_.isArray(cellOrXy)) cell = gg.xyToIndex(grid, cellOrXy)
+  else cell = cellOrXy
+  var entyOrEnties = _.where(grid.enties, { cell :  cell })   
   if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
   if( entyOrEnties.length == 1 ) return entyOrEnties[0]
   return entyOrEnties //< Returns an array. 
@@ -319,25 +322,45 @@ gg.nextOpenCell = (grid) => {
   return openCell
 }
 
-gg.nextOpenCellDown = (grid, startCell) => {
+gg.nextOpenCellSouth = (grid, startCell) => {
+  if(!startCell) startCell = 0
   //Return the cell # of the next open cell down (same column)
-  var nextOpenCellDown 
+  var nextOpenCellSouth 
   var nextCell = startCell
-  while (_.isUndefined(nextOpenCellDown)) {
-    nextCell = nextCell + grid.width
-    //Subtract the wdith cause nextRow adds it again: 
-    if(_.isNull(gg.nextRow(grid, nextCell - grid.width))) nextOpenCellDown = nextCell
-    //if(!nextCell.enties.length) nextOpenCellDown = nextCell
+  while (_.isUndefined(nextOpenCellSouth)) {
+    nextCell = nextCell + grid.width 
+    //if( gg.nextRow(grid, nextCell).enties ) 
+    var nextCellContents = gg.examine(grid, nextCell)
+    debugger
+    if( !nextCellContents ) nextOpenCellSouth = nextCell
   }
-  return nextOpenCellDown
+  //WARNING^ this is returning incorrect results; needs testing!
+  return nextOpenCellSouth
 }
 
-gg.nextCol = (grid, cell) => {
+gg.isEdge = (grid, cell) => {
+  if(cell < grid.width ) return true //North edge
+  if(cell % grid.width == grid.width - 1) return true   //< East edge
+  if(cell > (grid.width * grid.height) - (grid.width +1)) return true //< South edge
+  if(cell % grid.width == 0) return true //< West edge
+  return false //< not an edge! 
+}
+
+gg.isEastEdge = (grid, cell) => { 
+  if(cell % grid.width == grid.width - 1) return true 
+  return false
+}
+gg.isSouthEdge = (grid, cell) => { 
+  if(cell > (grid.width * grid.height) - (grid.width +1)) return true
+  return false
+}
+
+gg.nextCol = (grid, cell, loop) => {
   //Return the value of the cell one column to the right...
-  var entyOrEnties = _.where(grid.enties, { cell :  cell + 1})    
-  if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
-  if( entyOrEnties.length == 1 ) return entyOrEnties[0]
-  return entyOrEnties //< Returns an array. 
+  if(!loop && gg.isEdge(grid, cell)) return null //< If no columns to the right, return null:  
+  var enties = _.where(grid.enties, { cell :  cell + 1})    
+  if(_.isUndefined(enties) || _.isEmpty(enties) ) return null
+  return enties //< Returns an array. 
 }
 
 gg.nextRow = (grid, cell) => {

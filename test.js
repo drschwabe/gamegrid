@@ -43,6 +43,20 @@ test('Can find the next open cell', (t) => {
   t.equals( gg.nextOpenCell(grid), 2, 'found the next open cell')
 })
 
+test('Can find the next open cell south', (t) => {
+  t.plan(1)
+  var grid = gg.createGrid(3,3)
+  grid = gg.insertEnty(grid, 0)
+  grid = gg.insertEnty(grid, 3)
+  grid = gg.populateCells(grid)
+  //Fill in column A with 2 values ie: 
+  // [1,   0,   0  
+  //  1,   0,   0  
+  //  0,   0,   0]   <-- cell #6 is the first open cell down  
+  var expectedResult = 6
+  t.equals( gg.nextOpenCellSouth(grid), 6, "Correctly pinpointed next open cell down.")
+})
+
 
 test('Return accurate xy coordinates from a given index', (t) => {
   t.plan(9)
