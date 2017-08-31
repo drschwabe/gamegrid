@@ -44,7 +44,7 @@ test('Can find the next open cell', (t) => {
 })
 
 test('Can find the next open cell south', (t) => {
-  t.plan(1)
+  t.plan(2)
   var grid = gg.createGrid(3,3)
   grid = gg.insertEnty(grid, 0)
   grid = gg.insertEnty(grid, 3)
@@ -55,6 +55,17 @@ test('Can find the next open cell south', (t) => {
   //  0,   0,   0]   <-- cell #6 is the first open cell down  
   var expectedResult = 6
   t.equals( gg.nextOpenCellSouth(grid), 6, "Correctly pinpointed next open cell down.")
+
+
+  //Now again, but this time providing a start cell (2)
+  var grid = gg.createGrid(3,3)
+  grid = gg.insertEnty(grid, 0)
+  grid = gg.insertEnty(grid, 3)  
+  grid = gg.populateCells(grid)  
+  var expectedResult = 6
+  //Start at cell #2: 
+  t.equals( gg.nextOpenCellSouth(grid, 3), 6, "Correctly pinpointed next open cell down.")  
+
 })
 
 
@@ -152,4 +163,14 @@ test('Can expand a grid and enties remain in same place', (t) => {
   t.equals(gg.xyToIndex(bigGrid, [row, column]), _.findWhere(smallGrid.enties, { name: 'frog'}).cell, "Frog's cell is updated correctly (based on gg.xyToIndex)")
 
   t.ok(bigGrid.width == 3 && bigGrid.height == 3, 'Grid width and height are increased by 1')
+})
+
+test('Finds the next occupied cell east', (t) => {
+  t.plan(1)
+  let grid = gg.createGrid(4,4)
+  grid = gg.insertEnty(grid, { cell: 0, name: 'apple' })
+  grid = gg.insertEnty(grid, { cell: 1, name: 'banana' })
+  grid = gg.insertEnty(grid, { cell: 3, name: 'cherry' })
+
+  t.equals( gg.nextOccupiedCellEast(grid, 1), 3, 'gg.nextOccupiedCellEast can find the next occupied cell east')
 })

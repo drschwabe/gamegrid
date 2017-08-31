@@ -331,11 +331,23 @@ gg.nextOpenCellSouth = (grid, startCell) => {
     nextCell = nextCell + grid.width 
     //if( gg.nextRow(grid, nextCell).enties ) 
     var nextCellContents = gg.examine(grid, nextCell)
-    debugger
     if( !nextCellContents ) nextOpenCellSouth = nextCell
   }
   //WARNING^ this is returning incorrect results; needs testing!
   return nextOpenCellSouth
+}
+
+gg.nextOpenCellEast = (grid, startCell) => {
+  if(!startCell) startCell = 0
+  //Return the cell # of the next open cell to the right (same row) 
+  var nextOpenCellEast 
+  var nextCell = startCell 
+  while (_.isUndefined(nextOpenCellEast)) {
+    nextCell = nextCell + 1
+    var nextCellContents = gg.examine(grid, nextCell) 
+    if(!nextCellContents) nextOpenCellEast = nextCell 
+  }
+  return nextOpenCellEast
 }
 
 gg.isEdge = (grid, cell) => {
@@ -389,6 +401,22 @@ gg.expandGrid = (oldGrid) => {
   }).value()
 
   return newGrid
+}
+
+//Determine the next enty that exists over: 
+gg.nextOccupiedCellEast = (grid, startCell) => {
+  if(!startCell) startCell = 0
+  //Return the cell # of the next occupied cell to the right (same row) 
+  var nextOccupiedCellEast 
+  var nextCell = startCell
+  while (_.isUndefined(nextOccupiedCellEast)) {
+    nextCell = nextCell + 1
+    if(gg.isEastEdge(grid,nextCell)) nextOccupiedCellEast = false //< Prevent infinity. 
+    var nextCellContents = gg.examine(grid, nextCell) 
+    if(nextCellContents) nextOccupiedCellEast = nextCell 
+    debugger
+  }
+  return nextOccupiedCellEast
 }
 
 
