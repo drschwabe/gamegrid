@@ -299,7 +299,8 @@ gg.xyToIndex = (grid, param1, param2) => {
     col = param2
   }
   //Return the cell num: 
-  return ArrayGrid(grid.cells, [grid.width, grid.height]).index(row,col)
+  var xy = ArrayGrid(grid.cells, [grid.width, grid.height]).index(row,col)
+  return xy
 }
 
 gg.indexToXy = (grid, index) => {
@@ -419,6 +420,24 @@ gg.nextOccupiedCellEast = (grid, startCell) => {
   }
   return nextOccupiedCellEast
 }
+
+gg.westCell = (grid, cell) => {
+  //Determine the xy then use that...
+  if(_.isNumber(cell)) {
+    if(gg.isEdge(grid, cell)) return null    
+    var currentCellXy = gg.indexToXy(grid, cell)
+    //Now simply subtract one cell from the x axis
+    //(and return the cell number): 
+    var westCellXy = [ currentCellXy[0], currentCellXy[1] -1 ]
+    var westCellIndex = gg.xyToIndex(grid,westCellXy)
+    return westCellIndex
+  } else {
+    throw 'a cell number (starting point) was not provided'
+  }
+}
+
+//prevCell will work like westCell except that it will 
+//always return a cell num even on an edge (ie- next row up)
 
 
 module.exports = gg
