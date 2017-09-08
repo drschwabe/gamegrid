@@ -396,7 +396,9 @@ gg.expandGrid = (oldGrid) => {
 
   //apply original x and y coordinates; correcting cell numbers: 
   newGrid.enties = _.chain(oldGrid.enties).clone().map((enty) => {
-    enty.cell = gg.xyToIndex(newGrid, enty.xy)
+    var cellNum = gg.xyToIndex(newGrid, enty.xy)
+    enty.cell = cellNum  //^ update both the linear cell num and xy values: 
+    enty.xy = gg.indexToXy(newGrid, cellNum)
     return enty
   }).value()
 
@@ -414,7 +416,6 @@ gg.nextOccupiedCellEast = (grid, startCell) => {
     if(gg.isEastEdge(grid,nextCell)) nextOccupiedCellEast = false //< Prevent infinity. 
     var nextCellContents = gg.examine(grid, nextCell) 
     if(nextCellContents) nextOccupiedCellEast = nextCell 
-    debugger
   }
   return nextOccupiedCellEast
 }
