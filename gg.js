@@ -119,6 +119,7 @@ gg.examine = function(grid, cellOrXy) {
   if(_.isArray(cellOrXy)) cell = gg.xyToIndex(grid, cellOrXy)
   else cell = cellOrXy
   var entyOrEnties = _.where(grid.enties, { cell :  cell })   
+//debugger
   if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
   if( entyOrEnties.length == 1 ) return entyOrEnties[0]
   return entyOrEnties //< Returns an array. 
@@ -309,10 +310,13 @@ gg.indexToXy = (grid, index) => {
   return [x, y]
 }
 
-gg.nextOpenCell = (grid) => {
+gg.nextOpenCell = (grid, startCell) => {
   //Return the cell # of the next open cell (a cell that does not contain any enties)
   var openCell 
+  if(!startCell) startCell = 0
   grid.cells.some( (cell, index) => {
+    //skip if startCell is higher: 
+    if(startCell > index) return false
     if(cell.enties.length) {
       return false
     } else {
