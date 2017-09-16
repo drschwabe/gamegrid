@@ -174,3 +174,18 @@ test('Finds the next occupied cell east', (t) => {
 
   t.equals( gg.nextOccupiedCellEast(grid, 1), 3, 'gg.nextOccupiedCellEast can find the next occupied cell east')
 })
+test.only('Returns the complete range of cell (numbers) in a given column', (t) => {
+  t.plan(2)
+  let grid = gg.createGrid(3,3) 
+  // [0, 1, 2]
+  // [3, 4, 5] <- we will ask for column cells based from cell 5
+  // [6, 7, 8] <- and from [2,2] (cell 6)
+
+  //Test providing cell #: 
+  var columnCells = gg.columnCells(grid, 5)
+  t.ok( _.isEqual( columnCells, [2, 5, 8]) )
+
+  //From xy array: 
+  var moreColumnCells = gg.columnCells(grid, [2,2])
+  t.ok( _.isEqual( moreColumnCells, [2, 5, 8]) )  
+})

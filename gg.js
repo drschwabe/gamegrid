@@ -440,6 +440,18 @@ gg.westCell = (grid, cell) => {
   }
 }
 
+gg.columnCells = (grid, cellOrXy) => {
+  //Return a range of cell numbers for the given column: 
+  var targetColumn 
+  if(_.isArray(cellOrXy)) targetColumn = cellOrXy[1]
+  else targetColumn = gg.indexToXy(grid, cellOrXy)[1]
+  var columnCells = []
+  _.range(grid.height).forEach((row) => {
+    columnCells.push( gg.xyToIndex(grid, [row, targetColumn]) )
+  })
+  return columnCells
+}
+
 //prevCell will work like westCell except that it will 
 //always return a cell num even on an edge (ie- next row up)
 
