@@ -380,11 +380,11 @@ gg.nextCol = (grid, cell, loop) => {
   return enties //< Returns an array. 
 }
 
-gg.nextRow = (grid, cell) => {
+gg.nextRow = (grid, cell, loop) => {
   //Return the value of the cell one row below...
-  var entyOrEnties = _.where(grid.enties, { cell :  cell + grid.width })    
-  if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
-  if( entyOrEnties.length == 1 ) return entyOrEnties[0]
+  if(!loop && gg.isEdge(grid, cell)) return null //< If no cells below, return null:    
+  var enties = _.where(grid.enties, { cell :  cell + grid.width })    
+  if(_.isUndefined(enties) || _.isEmpty(enties) ) return null
   return entyOrEnties //< Returns an array. 
 }
 
@@ -441,6 +441,7 @@ gg.westCell = (grid, cell) => {
 }
 
 gg.columnCells = (grid, cellOrXy) => {
+  if(_.isUndefined(cellOrXy))
   //Return a range of cell numbers for the given column: 
   var targetColumn 
   if(_.isArray(cellOrXy)) targetColumn = cellOrXy[1]
@@ -455,5 +456,24 @@ gg.columnCells = (grid, cellOrXy) => {
 //prevCell will work like westCell except that it will 
 //always return a cell num even on an edge (ie- next row up)
 
+//Find the next open column... 
+//gg.nextOpenColumn = (grid, cell) => {
+gg.nextOpenColumn = (grid, startCell) => {  
+  debugger
+  if(_.isUndefined(startCell)) startCell = 0  
+  var nextCellToCheck, 
+      nextOpenColumn
+  while(_.isUndefined(nextOpenColumn)) {
+    if(_.isUndefined(nextCellToCheck)) nextCellToCheck = startCell
+    var nextOpenCell = gg.nextOpenCell(grid, nextCellToCheck)
+    var columnCells = gg.columnCells(grid, nextOpenCell)
+    if( _.every(columnCells, (cell) => !gg.examine(grid, cell))) {
+      nextOpenColumn = gg.indexToXy(grid, nextOpenCell)[1]
+    } else {
+      nextCellToCheck++
+    }
+  }
+  return nextOpenColumn
+}
 
 module.exports = gg
