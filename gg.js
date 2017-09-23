@@ -425,7 +425,11 @@ gg.nextOccupiedCellEast = (grid, startCell) => {
   var nextCell = startCell
   while (_.isUndefined(nextOccupiedCellEast)) {
     nextCell = nextCell + 1
-    if(gg.isEastEdge(grid,nextCell)) nextOccupiedCellEast = false //< Prevent infinity. 
+    gg.nextOpenCellEast(grid, nextCell)
+
+    gg.nextCellEast(grid, nextCell)
+
+    if(gg.isEastEdge(grid,nextCell)) return nextOccupiedCellEast = null //< Prevent infinity. 
     var nextCellContents = gg.examine(grid, nextCell) 
     if(nextCellContents) nextOccupiedCellEast = nextCell 
   }
@@ -466,7 +470,6 @@ gg.columnCells = (grid, cellOrXy) => {
 //Find the next open column... 
 //gg.nextOpenColumn = (grid, cell) => {
 gg.nextOpenColumn = (grid, startCell) => {  
-  debugger
   if(_.isUndefined(startCell)) startCell = 0  
   var nextCellToCheck, 
       nextOpenColumn
@@ -489,4 +492,23 @@ gg.nextCellEast = (grid, currentCell) => {
   }
   return currentCell + 1
 }
+
+gg.openCellsEast = (grid, startCell) => {
+  if(_.isUndefined(startCell)) startCell = 0  
+  grid = gg.populateCells(grid)
+  grid = gg.xyCells(grid)
+
+  //Determine which row is our starting cell; and get all enties in target row: 
+  var rowNum = gg.indexToXy(grid, startCell)[0], 
+      targetRow = _.filter(grid.cells, (cell) => cell.xy[0] === rowNum )
+
+  //Now iterate over it: 
+  var openCells = 0
+  targetRow.forEach((cell, index) => {
+    console.log(cell)
+    if(!cell.enties.length) openCells++
+  })
+  return openCells
+}
+
 module.exports = gg

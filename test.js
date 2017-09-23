@@ -204,3 +204,19 @@ test('Finds the next open column', (t) => {
   gg.nextOpenColumn
 })
 
+test('Determines the number of open cells east', (t) => {
+  t.plan(1)
+  let grid = gg.createGrid(4, 4)
+
+  grid = gg.insertEnty(grid, 0)
+  grid = gg.insertEnty(grid, 1)  
+  grid = gg.populateCells(grid)
+  grid = gg.xyCells(grid)
+
+  //This is what our first row looks like: 
+  // [ 0  1  2  3  ]  or  [ x x o o ]
+  //(there should be two open cells)
+
+  t.equals(2, gg.openCellsEast(grid, 0)) 
+
+})
