@@ -310,6 +310,13 @@ gg.indexToXy = (grid, index) => {
   return [x, y]
 }
 
+gg.xyCells = (grid) => {
+  grid.cells.forEach((cell, index) => {
+    cell.xy = gg.indexToXy(grid,index)
+  })
+  return grid
+}
+
 gg.nextOpenCell = (grid, startCell) => {
   //Return the cell # of the next open cell (a cell that does not contain any enties)
   var openCell 
@@ -476,4 +483,10 @@ gg.nextOpenColumn = (grid, startCell) => {
   return nextOpenColumn
 }
 
+gg.nextCellEast = (grid, currentCell) => {
+  if( currentCell % grid.width == grid.width - 1) {
+    return null
+  }
+  return currentCell + 1
+}
 module.exports = gg
