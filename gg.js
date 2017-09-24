@@ -119,9 +119,17 @@ gg.examine = function(grid, cellOrXy) {
   if(_.isArray(cellOrXy)) cell = gg.xyToIndex(grid, cellOrXy)
   else cell = cellOrXy
   var entyOrEnties = _.where(grid.enties, { cell :  cell })   
-//debugger
   if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
   if( entyOrEnties.length == 1 ) return entyOrEnties[0]
+  return entyOrEnties //< Returns an array. 
+}
+
+gg.examineAll = function(grid, cellOrXy) {
+  var cell 
+  if(_.isArray(cellOrXy)) cell = gg.xyToIndex(grid, cellOrXy)
+  else cell = cellOrXy
+  var entyOrEnties = _.where(grid.enties, { cell :  cell })   
+  if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
   return entyOrEnties //< Returns an array. 
 }
 
@@ -510,5 +518,13 @@ gg.openCellsEast = (grid, startCell) => {
   })
   return openCells
 }
+
+gg.nextCellSouth = (grid, currentCell) => {
+  if( currentCell > (grid.width * grid.height) - (grid.width +1)) {
+    return null //< Map edge
+  }
+  return currentCell + grid.width
+}
+
 
 module.exports = gg
