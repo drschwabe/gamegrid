@@ -75,8 +75,6 @@ test('Return accurate xy coordinates from a given index', (t) => {
   t.plan(9)
   var grid = gg.createGrid(3,3)
 
-  console.log(gg.populateCells(grid))
-
   var cellZero = gg.indexToXy(grid, 0), //< should be 0, 0
       cellOne =  gg.indexToXy(grid, 1), //< 0, 1  
       cellTwo =  gg.indexToXy(grid, 2), //< 0, 1
@@ -89,39 +87,30 @@ test('Return accurate xy coordinates from a given index', (t) => {
 
   var expect = [0,0]
   t.ok( _.isEqual(cellZero, expect), 'Index 0 ok')
-  console.log('Expect: ' + expect + ' actual: ' + cellZero)  
 
   expect = [0,1]
   t.ok( _.isEqual(cellOne, expect), 'Index 1 ok')
-  console.log('Expect: ' + expect + ' actual: ' + cellOne)  
 
   expect = [0,2]
   t.ok( _.isEqual(cellTwo, expect), 'Index 2 ok')
-  console.log('Expect: ' + expect + ' actual: ' + cellTwo)  
 
   expect = [1,0]
   t.ok( _.isEqual(cellThree, expect), 'Index 3 ok')
-  console.log('Expect: ' + expect + ' actual: ' + cellThree)  
 
   expect = [1,1]
   t.ok( _.isEqual(cellFour, expect),  'Index 4 ok' )
-  console.log('Expect: ' + expect + ' actual: ' + cellFour)  
 
   expect = [1,2]
   t.ok( _.isEqual(cellFive, expect), 'Index 5 ok')
-  console.log('Expect: ' + expect + ' actual: ' + cellFive)    
 
   expect = [2,0]
   t.ok( _.isEqual(cellSix, expect), 'Index 6 ok')
-  console.log('Expect: ' + expect + ' actual: ' + cellFive)    
 
   expect = [2,1]
   t.ok( _.isEqual(cellSeven, expect), 'Index 7 ok')
-  console.log('Expect: ' + expect + ' actual: ' + cellFive)    
 
   expect = [2,2]
   t.ok( _.isEqual(cellEight, expect), 'Index 8 ok')
-  console.log('Expect: ' + expect + ' actual: ' + cellFive)    
 })
 
 
@@ -137,8 +126,8 @@ test('Can expand a grid and enties remain in same place', (t) => {
 
   t.equals(3, _.findWhere(smallGrid.enties, { name: 'frog'}).cell)
 
-  console.log('\n#### smallGrid ####')
-  console.log(smallGrid)
+  // console.log('\n#### smallGrid ####')
+  // console.log(smallGrid)
 
   //2x2 grid structure with frog at cell [2,2] (cell 3): 
   // col0 col1  
@@ -156,9 +145,9 @@ test('Can expand a grid and enties remain in same place', (t) => {
 
   let bigGrid = gg.expandGrid(smallGrid)
 
-  console.log('-----------------')
-  console.log('#### bigGrid ####')
-  console.log(bigGrid)
+  // console.log('-----------------')
+  // console.log('#### bigGrid ####')
+  // console.log(bigGrid)
 
   t.equals(4, _.findWhere(bigGrid.enties, { name: 'frog'}).cell, "Frog's cell is updated correctly")
 
