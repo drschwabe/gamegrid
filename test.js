@@ -164,13 +164,17 @@ test('Finds the next occupied cell east', (t) => {
   grid = gg.insertEnty(grid, { cell: 0, name: 'apple' })
   grid = gg.insertEnty(grid, { cell: 1, name: 'banana' })
   grid = gg.insertEnty(grid, { cell: 3, name: 'cherry' })
-
+  /*
+    [ apple bannana  2  cherry ]
+    [ 4       5      6     7   ]
+    [ 8       9      10   11  ]
+  */
   t.equals( gg.nextOccupiedCellEast(grid, 1), 3, 'gg.nextOccupiedCellEast can find the next occupied cell east')
 })
 
 test('Returns the complete range of cell (numbers) in a given column', (t) => {
   t.plan(2)
-  let grid = gg.createGrid(3,3) 
+  let grid = gg.createGrid(3,3)
   // [0, 1, 2]
   // [3, 4, 5] <- we will ask for column cells based from cell 5
   // [6, 7, 8] <- and from [2,2] (cell 6)

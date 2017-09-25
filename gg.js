@@ -433,13 +433,9 @@ gg.nextOccupiedCellEast = (grid, startCell) => {
   var nextCell = startCell
   while (_.isUndefined(nextOccupiedCellEast)) {
     nextCell = nextCell + 1
-    gg.nextOpenCellEast(grid, nextCell)
-
-    gg.nextCellEast(grid, nextCell)
-
-    if(gg.isEastEdge(grid,nextCell)) return nextOccupiedCellEast = null //< Prevent infinity. 
     var nextCellContents = gg.examine(grid, nextCell) 
-    if(nextCellContents) nextOccupiedCellEast = nextCell 
+    if(nextCellContents) return nextOccupiedCellEast = nextCell 
+    if(gg.isEastEdge(grid,nextCell)) return nextOccupiedCellEast = null //< Prevent infinity.       
   }
   return nextOccupiedCellEast
 }
