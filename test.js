@@ -190,11 +190,15 @@ test('Returns the complete range of cell (numbers) in a given column', (t) => {
 
 test('Finds the next open column', (t) => {
   t.plan(1)
-  let grid = gg.createGrid(3,3)
-  // [0, 1, 2]
-  // [3, 4, 5] <- we will ask for column cells based from cell 5
-  // [6, 7, 8] <- and from [2,2] (cell 6)
-  gg.nextOpenColumn
+  let grid = gg.createGrid(4,4)
+  grid = gg.insertEnty(grid, 5)
+  grid = gg.insertEnty(grid, 10) 
+  grid = gg.populateCells(grid)
+  //grid = gg.insertEnty(grid, 5)  
+  // [0, 1,  2, 3]
+  // [4, x,  6, 7]
+  // [8, 9, x, 11]
+  t.equals( gg.nextOpenColumn(grid, 1), 3)  
 })
 
 test('Determines the number of open cells east', (t) => {
