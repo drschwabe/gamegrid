@@ -13,6 +13,7 @@ gg.getDirection = function(keyCode) {
   if(keyCode == 39) return 'east'
   if(keyCode == 40) return 'south'
   if(keyCode == 37) return 'west'
+  return null
 }
 
 gg.move = function(grid, enty, direction) {
@@ -440,6 +441,22 @@ gg.nextOccupiedCellEast = (grid, startCell) => {
   return nextOccupiedCellEast
 }
 
+//Determine the next enty that exists over: 
+gg.nextOccupiedCellWest = (grid, startCell) => {
+  if(!startCell) startCell = 0
+  //Return the cell # of the next occupied cell to the right (same row) 
+  var nextOccupiedCellWest 
+  var nextCell = startCell
+  while (_.isUndefined(nextOccupiedCellWest)) {
+    nextCell = nextCell - 1
+    var nextCellContents = gg.examine(grid, nextCell) 
+    if(nextCellContents) return nextOccupiedCellWest = nextCell 
+    //if(gg.isWestEdge(grid,nextCell)) return nextOccupiedCellEast = null //< Prevent infinity.       
+  }
+  return nextOccupiedCellWest
+}
+
+
 gg.westCell = (grid, cell) => {
   //Determine the xy then use that...
   if(_.isNumber(cell)) {
@@ -509,7 +526,6 @@ gg.openCellsEast = (grid, startCell) => {
   //Now iterate over it: 
   var openCells = 0
   targetRow.forEach((cell, index) => {
-    console.log(cell)
     if(!cell.enties.length) openCells++
   })
   return openCells
@@ -522,5 +538,9 @@ gg.nextCellSouth = (grid, currentCell) => {
   return currentCell + grid.width
 }
 
+gg.row = (grid, cell) => {
+  //Return the row of the given cell
+  return gg.indexToXy(grid, cell)[0]
+}
 
 module.exports = gg

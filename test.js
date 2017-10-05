@@ -201,6 +201,19 @@ test('Finds the next open column', (t) => {
   t.equals( gg.nextOpenColumn(grid, 1), 3)  
 })
 
+test('Returns null if there is no next available column', (t) => {
+  t.plan(1)
+  let grid = gg.createGrid(4,4)
+  grid = gg.insertEnty(grid, 5)
+  grid = gg.insertEnty(grid, 10) 
+  grid = gg.populateCells(grid)
+  //grid = gg.insertEnty(grid, 5)  
+  // [0, 1,  2, 3]
+  // [4, x,  6, 7]
+  // [8, 9, x, 11]
+  t.equals( gg.nextOpenColumn(grid, 1), 3)  
+})
+
 test('Determines the number of open cells east', (t) => {
   t.plan(1)
   let grid = gg.createGrid(4, 4)
