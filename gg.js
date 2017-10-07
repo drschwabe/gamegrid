@@ -285,27 +285,36 @@ gg.randomMapEdge = function(min, max, grid) {
   return randomNum - math.mod(randomNum, grid.width) 
 }
 
-gg.populateCells = (grid) => {
+gg.populateCells = (grid, fill) => {
+  if(_.isUndefined(fill)) fill = true //< Fill by default.
   grid.cells = []
-  //Determine the furthest enty: 
-  var maxEnty = _.max(grid.enties, (enty) => enty.cell).cell
-  //Populate an array/range of cells up to that index....
-  _.range(maxEnty).forEach((index) => {
-    //Put the enty in the cell: 
-    grid.cells[index] = {
-      enties : _.where(grid.enties, { cell : index })
-    }
-  })
-  //We no longer keep an array of every cell; cells will exist in stack.cells array only if they
-  //are within range of the furthest enty - this is for performance when dealing with super large grids
-  //if you need to iterate over very cell do var cells = _.range(grid.width * grid.height)
+  if(fill) { //Make a cell for every cell of the grid: 
+    grid.cells = _.map(_.range(grid.width * grid.height), (cell, index) => {
+      cell = {
+        enties : _.where(grid.enties, { cell: index })
+      }
+      if(!cell.enties) delete cell.enties
+      return cell
+    })
+  } else { //Only make cells which are relevant (better performance for massive grids)...
+    //determine the furthest enty: 
+    var maxEnty = _.max(grid.enties, (enty) => enty.cell).cell
+    //populate an array/range of cells up to that index....
+    _.range(maxEnty).forEach((index) => {
+      grid.cells[index] = { //Put any enties in cell:
+        enties : _.where(grid.enties, { cell : index })
+      }
+    })
+  }
   return grid
 }
 
+//Populate a row of cells: 
 gg.populateRowCells = (grid, row) => {
-  //Populate a row of cells: 
+  if(!row) row = 0
+
   grid.cells = []
-  //Determine the furthest enty: 
+
   var maxEnty = _.max(grid.enties, (enty) => enty.cell).cell
   //Populate an array/range of cells up to that index....
   _.range(maxEnty).forEach((index) => {

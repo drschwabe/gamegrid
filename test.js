@@ -217,7 +217,7 @@ test('Returns null if there is no next available column', (t) => {
   t.equals( gg.nextOpenColumn(grid, 1), 3)  
 })
 
-test.only('Determines the number of open cells east', (t) => {
+test('Determines the number of open cells east', (t) => {
   t.plan(1)
   let grid = gg.createGrid(4, 4)
 
