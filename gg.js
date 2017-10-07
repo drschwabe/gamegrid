@@ -286,13 +286,33 @@ gg.randomMapEdge = function(min, max, grid) {
 }
 
 gg.populateCells = (grid) => {
-  grid.cells = _.map(_.range(grid.width * grid.height), (cell, index) => {
-    cell = {
-      type : 'cell',
-      enties : _.where(grid.enties, { cell: index })
+  grid.cells = []
+  //Determine the furthest enty: 
+  var maxEnty = _.max(grid.enties, (enty) => enty.cell).cell
+  //Populate an array/range of cells up to that index....
+  _.range(maxEnty).forEach((index) => {
+    //Put the enty in the cell: 
+    grid.cells[index] = {
+      enties : _.where(grid.enties, { cell : index })
     }
-    if(!cell.enties) delete cell.enties
-    return cell
+  })
+  //We no longer keep an array of every cell; cells will exist in stack.cells array only if they
+  //are within range of the furthest enty - this is for performance when dealing with super large grids
+  //if you need to iterate over very cell do var cells = _.range(grid.width * grid.height)
+  return grid
+}
+
+gg.populateRowCells = (grid, row) => {
+  //Populate a row of cells: 
+  grid.cells = []
+  //Determine the furthest enty: 
+  var maxEnty = _.max(grid.enties, (enty) => enty.cell).cell
+  //Populate an array/range of cells up to that index....
+  _.range(maxEnty).forEach((index) => {
+    //Put the enty in the cell: 
+    grid.cells[index] = {
+      enties : _.where(grid.enties, { cell : index })
+    }
   })
   return grid
 }
@@ -328,7 +348,9 @@ gg.xyCells = (grid) => {
 
 gg.nextOpenCell = (grid, startCell) => {
   //Return the cell # of the next open cell (a cell that does not contain any enties)
+  //return grid.cells.length
   var openCell 
+  debugger
   if(!startCell) startCell = 0
   grid.cells.some( (cell, index) => {
     //skip if startCell is higher: 
@@ -518,6 +540,8 @@ gg.openCellsEast = (grid, startCell) => {
   if(_.isUndefined(startCell)) startCell = 0  
   grid = gg.populateCells(grid)
   grid = gg.xyCells(grid)
+
+  debugger
 
   //Determine which row is our starting cell; and get all enties in target row: 
   var rowNum = gg.indexToXy(grid, startCell)[0], 

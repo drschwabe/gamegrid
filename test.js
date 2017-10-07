@@ -34,14 +34,17 @@ test('Can determine a linear cell # based on xy coordinates', (t) => {
 })
 
 
-
 test('Can find the next open cell', (t) => {
   t.plan(1)
   var grid = gg.createGrid(3,3) 
+  // [apple,   pear,   2,  <-- row0
+  //  banana,   4,   5   <-- row1
+  //  6,   7,   8]   <-- row2  
   grid = gg.insertEnty(grid, { name : 'apple', cell : 0 })
   grid = gg.insertEnty(grid, { name : 'pear', cell : 1 })
-  grid = gg.insertEnty(grid, { name : 'apple', cell : 3 })
+  grid = gg.insertEnty(grid, { name : 'banana', cell : 3 })
   grid = gg.populateCells(grid)
+  debugger
   t.equals( gg.nextOpenCell(grid), 2, 'found the next open cell')
 })
 
@@ -214,7 +217,7 @@ test('Returns null if there is no next available column', (t) => {
   t.equals( gg.nextOpenColumn(grid, 1), 3)  
 })
 
-test('Determines the number of open cells east', (t) => {
+test.only('Determines the number of open cells east', (t) => {
   t.plan(1)
   let grid = gg.createGrid(4, 4)
 
@@ -226,7 +229,6 @@ test('Determines the number of open cells east', (t) => {
   //This is what our first row looks like: 
   // [ 0  1  2  3  ]  or  [ x x o o ]
   //(there should be two open cells)
-
-  t.equals(2, gg.openCellsEast(grid, 0)) 
-
+  var openCellsEast = gg.openCellsEast(grid, 0)
+  t.equals(openCellsEast, 2) 
 })
