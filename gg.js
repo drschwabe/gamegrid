@@ -516,6 +516,19 @@ gg.columnCells = (grid, cellOrXy) => {
   return columnCells
 }
 
+gg.rowCells = (grid, cellOrXy) => {
+  if(_.isUndefined(cellOrXy))
+  //Return a range of cell numbers for the given column: 
+  var targetRow
+  if(_.isArray(cellOrXy)) targetRow = cellOrXy[0]
+  else targetRow = gg.indexToXy(grid, cellOrXy)[0]
+  var rowCells = []
+  _.range(grid.width).forEach((column) => {
+    rowCells.push( gg.xyToIndex(grid, [targetRow, column ]) )
+  })
+  return rowCells
+}
+
 //prevCell will work like westCell except that it will 
 //always return a cell num even on an edge (ie- next row up)
 
@@ -536,6 +549,24 @@ gg.nextOpenColumn = (grid, startCell) => {
     }
   }
   return nextOpenColumn
+}
+
+//Find the next row that has no enties in it: 
+gg.nextOpenRow = (grid, startCell) => {
+  if(_.isUndefined(startCell)) startCell = 0  
+  var nextCellToCheck, 
+      nextOpenRow
+  while(_.isUndefined(nextOpenRow)) {
+    if(_.isUndefined(nextCellToCheck)) nextCellToCheck = startCell
+    var nextOpenCell = gg.nextOpenCell(grid, nextCellToCheck)
+    var rowCells = gg.rowCells(grid, nextOpenCell)
+    if( _.every(rowCells, (cell) => !gg.examine(grid, cell))) {
+      nextOpenRow = gg.indexToXy(grid, nextOpenCell)[0]
+    } else {
+      nextCellToCheck++
+    }
+  }
+  return nextOpenRow  
 }
 
 gg.nextCellEast = (grid, currentCell) => {
