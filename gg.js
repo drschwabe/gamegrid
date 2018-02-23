@@ -16,7 +16,10 @@ gg.getDirection = function(keyCode) {
   return null
 }
 
-gg.move = function(grid, enty, direction) {
+gg.move = function(grid, entyOrCell, direction) {
+  var enty 
+  if(_.isNumber(entyOrCell)) enty = gg.find(grid, entyOrCell)
+  else enty = entyOrCell
   function nextCell(grid, enty, direction) {
     //Returns the cell # for the nearest cell in the given direction:
     var nextCell,
