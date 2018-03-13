@@ -137,6 +137,14 @@ gg.examineAll = function(grid, cellOrXy) {
   return entyOrEnties //< Returns an array. 
 }
 
+// Looks through each enty in the cell, returning the first one that passes a truth test (predicate), or undefined if no value passes the test. The function returns as soon as it finds an acceptable enty, and doesn't traverse the entire list of enties. 
+// If no predicate is provided, the first enty 
+// or undefined if no enties are there
+gg.find = (grid, cellOrXy, predicate) => {
+  return _.findWhere( grid.enties, { cell : cellOrXy } )
+}
+//WIP / TODO factor in predicate
+
 gg.createGrid = function(width, height, type, name) {
   var id
   if(name) id = name
