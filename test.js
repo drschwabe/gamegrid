@@ -48,6 +48,25 @@ test('Can find the next open cell', (t) => {
   t.equals( gg.nextOpenCell(grid), 2, 'found the next open cell')
 })
 
+test('Can find next cell south', (t) => {
+  t.plan(2)
+  var grid = gg.createGrid(2,2)
+  console.log(`
+    0 1 
+    2 3
+  `)
+  var nextCellSouth = gg.nextCellSouth(grid, 0)
+  t.equals(nextCellSouth, 2, '(2x2 grid) the next cell south of 0 is 2')
+
+  var gridX4 = gg.createGrid(4,4)
+  console.log(`
+    0 1 2 3 
+    4 5 6 7
+  `)  
+  var nextCellSouth = gg.nextCellSouth(gridX4, 3)
+  t.equals(nextCellSouth, 7, '(4x4 grid) the next cell south of the fourth cell (3) is cell 7 (8th cell)')
+})
+
 test('Can find the next open cell south', (t) => {
   t.plan(2)
   var grid = gg.createGrid(3,3)
@@ -55,8 +74,8 @@ test('Can find the next open cell south', (t) => {
   grid = gg.insertEnty(grid, 3)
   grid = gg.populateCells(grid)
   //Fill in column A with 2 values ie: 
-  // [1,   0,   0  
-  //  1,   0,   0  
+  // [x,   0,   0  
+  //  x,   0,   0  
   //  0,   0,   0]   <-- cell #6 is the first open cell down  
   var expectedResult = 6
   t.equals( gg.nextOpenCellSouth(grid), 6, "Correctly pinpointed next open cell down.")
@@ -67,9 +86,9 @@ test('Can find the next open cell south', (t) => {
   grid = gg.insertEnty(grid, 0)
   grid = gg.insertEnty(grid, 3)  
   grid = gg.populateCells(grid)  
-  var expectedResult = 6
+  var expectedResult = 4
   //Start at cell #2: 
-  t.equals( gg.nextOpenCellSouth(grid, 3), 6, "Correctly pinpointed next open cell down.")  
+  t.equals( gg.nextOpenCellSouth(grid, 1), 4, "Correctly pinpointed next open cell down.")  
 
 })
 
@@ -158,7 +177,6 @@ test('Can expand a grid and enties remain in same place', (t) => {
 
   t.ok(bigGrid.width == 3 && bigGrid.height == 3, 'Grid width and height are increased by 1')
 
-  debugger
 })
 
 test('Finds the next occupied cell east', (t) => {
