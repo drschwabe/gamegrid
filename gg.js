@@ -323,7 +323,6 @@ gg.populateCells = (grid, fill) => {
 //Populate a row of cells: 
 gg.populateRowCells = (grid, row) => {
   if(!row) row = 0
-
   grid.cells = []
 
   var maxEnty = _.max(grid.enties, (enty) => enty.cell).cell
@@ -369,8 +368,7 @@ gg.xyCells = (grid) => {
 gg.nextOpenCell = (grid, startCell) => {
   //Return the cell # of the next open cell (a cell that does not contain any enties)
   //return grid.cells.length
-  var openCell 
-  debugger
+  var openCell
   if(!startCell) startCell = 0
   grid.cells.some( (cell, index) => {
     //skip if startCell is higher: 
@@ -438,12 +436,13 @@ gg.nextCol = (grid, cell, loop) => {
   return enties //< Returns an array. 
 }
 
+
 gg.nextRow = (grid, cell, loop) => {
   //Return the value of the cell one row below...
   if(!loop && gg.isEdge(grid, cell)) return null //< If no cells below, return null:    
   var enties = _.where(grid.enties, { cell :  cell + grid.width })    
   if(_.isUndefined(enties) || _.isEmpty(enties) ) return null
-  return entyOrEnties //< Returns an array. 
+  return enties //< Returns an array. 
 }
 
 gg.expandGrid = (oldGrid) => {
@@ -529,7 +528,7 @@ gg.columnCells = (grid, cellOrXy) => {
 
 gg.rowCells = (grid, cellOrXy) => {
   if(_.isUndefined(cellOrXy))
-  //Return a range of cell numbers for the given column: 
+  //Return a range of cell numbers for the given row: 
   var targetRow
   if(_.isArray(cellOrXy)) targetRow = cellOrXy[0]
   else targetRow = gg.indexToXy(grid, cellOrXy)[0]
@@ -592,8 +591,6 @@ gg.openCellsEast = (grid, startCell) => {
   grid = gg.populateCells(grid)
   grid = gg.xyCells(grid)
 
-  debugger
-
   //Determine which row is our starting cell; and get all enties in target row: 
   var rowNum = gg.indexToXy(grid, startCell)[0], 
       targetRow = _.filter(grid.cells, (cell) => cell.xy[0] === rowNum )
@@ -616,6 +613,20 @@ gg.nextCellSouth = (grid, currentCell) => {
 gg.row = (grid, cell) => {
   //Return the row of the given cell
   return gg.indexToXy(grid, cell)[0]
+}
+
+gg.column = (grid, cell) => {
+  //Return the column of the given cell
+  return gg.indexToXy(grid, cell)[1]
+}
+
+gg.teleport = (grid, cellOrEnty, destinationCell) => {
+  //Teleport an enty to a different position of the grid:  
+
+}
+
+gg.entiesBelowInColumn = () => {
+  //Return all the enties below a given cell, but within the same column
 }
 
 module.exports = gg
