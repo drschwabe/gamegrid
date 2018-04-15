@@ -305,3 +305,30 @@ test('Can examine a cell for any enties that might be there', (t) => {
   t.equals(   gg.examine(grid, 5).name, 'apple', 'gg.examine finds the enty we placed in the grid' ) 
 
 })
+
+
+test('Examine a cell for ALL enties that might be there', (t) => {
+  t.plan(6)
+
+  var grid = gg.createGrid(3,3) 
+  // [0,  1,   2]
+  // [3,  4,   5]
+  // [6,  7,  8]  
+
+  grid = gg.insertEnty(grid, { cell: 6, name : 'orange' })
+
+  grid = gg.insertEnty(grid, { cell: 6, name : 'blueberry' })
+
+  t.ok( _.isArray( gg.examineAll(grid, 6)) )  
+
+  t.equals( gg.examineAll(grid, 6).length,   2   ) 
+
+  t.ok(   _.findWhere( gg.examineAll(grid, 6), { name : 'blueberry'}  )   )
+
+  t.ok(   _.findWhere( gg.examineAll(grid, 6), { name : 'orange'}  )   )
+
+  t.notOk(   _.findWhere( gg.examineAll(grid, 6), { name : 'bannana'}  )   )
+
+  t.notOk(   _.findWhere( gg.examineAll(grid, 5), { name : 'blueberry'}  )   )
+
+})

@@ -22,3 +22,15 @@ Returns a string, North East South or West, from a given arrow key.
 ### move(grid, enty, direction)
 Moves a given enty to the next adajcent cell in the given direction.
 
+
+### examine(grid, cell)
+Returns the first enty in a given cell 
+
+
+### examineAll(grid, cell)
+Returns an array of all enties in a given cell
+
+
+
+
+
