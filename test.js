@@ -288,3 +288,20 @@ test('Can move an enty to another cell in grid based on direction', (t) => {
 
 
 })
+
+
+test('Can examine a cell for any enties that might be there', (t) => {
+  t.plan(2)
+
+  var grid = gg.createGrid(3,3) 
+  // [0,  1,   2]
+  // [3,  4,   5]
+  // [6,  7,  8]
+
+  grid = gg.insertEnty(grid, { name : 'apple', cell : 5 })
+
+  t.ok( _.isNull( gg.examine(grid, 4) ), 'Examining an empty cell returns null')  //< Nothing is in this cell 
+
+  t.equals(   gg.examine(grid, 5).name, 'apple', 'gg.examine finds the enty we placed in the grid' ) 
+
+})
