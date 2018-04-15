@@ -252,7 +252,7 @@ test('Determines the number of open cells east', (t) => {
 })
 
 test('Can move an enty to another cell in grid based on direction', (t) => {
-  t.plan(2)
+  t.plan(3)
 
   var grid = gg.createGrid(4,4)
   // [0,  1,   2,  3]
@@ -276,5 +276,15 @@ test('Can move an enty to another cell in grid based on direction', (t) => {
   // [12, 13, 14, 15]  
 
   t.equals(grid.enties[0].cell, 9, 'Enty was moved one cell south')
+
+  grid = gg.move(grid, 9, 'east') 
+
+  // [0,  1,   2,  3]
+  // [4,  5,   6,  7]
+  // [8,  9,  X,  11] <-- new position after moving east
+  // [12, 13, 14, 15]  
+
+  t.equals(grid.enties[0].cell, 10, 'Enty was moved one cell east')
+
 
 })
