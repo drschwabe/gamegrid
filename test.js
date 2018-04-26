@@ -332,3 +332,29 @@ test('Examine a cell for ALL enties that might be there', (t) => {
   t.notOk(   _.findWhere( gg.examineAll(grid, 5), { name : 'blueberry'}  )   )
 
 })
+
+
+test('gg.columnIsFull', (t) => {
+  t.plan(2)
+  
+  var grid = gg.createGrid(3,3) 
+  // [0,  1,   2]
+  // [3,  4,   5]
+  // [6,  7,  8]  
+
+  //put a single cell in column 0 (row 0): 
+  grid = gg.insertEnty(grid, { cell: 0 } )
+  grid = gg.populateCells(grid)
+
+  //test to ensure the function returns not full: 
+  t.notOk(  gg.columnIsFull(grid, 0) )
+
+  //now fill up the rest of the column up : 
+  grid = gg.insertEnty(grid, { cell: 3} )
+  grid = gg.insertEnty(grid, { cell: 6} )
+  grid = gg.populateCells(grid)
+
+  t.ok(  gg.columnIsFull(grid, 0) )
+
+})
+

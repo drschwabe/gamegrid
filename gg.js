@@ -629,4 +629,13 @@ gg.entiesBelowInColumn = () => {
   //Return all the enties below a given cell, but within the same column
 }
 
+gg.columnIsFull = (grid, column) => {
+  //Returns true if each cell in a given column is occupied by an enty: 
+  var colCells = gg.columnCells(grid, column)
+  //var everyCellHasEnty = _.every(colCells, (cell) => cell.enties && cell.enties.length )
+  var everyCellHasEnty = _.every(colCells, (cell) => grid.cells[cell].enties && grid.cells[cell].enties.length)
+  debugger
+  if( everyCellHasEnty ) return true 
+  else return false
+}
 module.exports = gg
