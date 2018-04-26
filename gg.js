@@ -638,4 +638,18 @@ gg.columnIsFull = (grid, column) => {
   if( everyCellHasEnty ) return true 
   else return false
 }
+
+gg.anyColumnIsFull = (grid) => {
+  //Returns true if ANY column of the grid is fully occupied by enties 
+  //(at least one enty occupies each cell of the column): 
+  var columns = _.range(grid.width) 
+  var anyColumnIsFull 
+  columns.some((col, index) => {
+    var colCells = gg.columnCells(grid, index)
+    anyColumnIsFull = gg.columnIsFull(grid, col)
+    return anyColumnIsFull //< return to escape or continue the loop
+  })
+  return anyColumnIsFull //< return again for the final result
+}
+
 module.exports = gg
