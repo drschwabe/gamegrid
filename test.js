@@ -379,3 +379,68 @@ test('gg.anyColumnIsFull', (t) => {
   t.ok(  gg.anyColumnIsFull(grid) )
 })
 
+
+test('gg.rowCells', (t) => {
+  t.plan(16) 
+
+  var grid = gg.createGrid(3,3) 
+  // [0,  1,   2]
+  // [3,  4,   5]
+  // [6,  7,   8]
+
+  var firstRowCells = gg.rowCells(grid, 0) 
+
+  console.log(firstRowCells)
+  t.ok(   _.every(firstRowCells, (cell) => _.contains([0, 1, 2], cell)) )  
+  t.equals(firstRowCells.length, 3)
+
+  var secondRowCells = gg.rowCells(grid, 3) 
+
+  console.log(firstRowCells)
+  t.ok(   _.every(secondRowCells, (cell) => _.contains([3, 4, 5], cell)) )  
+  t.equals(secondRowCells.length, 3)
+
+  var thirdRowCells = gg.rowCells(grid, 6) 
+
+  console.log(thirdRowCells)
+  t.ok(   _.every(thirdRowCells, (cell) => _.contains([6, 7, 8], cell)) )  
+  t.equals(thirdRowCells.length, 3)  
+
+
+  var grid = gg.createGrid(3,3) 
+  // [0,  1,   2]
+  // [3,  4,   5]
+  // [6,  7,   8]
+
+  //Again, but supply gg.rowCells with an x, y
+  var firstRowCells = gg.rowCells(grid, [0, 0]) 
+
+  t.ok(   _.every(firstRowCells, (cell) => _.contains([0, 1, 2], cell)) )  
+  t.equals(firstRowCells.length, 3)
+
+  var secondRowCells = gg.rowCells(grid, [1, 0]) 
+
+  t.ok(   _.every(secondRowCells, (cell) => _.contains([3, 4, 5], cell)) )  
+  t.equals(secondRowCells.length, 3)
+
+  var thirdRowCells = gg.rowCells(grid, [2, 0]) 
+
+  t.ok(   _.every(thirdRowCells, (cell) => _.contains([6, 7, 8], cell)) )  
+  t.equals(thirdRowCells.length, 3)    
+
+
+  //Try with different size grids... 
+  var grid = gg.createGrid(2,2) //(does not support any smaller than 2x2)
+  // [0,  1]
+  // [2,  3]
+
+  var firstRowCells = gg.rowCells(grid, [0, 0]) 
+  t.ok(   _.every(firstRowCells, (cell) => _.contains([0, 1], cell)) )  
+  t.equals(firstRowCells.length, 2)
+
+  var secondRowCells = gg.rowCells(grid, [1, 0]) 
+  t.ok(   _.every(secondRowCells, (cell) => _.contains([2, 3], cell)) )  
+  t.equals(secondRowCells.length, 2)
+
+})
+
