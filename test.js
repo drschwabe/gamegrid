@@ -444,3 +444,43 @@ test('gg.rowCells', (t) => {
 
 })
 
+test('gg.someEntyIsOnBottomEdge', (t) => {
+  t.plan(4)
+
+  var grid = gg.createGrid(3,3) 
+  // [0,  1,   2]
+  // [3,  4,   5]
+  // [6,  7,   8]
+
+  t.notOk(gg.someEntyIsOnBottomEdge(grid))
+
+  grid = gg.insertEnty(grid, 6)
+
+  grid = gg.populateCells(grid)
+
+  t.ok( gg.someEntyIsOnBottomEdge(grid) )
+
+  //Try again with different grid config: 
+
+  var grid = gg.createGrid(7,7) 
+  // [0,  1,   2,  3,  4,  5,  6 ]
+  // [7,  8,   9,  10, 11, 12, 13 ]
+  // [14, 15,  16, 17, 18, 19, 20 ]
+  // [21, 22,  23, 24, 25, 26, 27 ]
+  // [28, 29,  30, 31, 32, 33, 34 ]  
+  // [35, 36,  37, 38, 39, 40, 41 ]
+  // [42, 43,  44, 45, 46,  47, 48 ]
+
+  grid = gg.insertEnty(grid, 15)
+  grid = gg.populateCells(grid)
+
+  t.notOk(gg.someEntyIsOnBottomEdge(grid))
+
+  grid = gg.insertEnty(grid, 46)
+  grid = gg.populateCells(grid)  
+
+  t.ok( gg.someEntyIsOnBottomEdge(grid) )
+
+
+})
+

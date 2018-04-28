@@ -652,4 +652,18 @@ gg.anyColumnIsFull = (grid) => {
   return anyColumnIsFull //< return again for the final result
 }
 
+gg.someEntyIsOnBottomEdge = (grid) => {
+  if(!grid.height) return false
+  if(grid.height == 1) {
+    if(grid.cells[0].enties) return true 
+    else return false 
+  }
+  //find the bottom row:  
+  var bottomRowCells = gg.rowCells(grid, [grid.height -1, 0])
+  if(!bottomRowCells.length) return false 
+  var someEntyIsOnBottomEdge = bottomRowCells.some((cell) => {
+    return gg.examine(grid, cell)
+  })
+  return someEntyIsOnBottomEdge
+}
 module.exports = gg
