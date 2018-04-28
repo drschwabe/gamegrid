@@ -666,4 +666,20 @@ gg.someEntyIsOnBottomEdge = (grid) => {
   })
   return someEntyIsOnBottomEdge
 }
+
+gg.someEntyIsOnRightEdge = (grid) => {
+  if(!grid.width) return false
+  if(grid.width == 1) {
+    if(grid.cells[0].enties) return true 
+    else return false 
+  }
+  //find the right column:  
+  var rightEdgeColumnCells = gg.columnCells(grid, [0, grid.width -1])
+  if(!rightEdgeColumnCells.length) return false 
+  var someEntyIsOnRightEdge = rightEdgeColumnCells.some((cell) => {
+    return gg.examine(grid, cell)
+  })
+  return someEntyIsOnRightEdge
+}
+
 module.exports = gg
