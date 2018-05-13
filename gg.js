@@ -526,8 +526,25 @@ gg.columnCells = (grid, cellOrXy) => {
   return columnCells
 }
 
+gg.columnEnties = (grid, cellOrXy) => {
+  if(_.isUndefined(cellOrXy)) return console.log('no cell or row/column pair provided')
+  var targetColumn 
+  if(_.isArray(cellOrXy)) targetColumn = cellOrXy[1]
+  else targetColumn = gg.indexToXy(grid, cellOrXy)[1]
+
+  //Return all enties in a given column: 
+  var thisColumnCells = gg.columnCells(grid, targetColumn)
+  thisColumnEnties = _.chain(grid.enties)
+    .map((enty) => {
+      if(_.contains(thisColumnCells, enty.cell)) return enty
+      return false 
+    })
+    .compact() 
+    .value() 
+  return thisColumnEnties
+}
+
 gg.rowCells = (grid, cellOrXy) => {
-  if(_.isUndefined(cellOrXy))
   //Return a range of cell numbers for the given row: 
   var targetRow
   if(_.isArray(cellOrXy)) targetRow = cellOrXy[0]
@@ -599,6 +616,24 @@ gg.openCellsEast = (grid, startCell) => {
   var openCells = 0
   targetRow.forEach((cell, index) => {
     if(!cell.enties.length) openCells++
+  })
+  return openCells
+}
+
+gg.openCellsDown = (grid, startCell) => {
+  var openCellsDown = []
+  grid = gg.populateCells(grid)
+  grid = gg.xyCells(grid)
+  //idea: is there a test that could be run, which is less expensive than always populating cells or xy'ing cells each function call ?
+
+  //Determine which row is our starting cell; and get all enties in target row: 
+  var columnNum = gg.indexToXy(grid, startCell)[1], 
+      targetColumn = _.filter(grid.cells, (cell) => cell.xy[1] === columnNum )
+
+  //Now iterate over it: 
+  var openCells = []
+  targetColumn.forEach((cell, index) => {
+    if(!cell.enties.length) openCells.push(cell)
   })
   return openCells
 }
