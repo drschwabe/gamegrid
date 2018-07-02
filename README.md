@@ -1,14 +1,14 @@
-# gg #
-gg is a library to help in the creation of 2D grid based games. 
+# gg 
+gg is a library for creating 2D grid based games or apps. 
 
 Some terminology/assumptions: 
 
-grid: This is the object which contains all of the interesting things (and their state) in your game. 
-enties: These are the 'interesting things' in your game, typically defined by something that moves, is interactive or has some functionality. 
-enty: Singular form of 'enties'.  Each enty has a property called cell which is used as the basis for it's location within the grid. 
+**grid**: This is the object which contains all of the interesting things
 
-optional: 
-elems: These are custom DOM elements which correspond to enties, and have special functionality specific for rendering and browser-based interactions.  
+**enty (or enties)**: These are the 'interesting things' in your grid, typically defined by something that moves, is interactive or has some functionality.  Each enty has a property called `cell` which is used as the basis for its location within the grid. 
+
+## API
+---------
 
 ### createGrid(width, height, type)
 gg supports 2 aspect ratios: square or 16:10 (16:10 is WIP), you imply the aspect ratio with your width & height.
