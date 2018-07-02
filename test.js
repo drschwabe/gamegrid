@@ -26,7 +26,7 @@ test('Can insert an enty', (t) => {
 test('Can determine a linear cell # based on xy coordinates', (t) => {
   t.plan(1)
   var grid = gg.createGrid(3,3)
-  t.equals( gg.xyToIndex(grid, 2, 2), 8, 'gg.xy pinpoints the correct linear cell number')
+  t.equals( gg.rcToIndex(grid, 2, 2), 8, 'gg.xy pinpoints the correct linear cell number')
   // col0 col1 col2
   // [x,   x,   x   <-- row0
   //  x,   x,   x   <-- row1
@@ -97,15 +97,15 @@ test('Return accurate xy coordinates from a given index', (t) => {
   t.plan(10)
   var grid = gg.createGrid(3,3)
 
-  var cellZero = gg.indexToXy(grid, 0), //< should be 0, 0
-      cellOne =  gg.indexToXy(grid, 1), //< 0, 1  
-      cellTwo =  gg.indexToXy(grid, 2), //< 0, 1
-      cellThree = gg.indexToXy(grid, 3) //< 1, 2
-      cellFour = gg.indexToXy(grid, 4) //< 1, 2
-      cellFive = gg.indexToXy(grid, 5) //< 1, 2
-      cellSix = gg.indexToXy(grid, 6) //< 1, 2
-      cellSeven = gg.indexToXy(grid, 7) //< 1, 2
-      cellEight = gg.indexToXy(grid, 8) //< 1, 2
+  var cellZero = gg.indexToRc(grid, 0), //< should be 0, 0
+      cellOne =  gg.indexToRc(grid, 1), //< 0, 1  
+      cellTwo =  gg.indexToRc(grid, 2), //< 0, 1
+      cellThree = gg.indexToRc(grid, 3) //< 1, 2
+      cellFour = gg.indexToRc(grid, 4) //< 1, 2
+      cellFive = gg.indexToRc(grid, 5) //< 1, 2
+      cellSix = gg.indexToRc(grid, 6) //< 1, 2
+      cellSeven = gg.indexToRc(grid, 7) //< 1, 2
+      cellEight = gg.indexToRc(grid, 8) //< 1, 2
 
   var expect = [0,0]
   t.ok( _.isEqual(cellZero, expect), 'Index 0 ok')
@@ -154,9 +154,9 @@ test('Return accurate xy coordinates from a given index', (t) => {
 
   expect = [3,1]
 
-  console.log('cell 16 is at: ' + gg.indexToXy(grid2, 16) )
+  console.log('cell 16 is at: ' + gg.indexToRc(grid2, 16) )
 
-  t.ok( _.isEqual( gg.indexToXy(grid2, 16)  , expect), 'Index 16 on 5x5 ok')
+  t.ok( _.isEqual( gg.indexToRc(grid2, 16)  , expect), 'Index 16 on 5x5 ok')
 
 })
 
@@ -169,7 +169,7 @@ test('Can expand a grid and enties remain in same place', (t) => {
   var row = 1, 
       column = 1
 
-  smallGrid = gg.insertEnty(smallGrid, {name: 'frog', cell : gg.xyToIndex(smallGrid, [row, column])})
+  smallGrid = gg.insertEnty(smallGrid, {name: 'frog', cell : gg.rcToIndex(smallGrid, [row, column])})
 
   t.equals(3, _.findWhere(smallGrid.enties, { name: 'frog'}).cell)
 
@@ -198,7 +198,7 @@ test('Can expand a grid and enties remain in same place', (t) => {
 
   t.equals(4, _.findWhere(bigGrid.enties, { name: 'frog'}).cell, "Frog's cell is updated correctly")
 
-  t.equals(gg.xyToIndex(bigGrid, [row, column]), _.findWhere(smallGrid.enties, { name: 'frog'}).cell, "Frog's cell is updated correctly (based on gg.xyToIndex)")
+  t.equals(gg.rcToIndex(bigGrid, [row, column]), _.findWhere(smallGrid.enties, { name: 'frog'}).cell, "Frog's cell is updated correctly (based on gg.rcToIndex)")
 
   t.ok(bigGrid.width == 3 && bigGrid.height == 3, 'Grid width and height are increased by 1')
 
@@ -267,7 +267,7 @@ test('Determines the number of open cells east', (t) => {
   grid = gg.insertEnty(grid, 0)
   grid = gg.insertEnty(grid, 1)  
   grid = gg.populateCells(grid)
-  grid = gg.xyCells(grid)
+  grid = gg.rcCells(grid)
 
   //This is what our first row looks like: 
   // [ 0  1  2  3  ]  or  [ x x o o ]

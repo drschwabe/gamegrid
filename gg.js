@@ -118,20 +118,20 @@ gg.indexIt = function(grid, enty) {
   return enty
 }
 
-gg.examine = function(grid, cellOrXy) {
+gg.examine = function(grid, cellOrRc) {
   var cell 
-  if(_.isArray(cellOrXy)) cell = gg.xyToIndex(grid, cellOrXy)
-  else cell = cellOrXy
+  if(_.isArray(cellOrRc)) cell = gg.rcToIndex(grid, cellOrRc)
+  else cell = cellOrRc
   var entyOrEnties = _.where(grid.enties, { cell :  cell })   
   if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
   if( entyOrEnties.length == 1 ) return entyOrEnties[0]
   return entyOrEnties //< Returns an array. 
 }
 
-gg.examineAll = function(grid, cellOrXy) {
+gg.examineAll = function(grid, cellOrRc) {
   var cell 
-  if(_.isArray(cellOrXy)) cell = gg.xyToIndex(grid, cellOrXy)
-  else cell = cellOrXy
+  if(_.isArray(cellOrRc)) cell = gg.rcToIndex(grid, cellOrRc)
+  else cell = cellOrRc
   var entyOrEnties = _.where(grid.enties, { cell :  cell })   
   if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
   return entyOrEnties //< Returns an array. 
@@ -140,8 +140,8 @@ gg.examineAll = function(grid, cellOrXy) {
 // Looks through each enty in the cell, returning the first one that passes a truth test (predicate), or undefined if no value passes the test. The function returns as soon as it finds an acceptable enty, and doesn't traverse the entire list of enties. 
 // If no predicate is provided, the first enty 
 // or undefined if no enties are there
-gg.find = (grid, cellOrXy, predicate) => {
-  return _.findWhere( grid.enties, { cell : cellOrXy } )
+gg.find = (grid, cellOrRc, predicate) => {
+  return _.findWhere( grid.enties, { cell : cellOrRc } )
 }
 //WIP / TODO factor in predicate
 
@@ -226,7 +226,7 @@ gg.insertEnty = function(grid, cellOrEnty, group, css, extras) {
     }
   }
   //Convert to linear number if an array ([row,col]) was provided as cell: 
-  if(_.isArray(enty.cell)) enty.cell = gg.xy(grid, enty.cell)
+  if(_.isArray(enty.cell)) enty.cell = gg.rc(grid, enty.cell)
     
   //Apply any additional properties:
   if(extras) enty = _.extend(enty, extras )
@@ -338,7 +338,7 @@ gg.populateRowCells = (grid, row) => {
 
 var ArrayGrid = require('array-grid')
 
-gg.xyToIndex = (grid, param1, param2) => {
+gg.rcToIndex = (grid, param1, param2) => {
   var row, col //<^ Accept either an array [row,col] or row, col as plain numbers
   if(_.isArray(param1)) {
     row = param1[0]
@@ -348,19 +348,20 @@ gg.xyToIndex = (grid, param1, param2) => {
     col = param2
   }
   //Return the cell num: 
-  var xy = ArrayGrid(grid.cells, [grid.width, grid.height]).index(row,col)
-  return xy
+  var rc = ArrayGrid(grid.cells, [grid.width, grid.height]).index(row,col)
+  return rc
 }
 
-gg.indexToXy = (grid, index) => {
+gg.indexToRc = (grid, index) => {
   var x = math.floor( index / grid.width ), 
       y = math.floor( index % grid.width )
   return [x, y]
 }
 
-gg.xyCells = (grid) => {
+
+gg.rcCells = (grid) => {
   grid.cells.forEach((cell, index) => {
-    cell.xy = gg.indexToXy(grid,index)
+    cell.rc = gg.indexToRc(grid,index)
   })
   return grid
 }
@@ -448,7 +449,7 @@ gg.expandGrid = (oldGrid) => {
   //Perform a single cell top-left diagonal expansion)...
   //store reference to original x and y coordinates: 
   oldGrid.enties = _.map(oldGrid.enties, (enty) => {
-    enty.xy = gg.indexToXy(oldGrid, enty.cell)
+    enty.rc = gg.indexToRc(oldGrid, enty.cell)
     return enty
   })
 
@@ -457,9 +458,9 @@ gg.expandGrid = (oldGrid) => {
 
   //apply original x and y coordinates; correcting cell numbers: 
   newGrid.enties = _.chain(oldGrid.enties).clone().map((enty) => {
-    var cellNum = gg.xyToIndex(newGrid, enty.xy)
-    enty.cell = cellNum  //^ update both the linear cell num and xy values: 
-    enty.xy = gg.indexToXy(newGrid, cellNum)
+    var cellNum = gg.rcToIndex(newGrid, enty.rc)
+    enty.cell = cellNum  //^ update both the linear cell num and rc values: 
+    enty.rc = gg.indexToRc(newGrid, cellNum)
     return enty
   }).value()
 
@@ -498,38 +499,38 @@ gg.nextOccupiedCellWest = (grid, startCell) => {
 
 
 gg.westCell = (grid, cell) => {
-  //Determine the xy then use that...
+  //Determine the rc then use that...
   if(_.isNumber(cell)) {
     if(gg.isEdge(grid, cell)) return null    
-    var currentCellXy = gg.indexToXy(grid, cell)
+    var currentCellRc = gg.indexToRc(grid, cell)
     //Now simply subtract one cell from the x axis
     //(and return the cell number): 
-    var westCellXy = [ currentCellXy[0], currentCellXy[1] -1 ]
-    var westCellIndex = gg.xyToIndex(grid,westCellXy)
+    var westCellRc = [ currentCellRc[0], currentCellRc[1] -1 ]
+    var westCellIndex = gg.rcToIndex(grid,westCellRc)
     return westCellIndex
   } else {
     throw 'a cell number (starting point) was not provided'
   }
 }
 
-gg.columnCells = (grid, cellOrXy) => {
-  if(_.isUndefined(cellOrXy))
+gg.columnCells = (grid, cellOrRc) => {
+  if(_.isUndefined(cellOrRc))
   //Return a range of cell numbers for the given column: 
   var targetColumn 
-  if(_.isArray(cellOrXy)) targetColumn = cellOrXy[1]
-  else targetColumn = gg.indexToXy(grid, cellOrXy)[1]
+  if(_.isArray(cellOrRc)) targetColumn = cellOrRc[1]
+  else targetColumn = gg.indexToRc(grid, cellOrRc)[1]
   var columnCells = []
   _.range(grid.height).forEach((row) => {
-    columnCells.push( gg.xyToIndex(grid, [row, targetColumn]) )
+    columnCells.push( gg.rcToIndex(grid, [row, targetColumn]) )
   })
   return columnCells
 }
 
-gg.columnEnties = (grid, cellOrXy) => {
-  if(_.isUndefined(cellOrXy)) return console.log('no cell or row/column pair provided')
+gg.columnEnties = (grid, cellOrRc) => {
+  if(_.isUndefined(cellOrRc)) return console.log('no cell or row/column pair provided')
   var targetColumn 
-  if(_.isArray(cellOrXy)) targetColumn = cellOrXy[1]
-  else targetColumn = gg.indexToXy(grid, cellOrXy)[1]
+  if(_.isArray(cellOrRc)) targetColumn = cellOrRc[1]
+  else targetColumn = gg.indexToRc(grid, cellOrRc)[1]
 
   //Return all enties in a given column: 
   var thisColumnCells = gg.columnCells(grid, targetColumn)
@@ -543,14 +544,14 @@ gg.columnEnties = (grid, cellOrXy) => {
   return thisColumnEnties
 }
 
-gg.rowCells = (grid, cellOrXy) => {
+gg.rowCells = (grid, cellOrRc) => {
   //Return a range of cell numbers for the given row: 
   var targetRow
-  if(_.isArray(cellOrXy)) targetRow = cellOrXy[0]
-  else targetRow = gg.indexToXy(grid, cellOrXy)[0]
+  if(_.isArray(cellOrRc)) targetRow = cellOrRc[0]
+  else targetRow = gg.indexToRc(grid, cellOrRc)[0]
   var rowCells = []
   _.range(grid.width).forEach((column) => {
-    rowCells.push( gg.xyToIndex(grid, [targetRow, column ]) )
+    rowCells.push( gg.rcToIndex(grid, [targetRow, column ]) )
   })
   return rowCells
 }
@@ -572,7 +573,7 @@ gg.nextOpenColumn = (grid, startCell) => {
     var nextOpenCell = gg.nextOpenCell(grid, nextCellToCheck)
     var columnCells = gg.columnCells(grid, nextOpenCell)
     if( _.every(columnCells, (cell) => !gg.examine(grid, cell))) {
-      nextOpenColumn = gg.indexToXy(grid, nextOpenCell)[1]
+      nextOpenColumn = gg.indexToRc(grid, nextOpenCell)[1]
     } else {
       nextCellToCheck++
     }
@@ -591,7 +592,7 @@ gg.nextOpenRow = (grid, startCell) => {
     var nextOpenCell = gg.nextOpenCell(grid, nextCellToCheck)
     var rowCells = gg.rowCells(grid, nextOpenCell)
     if( _.every(rowCells, (cell) => !gg.examine(grid, cell))) {
-      nextOpenRow = gg.indexToXy(grid, nextOpenCell)[0]
+      nextOpenRow = gg.indexToRc(grid, nextOpenCell)[0]
     } else {
       nextCellToCheck++
     }
@@ -609,11 +610,11 @@ gg.nextCellEast = (grid, currentCell) => {
 gg.openCellsEast = (grid, startCell) => {
   if(_.isUndefined(startCell)) startCell = 0  
   grid = gg.populateCells(grid)
-  grid = gg.xyCells(grid)
+  grid = gg.rcCells(grid)
 
   //Determine which row is our starting cell; and get all enties in target row: 
-  var rowNum = gg.indexToXy(grid, startCell)[0], 
-      targetRow = _.filter(grid.cells, (cell) => cell.xy[0] === rowNum )
+  var rowNum = gg.indexToRc(grid, startCell)[0], 
+      targetRow = _.filter(grid.cells, (cell) => cell.rc[0] === rowNum )
 
   //Now iterate over it: 
   var openCells = 0
@@ -626,12 +627,12 @@ gg.openCellsEast = (grid, startCell) => {
 gg.openCellsDown = (grid, startCell) => {
   var openCellsDown = []
   grid = gg.populateCells(grid)
-  grid = gg.xyCells(grid)
-  //idea: is there a test that could be run, which is less expensive than always populating cells or xy'ing cells each function call ?
+  grid = gg.rcCells(grid)
+  //idea: is there a test that could be run, which is less expensive than always populating cells or rc'ing cells each function call ?
 
   //Determine which row is our starting cell; and get all enties in target row: 
-  var columnNum = gg.indexToXy(grid, startCell)[1], 
-      targetColumn = _.filter(grid.cells, (cell) => cell.xy[1] === columnNum )
+  var columnNum = gg.indexToRc(grid, startCell)[1], 
+      targetColumn = _.filter(grid.cells, (cell) => cell.rc[1] === columnNum )
 
   //Now iterate over it: 
   var openCells = []
@@ -650,12 +651,12 @@ gg.nextCellSouth = (grid, currentCell) => {
 
 gg.row = (grid, cell) => {
   //Return the row of the given cell
-  return gg.indexToXy(grid, cell)[0]
+  return gg.indexToRc(grid, cell)[0]
 }
 
 gg.column = (grid, cell) => {
   //Return the column of the given cell
-  return gg.indexToXy(grid, cell)[1]
+  return gg.indexToRc(grid, cell)[1]
 }
 
 gg.teleport = (grid, cellOrEnty, destinationCell) => {
