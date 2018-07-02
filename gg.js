@@ -250,18 +250,18 @@ gg.removeEnty = function(grid, cellOrEnty) {
     else enty = entyOrEnties
 
   } else if( _.isObject(cellOrEnty)) {
-    console.log('is object')
+    //console.log('is object')
     enty = cellOrEnty
 
   } else if(_.isString(cellOrEnty)) {
-    console.log('is a string')
+    //console.log('is a string')
     //remove the enty based on that string 
     enty = _.findWhere(grid.enties, { _id : cellOrEnty })
-    console.log('TARGET ENTRY')
+    //console.log('TARGET ENTRY')
   } else if(_.isUndefined(cellOrEnty) || _.isNull(cellOrEnty) ) {
-    console.log('is undefined or null or a string')
-    console.log('gg error (gg.removeEnty): No valid cell or enty provided.  This is what was provided: ')
-    console.log(cellOrEnty)
+    //console.log('is undefined or null or a string')
+    //console.log('gg error (gg.removeEnty): No valid cell or enty provided.  This is what was provided: ')
+    //console.log(cellOrEnty)
     return
   }
   grid.enties = _.without(grid.enties, enty)
@@ -390,7 +390,6 @@ gg.nextOpenCellSouth = (grid, startCell) => {
   var nextCell = startCell
   while (_.isUndefined(nextOpenCellSouth)) {
     nextCell = nextCell + grid.width 
-    //if( gg.nextRow(grid, nextCell).enties ) 
     var nextCellContents = gg.examine(grid, nextCell)
     if( !nextCellContents ) nextOpenCellSouth = nextCell
   }
@@ -565,6 +564,9 @@ gg.nextOpenColumn = (grid, startCell) => {
   if(_.isUndefined(startCell)) startCell = 0  
   var nextCellToCheck, 
       nextOpenColumn
+  //TODO: prevent this loop from freezing by making sure 
+  //we exit if there is never any open column...
+  //console.log('running nextOpenColumn while loop... (dangerous)')  
   while(_.isUndefined(nextOpenColumn)) {
     if(_.isUndefined(nextCellToCheck)) nextCellToCheck = startCell
     var nextOpenCell = gg.nextOpenCell(grid, nextCellToCheck)
@@ -575,6 +577,7 @@ gg.nextOpenColumn = (grid, startCell) => {
       nextCellToCheck++
     }
   }
+  //console.log('finished running nextOpenColumn while loop: ' + nextOpenColumn)  
   return nextOpenColumn
 }
 
@@ -669,7 +672,6 @@ gg.columnIsFull = (grid, column) => {
   var colCells = gg.columnCells(grid, column)
   //var everyCellHasEnty = _.every(colCells, (cell) => cell.enties && cell.enties.length )
   var everyCellHasEnty = _.every(colCells, (cell) => grid.cells[cell].enties && grid.cells[cell].enties.length)
-  debugger
   if( everyCellHasEnty ) return true 
   else return false
 }
