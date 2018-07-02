@@ -94,7 +94,7 @@ test('Can find the next open cell south', (t) => {
 
 
 test('Return accurate xy coordinates from a given index', (t) => {
-  t.plan(9)
+  t.plan(10)
   var grid = gg.createGrid(3,3)
 
   var cellZero = gg.indexToXy(grid, 0), //< should be 0, 0
@@ -133,6 +133,31 @@ test('Return accurate xy coordinates from a given index', (t) => {
 
   expect = [2,2]
   t.ok( _.isEqual(cellEight, expect), 'Index 8 ok')
+
+  //Try on a bigger grid, using odd numbers: 
+
+  var grid2 = gg.createGrid(5,5)
+
+  //[ 0  1   2   3   4  ]
+  //[ 5  -   -   -   -  ]
+  //[ 10  -   -   -   -  ]
+  //[ 15  16  -   -   -  ]
+  //[ 20  -   -   -   24  ]
+
+  //[ 0  1   2   3   4  ]
+  //[ 1  -   -   -   -  ]
+  //[ 2  -   -   -   -  ]
+  //[ 3  1  -   -   -   ]
+  //[ 4  -   -   -   4  ]  
+
+  //Cell 16 should be at 3, 1
+
+  expect = [3,1]
+
+  console.log('cell 16 is at: ' + gg.indexToXy(grid2, 16) )
+
+  t.ok( _.isEqual( gg.indexToXy(grid2, 16)  , expect), 'Index 16 on 5x5 ok')
+
 })
 
 
