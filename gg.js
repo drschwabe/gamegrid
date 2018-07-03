@@ -352,12 +352,15 @@ gg.rcToIndex = (grid, param1, param2) => {
   return rc
 }
 
+gg.xyToIndex = gg.rcToIndex
+
 gg.indexToRc = (grid, index) => {
   var x = math.floor( index / grid.width ), 
       y = math.floor( index % grid.width )
   return [x, y]
 }
 
+gg.indexToXy = gg.indexToRc
 
 gg.rcCells = (grid) => {
   grid.cells.forEach((cell, index) => {
@@ -365,6 +368,8 @@ gg.rcCells = (grid) => {
   })
   return grid
 }
+
+gg.xyCells = gg.rcCells 
 
 gg.nextOpenCell = (grid, startCell) => {
   //Return the cell # of the next open cell (a cell that does not contain any enties)
@@ -450,6 +455,7 @@ gg.expandGrid = (oldGrid) => {
   //store reference to original x and y coordinates: 
   oldGrid.enties = _.map(oldGrid.enties, (enty) => {
     enty.rc = gg.indexToRc(oldGrid, enty.cell)
+    enty.xy = enty.rc 
     return enty
   })
 
