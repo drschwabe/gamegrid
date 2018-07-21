@@ -31,6 +31,9 @@ Returns the first enty in a given cell
 Returns an array of all enties in a given cell
 
 
+### rcToIndex = (grid, row, column)
+Converts a row/column pair to the equivalent array index (ie- as spread out in a single row)
 
 
-
+### indexToRc = (grid, index)
+Converts an index value to the equivalent row/column

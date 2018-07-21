@@ -12,7 +12,7 @@ test('Grid is created', (t) => {
 })
 
 test('Can insert an enty', (t) => {
-  t.plan(3)
+  t.plan(2)
   var grid = gg.createGrid(3,3)
   gg.insertEnty(grid, {
     name : 'mushroom', 
@@ -20,7 +20,6 @@ test('Can insert an enty', (t) => {
   })
   t.equals(grid.enties[0].name, 'mushroom', "enty's name is correct")
   t.equals(grid.enties[0].cell, 3, "enty was inserted into the correct cell")
-  t.ok(_.isString(grid.enties[0]._id), "enty has an _id string" )
 })
 
 test('Can determine a linear cell # based on xy coordinates', (t) => {

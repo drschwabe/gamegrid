@@ -114,7 +114,7 @@ gg.indexIt = function(grid, enty) {
   //Increment the counter:
   grid.groups[enty.group].counter++;
   //Give it a unique ID and revision property: 
-  enty._id = uuid.v4()
+  //enty._id = uuid.v4()
   return enty
 }
 
