@@ -9,7 +9,7 @@
     "mathjs": "2.3.0",
     "node-uuid": "1.4.3",
     "rot-js": "0.6.0",
-    "underscore": "1.8.3"
+    "underscore": "1.9.1"
   },
   "scripts": {
     "test": "tape test.js | tap-spec"
