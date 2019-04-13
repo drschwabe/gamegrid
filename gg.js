@@ -100,24 +100,6 @@ gg.revise = function(enty) {
   return enty
 }
 
-//Assign a unique id based on group:
-gg.indexIt = function(grid, enty) {
-  //Initialize a groups variable if not already existing:
-  if(!grid.groups) grid.groups = {}
-  //Find if the group has been established:
-  if(!grid.groups[enty.group]) {
-    grid.groups[enty.group] = {
-      counter : -1
-    }
-  }
-  enty.groupid = grid.groups[enty.group].counter + 1
-  //Increment the counter:
-  grid.groups[enty.group].counter++;
-  //Give it a unique ID and revision property:
-  //enty._id = uuid.v4()
-  return enty
-}
-
 gg.examine = function(grid, cellOrRc) {
   var cell
   if(_.isArray(cellOrRc)) cell = gg.rcToIndex(grid, cellOrRc)
@@ -212,8 +194,8 @@ gg.isTouching = function (grid, enty, entyOrGroup) {
   }
 }
 
-gg.insert = function(grid, cellOrEnty, group, css, extras) {
-  //(obj, int, str, arr, obj)
+gg.insert = function(grid, cellOrEnty, label, extras) {
+  //(obj, int, str, obj)
 
   var enty
   //If the second param is an object, it's already an enty object:
@@ -221,7 +203,7 @@ gg.insert = function(grid, cellOrEnty, group, css, extras) {
     enty = cellOrEnty
   } else {
     enty = { //Otherwise create an enty object from the params:
-      group: group,
+      label: label,
       cell: cellOrEnty
     }
   }
@@ -230,11 +212,7 @@ gg.insert = function(grid, cellOrEnty, group, css, extras) {
 
   //Apply any additional properties:
   if(extras) enty = _.extend(enty, extras )
-
-  //Merge/add CSS:
-  if(css) enty.css = enty.css.concat( css )
-
-  enty = this.indexIt(grid, enty)
+  enty._id = uuid.v4()
   grid.enties.push(enty)
   return grid
 }
