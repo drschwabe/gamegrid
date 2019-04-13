@@ -1,7 +1,7 @@
-var gg = {}, 
+var gg = {},
     ROT = require('rot-js'),
-    _ = require('underscore'), 
-    uuid = require('node-uuid'), 
+    _ = require('underscore'),
+    uuid = require('node-uuid'),
     math = require('mathjs')
 
 gg.isArrowKey = function(keyCode) {
@@ -17,7 +17,7 @@ gg.getDirection = function(keyCode) {
 }
 
 gg.move = function(grid, entyOrCell, direction) {
-  var enty 
+  var enty
   if(_.isNumber(entyOrCell)) enty = gg.find(grid, entyOrCell)
   else enty = entyOrCell
   function nextCell(grid, enty, direction) {
@@ -53,11 +53,11 @@ gg.move = function(grid, entyOrCell, direction) {
         }
         nextCell = enty.cell - 1
         break
-      default : 
+      default :
         //If no direction supplied, just do a linear increment...
         if(enty.cell == gridSize) nextCell = 0
-        //unless we are at the last cell, in which case we set the new position to 0 (ie: looping around a track)  
-        else nextCell = enty.cell + 1       
+        //unless we are at the last cell, in which case we set the new position to 0 (ie: looping around a track)
+        else nextCell = enty.cell + 1
         break
     }
     return nextCell
@@ -70,7 +70,7 @@ gg.move = function(grid, entyOrCell, direction) {
   enty.direction = direction //< Update enty's direction.
 
   //Check if we are on a map edge:
-  enty.onMapEdge = false //< false by default.    
+  enty.onMapEdge = false //< false by default.
   var intendedPosition = nextCell(grid, enty, direction)
   if(intendedPosition == 'map edge') {
     enty.onMapEdge = true
@@ -79,7 +79,7 @@ gg.move = function(grid, entyOrCell, direction) {
 
   //Prevent movement (but update facing) if the object we are facing is impassable:
   enty.facing = this.examine(grid, intendedPosition)
-  if(enty.facing && enty.facing.passable === false) return enty 
+  if(enty.facing && enty.facing.passable === false) return enty
   //^ (unchanged)
 
   //Modify the enty's cell to simulate the movement:
@@ -91,18 +91,18 @@ gg.move = function(grid, entyOrCell, direction) {
   //Also update the direction enty is pointed:
   enty.direction = direction
 
-  //return grid (which contains enty):  
+  //return grid (which contains enty):
   return grid
 }
 
 gg.revise = function(enty) {
-  enty._rev = uuid.v4() //< Creates a unique revision stamp.    
+  enty._rev = uuid.v4() //< Creates a unique revision stamp.
   return enty
 }
 
 //Assign a unique id based on group:
 gg.indexIt = function(grid, enty) {
-  //Initialize a groups variable if not already existing: 
+  //Initialize a groups variable if not already existing:
   if(!grid.groups) grid.groups = {}
   //Find if the group has been established:
   if(!grid.groups[enty.group]) {
@@ -113,32 +113,32 @@ gg.indexIt = function(grid, enty) {
   enty.groupid = grid.groups[enty.group].counter + 1
   //Increment the counter:
   grid.groups[enty.group].counter++;
-  //Give it a unique ID and revision property: 
+  //Give it a unique ID and revision property:
   //enty._id = uuid.v4()
   return enty
 }
 
 gg.examine = function(grid, cellOrRc) {
-  var cell 
+  var cell
   if(_.isArray(cellOrRc)) cell = gg.rcToIndex(grid, cellOrRc)
   else cell = cellOrRc
-  var entyOrEnties = _.where(grid.enties, { cell :  cell })   
+  var entyOrEnties = _.where(grid.enties, { cell :  cell })
   if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
   if( entyOrEnties.length == 1 ) return entyOrEnties[0]
-  return entyOrEnties //< Returns an array. 
+  return entyOrEnties //< Returns an array.
 }
 
 gg.examineAll = function(grid, cellOrRc) {
-  var cell 
+  var cell
   if(_.isArray(cellOrRc)) cell = gg.rcToIndex(grid, cellOrRc)
   else cell = cellOrRc
-  var entyOrEnties = _.where(grid.enties, { cell :  cell })   
+  var entyOrEnties = _.where(grid.enties, { cell :  cell })
   if(_.isUndefined(entyOrEnties) || _.isEmpty(entyOrEnties) ) return null
-  return entyOrEnties //< Returns an array. 
+  return entyOrEnties //< Returns an array.
 }
 
-// Looks through each enty in the cell, returning the first one that passes a truth test (predicate), or undefined if no value passes the test. The function returns as soon as it finds an acceptable enty, and doesn't traverse the entire list of enties. 
-// If no predicate is provided, the first enty 
+// Looks through each enty in the cell, returning the first one that passes a truth test (predicate), or undefined if no value passes the test. The function returns as soon as it finds an acceptable enty, and doesn't traverse the entire list of enties.
+// If no predicate is provided, the first enty
 // or undefined if no enties are there
 gg.find = (grid, cellOrRc, predicate) => {
   return _.findWhere( grid.enties, { cell : cellOrRc } )
@@ -167,7 +167,7 @@ gg.createGrid = function(width, height, type, name) {
     rotMap = new ROT.Map[type](width, height)
     //This map type has a special randomize function:
     rotMap.randomize(0.3)
-  }    
+  }
   else if(type == 'Digger') {
     rotMap = new ROT.Map[type](height, width, { dugPercentage : 0.9 })
   }
@@ -212,7 +212,7 @@ gg.isTouching = function (grid, enty, entyOrGroup) {
   }
 }
 
-gg.insertEnty = function(grid, cellOrEnty, group, css, extras) {
+gg.insert = function(grid, cellOrEnty, group, css, extras) {
   //(obj, int, str, arr, obj)
 
   var enty
@@ -225,9 +225,9 @@ gg.insertEnty = function(grid, cellOrEnty, group, css, extras) {
       cell: cellOrEnty
     }
   }
-  //Convert to linear number if an array ([row,col]) was provided as cell: 
+  //Convert to linear number if an array ([row,col]) was provided as cell:
   if(_.isArray(enty.cell)) enty.cell = gg.rc(grid, enty.cell)
-    
+
   //Apply any additional properties:
   if(extras) enty = _.extend(enty, extras )
 
@@ -238,14 +238,15 @@ gg.insertEnty = function(grid, cellOrEnty, group, css, extras) {
   grid.enties.push(enty)
   return grid
 }
+gg.insertEnty  = gg.insert
 
-gg.removeEnty = function(grid, cellOrEnty) {
+gg.remove = function(grid, cellOrEnty) {
   var enty
   //Find the enty based on the cell
   if( _.isNumber(cellOrEnty)) {
     var entyOrEnties = gg.examine(grid.enties, cellOrEnty)
 
-    //Accommodate for array result:       
+    //Accommodate for array result:
     if( _.isArray(entyOrEnties)) enty = entyOrEnties[0]
     else enty = entyOrEnties
 
@@ -255,7 +256,7 @@ gg.removeEnty = function(grid, cellOrEnty) {
 
   } else if(_.isString(cellOrEnty)) {
     //console.log('is a string')
-    //remove the enty based on that string 
+    //remove the enty based on that string
     enty = _.findWhere(grid.enties, { _id : cellOrEnty })
     //console.log('TARGET ENTRY')
   } else if(_.isUndefined(cellOrEnty) || _.isNull(cellOrEnty) ) {
@@ -270,16 +271,17 @@ gg.removeEnty = function(grid, cellOrEnty) {
 
   return grid
 }
+gg.removeEnty = gg.remove
 
 //Returns an array of cell numbers representing a region of the grid:
 gg.makeRegion = function(grid, startCell, width, height) {
   var region = []
 
-  var endCell = Math.round(63 * grid.width * (height -1) / 36) 
+  var endCell = Math.round(63 * grid.width * (height -1) / 36)
   //^ 63 seems to be the magic number.
 
   startCell = parseInt(startCell)
-  endCell = parseInt(endCell) 
+  endCell = parseInt(endCell)
 
   //Loop over each row:
   _.range(startCell, endCell, grid.width).forEach(function(rowStart) {
@@ -293,13 +295,13 @@ gg.makeRegion = function(grid, startCell, width, height) {
 
 gg.randomMapEdge = function(min, max, grid) {
   var randomNum = _.random(min, max)
-  return randomNum - math.mod(randomNum, grid.width) 
+  return randomNum - math.mod(randomNum, grid.width)
 }
 
 gg.populateCells = (grid, fill) => {
   if(_.isUndefined(fill)) fill = true //< Fill by default.
   grid.cells = []
-  if(fill) { //Make a cell for every cell of the grid: 
+  if(fill) { //Make a cell for every cell of the grid:
     grid.cells = _.map(_.range(grid.width * grid.height), (cell, index) => {
       cell = {
         enties : _.where(grid.enties, { cell: index })
@@ -308,7 +310,7 @@ gg.populateCells = (grid, fill) => {
       return cell
     })
   } else { //Only make cells which are relevant (better performance for massive grids)...
-    //determine the furthest enty: 
+    //determine the furthest enty:
     var maxEnty = _.max(grid.enties, (enty) => enty.cell).cell
     //populate an array/range of cells up to that index....
     _.range(maxEnty).forEach((index) => {
@@ -320,7 +322,7 @@ gg.populateCells = (grid, fill) => {
   return grid
 }
 
-//Populate a row of cells: 
+//Populate a row of cells:
 gg.populateRowCells = (grid, row) => {
   if(!row) row = 0
   grid.cells = []
@@ -328,7 +330,7 @@ gg.populateRowCells = (grid, row) => {
   var maxEnty = _.max(grid.enties, (enty) => enty.cell).cell
   //Populate an array/range of cells up to that index....
   _.range(maxEnty).forEach((index) => {
-    //Put the enty in the cell: 
+    //Put the enty in the cell:
     grid.cells[index] = {
       enties : _.where(grid.enties, { cell : index })
     }
@@ -347,7 +349,7 @@ gg.rcToIndex = (grid, param1, param2) => {
     row = param1
     col = param2
   }
-  //Return the cell num: 
+  //Return the cell num:
   var rc = ArrayGrid(grid.cells, [grid.width, grid.height]).index(row,col)
   return rc
 }
@@ -355,7 +357,7 @@ gg.rcToIndex = (grid, param1, param2) => {
 gg.xyToIndex = gg.rcToIndex
 
 gg.indexToRc = (grid, index) => {
-  var x = math.floor( index / grid.width ), 
+  var x = math.floor( index / grid.width ),
       y = math.floor( index % grid.width )
   return [x, y]
 }
@@ -369,7 +371,7 @@ gg.rcCells = (grid) => {
   return grid
 }
 
-gg.xyCells = gg.rcCells 
+gg.xyCells = gg.rcCells
 
 gg.nextOpenCell = (grid, startCell) => {
   //Return the cell # of the next open cell (a cell that does not contain any enties)
@@ -377,13 +379,13 @@ gg.nextOpenCell = (grid, startCell) => {
   var openCell
   if(!startCell) startCell = 0
   grid.cells.some( (cell, index) => {
-    //skip if startCell is higher: 
+    //skip if startCell is higher:
     if(startCell > index) return false
     if(cell.enties.length) {
       return false
     } else {
-      openCell = index 
-      return true 
+      openCell = index
+      return true
     }
   })
   return openCell
@@ -392,10 +394,10 @@ gg.nextOpenCell = (grid, startCell) => {
 gg.nextOpenCellSouth = (grid, startCell) => {
   if(!startCell) startCell = 0
   //Return the cell # of the next open cell down (same column)
-  var nextOpenCellSouth 
+  var nextOpenCellSouth
   var nextCell = startCell
   while (_.isUndefined(nextOpenCellSouth)) {
-    nextCell = nextCell + grid.width 
+    nextCell = nextCell + grid.width
     var nextCellContents = gg.examine(grid, nextCell)
     if( !nextCellContents ) nextOpenCellSouth = nextCell
   }
@@ -405,13 +407,13 @@ gg.nextOpenCellSouth = (grid, startCell) => {
 
 gg.nextOpenCellEast = (grid, startCell) => {
   if(!startCell) startCell = 0
-  //Return the cell # of the next open cell to the right (same row) 
-  var nextOpenCellEast 
-  var nextCell = startCell 
+  //Return the cell # of the next open cell to the right (same row)
+  var nextOpenCellEast
+  var nextCell = startCell
   while (_.isUndefined(nextOpenCellEast)) {
     nextCell = nextCell + 1
-    var nextCellContents = gg.examine(grid, nextCell) 
-    if(!nextCellContents) nextOpenCellEast = nextCell 
+    var nextCellContents = gg.examine(grid, nextCell)
+    if(!nextCellContents) nextOpenCellEast = nextCell
   }
   return nextOpenCellEast
 }
@@ -421,51 +423,51 @@ gg.isEdge = (grid, cell) => {
   if(cell % grid.width == grid.width - 1) return true   //< East edge
   if(cell > (grid.width * grid.height) - (grid.width +1)) return true //< South edge
   if(cell % grid.width == 0) return true //< West edge
-  return false //< not an edge! 
+  return false //< not an edge!
 }
 
-gg.isEastEdge = (grid, cell) => { 
-  if(cell % grid.width == grid.width - 1) return true 
+gg.isEastEdge = (grid, cell) => {
+  if(cell % grid.width == grid.width - 1) return true
   return false
 }
-gg.isSouthEdge = (grid, cell) => { 
+gg.isSouthEdge = (grid, cell) => {
   if(cell > (grid.width * grid.height) - (grid.width +1)) return true
   return false
 }
 
 gg.nextCol = (grid, cell, loop) => {
   //Return the value of the cell one column to the right...
-  if(!loop && gg.isEdge(grid, cell)) return null //< If no columns to the right, return null:  
-  var enties = _.where(grid.enties, { cell :  cell + 1})    
+  if(!loop && gg.isEdge(grid, cell)) return null //< If no columns to the right, return null:
+  var enties = _.where(grid.enties, { cell :  cell + 1})
   if(_.isUndefined(enties) || _.isEmpty(enties) ) return null
-  return enties //< Returns an array. 
+  return enties //< Returns an array.
 }
 
 
 gg.nextRow = (grid, cell, loop) => {
   //Return the value of the cell one row below...
-  if(!loop && gg.isEdge(grid, cell)) return null //< If no cells below, return null:    
-  var enties = _.where(grid.enties, { cell :  cell + grid.width })    
+  if(!loop && gg.isEdge(grid, cell)) return null //< If no cells below, return null:
+  var enties = _.where(grid.enties, { cell :  cell + grid.width })
   if(_.isUndefined(enties) || _.isEmpty(enties) ) return null
-  return enties //< Returns an array. 
+  return enties //< Returns an array.
 }
 
 gg.expandGrid = (oldGrid) => {
   //Perform a single cell top-left diagonal expansion)...
-  //store reference to original x and y coordinates: 
+  //store reference to original x and y coordinates:
   oldGrid.enties = _.map(oldGrid.enties, (enty) => {
     enty.rc = gg.indexToRc(oldGrid, enty.cell)
-    enty.xy = enty.rc 
+    enty.xy = enty.rc
     return enty
   })
 
-  //create a blank new, larger grid: 
+  //create a blank new, larger grid:
   var newGrid = gg.createGrid(oldGrid.height + 1 , oldGrid.width + 1)
 
-  //apply original x and y coordinates; correcting cell numbers: 
+  //apply original x and y coordinates; correcting cell numbers:
   newGrid.enties = _.chain(oldGrid.enties).clone().map((enty) => {
     var cellNum = gg.rcToIndex(newGrid, enty.rc)
-    enty.cell = cellNum  //^ update both the linear cell num and rc values: 
+    enty.cell = cellNum  //^ update both the linear cell num and rc values:
     enty.rc = gg.indexToRc(newGrid, cellNum)
     return enty
   }).value()
@@ -473,32 +475,32 @@ gg.expandGrid = (oldGrid) => {
   return newGrid
 }
 
-//Determine the next enty that exists over: 
+//Determine the next enty that exists over:
 gg.nextOccupiedCellEast = (grid, startCell) => {
   if(!startCell) startCell = 0
-  //Return the cell # of the next occupied cell to the right (same row) 
-  var nextOccupiedCellEast 
+  //Return the cell # of the next occupied cell to the right (same row)
+  var nextOccupiedCellEast
   var nextCell = startCell
   while (_.isUndefined(nextOccupiedCellEast)) {
     nextCell = nextCell + 1
-    var nextCellContents = gg.examine(grid, nextCell) 
-    if(nextCellContents) return nextOccupiedCellEast = nextCell 
-    if(gg.isEastEdge(grid,nextCell)) return nextOccupiedCellEast = null //< Prevent infinity.       
+    var nextCellContents = gg.examine(grid, nextCell)
+    if(nextCellContents) return nextOccupiedCellEast = nextCell
+    if(gg.isEastEdge(grid,nextCell)) return nextOccupiedCellEast = null //< Prevent infinity.
   }
   return nextOccupiedCellEast
 }
 
-//Determine the next enty that exists over: 
+//Determine the next enty that exists over:
 gg.nextOccupiedCellWest = (grid, startCell) => {
   if(!startCell) startCell = 0
-  //Return the cell # of the next occupied cell to the right (same row) 
-  var nextOccupiedCellWest 
+  //Return the cell # of the next occupied cell to the right (same row)
+  var nextOccupiedCellWest
   var nextCell = startCell
   while (_.isUndefined(nextOccupiedCellWest)) {
     nextCell = nextCell - 1
-    var nextCellContents = gg.examine(grid, nextCell) 
-    if(nextCellContents) return nextOccupiedCellWest = nextCell 
-    //if(gg.isWestEdge(grid,nextCell)) return nextOccupiedCellEast = null //< Prevent infinity.       
+    var nextCellContents = gg.examine(grid, nextCell)
+    if(nextCellContents) return nextOccupiedCellWest = nextCell
+    //if(gg.isWestEdge(grid,nextCell)) return nextOccupiedCellEast = null //< Prevent infinity.
   }
   return nextOccupiedCellWest
 }
@@ -507,10 +509,10 @@ gg.nextOccupiedCellWest = (grid, startCell) => {
 gg.westCell = (grid, cell) => {
   //Determine the rc then use that...
   if(_.isNumber(cell)) {
-    if(gg.isEdge(grid, cell)) return null    
+    if(gg.isEdge(grid, cell)) return null
     var currentCellRc = gg.indexToRc(grid, cell)
     //Now simply subtract one cell from the x axis
-    //(and return the cell number): 
+    //(and return the cell number):
     var westCellRc = [ currentCellRc[0], currentCellRc[1] -1 ]
     var westCellIndex = gg.rcToIndex(grid,westCellRc)
     return westCellIndex
@@ -521,8 +523,8 @@ gg.westCell = (grid, cell) => {
 
 gg.columnCells = (grid, cellOrRc) => {
   if(_.isUndefined(cellOrRc))
-  //Return a range of cell numbers for the given column: 
-  var targetColumn 
+  //Return a range of cell numbers for the given column:
+  var targetColumn
   if(_.isArray(cellOrRc)) targetColumn = cellOrRc[1]
   else targetColumn = gg.indexToRc(grid, cellOrRc)[1]
   var columnCells = []
@@ -534,24 +536,24 @@ gg.columnCells = (grid, cellOrRc) => {
 
 gg.columnEnties = (grid, cellOrRc) => {
   if(_.isUndefined(cellOrRc)) return console.log('no cell or row/column pair provided')
-  var targetColumn 
+  var targetColumn
   if(_.isArray(cellOrRc)) targetColumn = cellOrRc[1]
   else targetColumn = gg.indexToRc(grid, cellOrRc)[1]
 
-  //Return all enties in a given column: 
+  //Return all enties in a given column:
   var thisColumnCells = gg.columnCells(grid, targetColumn)
   thisColumnEnties = _.chain(grid.enties)
     .map((enty) => {
       if(_.contains(thisColumnCells, enty.cell)) return enty
-      return false 
+      return false
     })
-    .compact() 
-    .value() 
+    .compact()
+    .value()
   return thisColumnEnties
 }
 
 gg.rowCells = (grid, cellOrRc) => {
-  //Return a range of cell numbers for the given row: 
+  //Return a range of cell numbers for the given row:
   var targetRow
   if(_.isArray(cellOrRc)) targetRow = cellOrRc[0]
   else targetRow = gg.indexToRc(grid, cellOrRc)[0]
@@ -562,18 +564,18 @@ gg.rowCells = (grid, cellOrRc) => {
   return rowCells
 }
 
-//prevCell will work like westCell except that it will 
+//prevCell will work like westCell except that it will
 //always return a cell num even on an edge (ie- next row up)
 
-//Find the next open column... 
+//Find the next open column...
 //gg.nextOpenColumn = (grid, cell) => {
-gg.nextOpenColumn = (grid, startCell) => {  
-  if(_.isUndefined(startCell)) startCell = 0  
-  var nextCellToCheck, 
+gg.nextOpenColumn = (grid, startCell) => {
+  if(_.isUndefined(startCell)) startCell = 0
+  var nextCellToCheck,
       nextOpenColumn
-  //TODO: prevent this loop from freezing by making sure 
+  //TODO: prevent this loop from freezing by making sure
   //we exit if there is never any open column...
-  //console.log('running nextOpenColumn while loop... (dangerous)')  
+  //console.log('running nextOpenColumn while loop... (dangerous)')
   while(_.isUndefined(nextOpenColumn)) {
     if(_.isUndefined(nextCellToCheck)) nextCellToCheck = startCell
     var nextOpenCell = gg.nextOpenCell(grid, nextCellToCheck)
@@ -584,14 +586,14 @@ gg.nextOpenColumn = (grid, startCell) => {
       nextCellToCheck++
     }
   }
-  //console.log('finished running nextOpenColumn while loop: ' + nextOpenColumn)  
+  //console.log('finished running nextOpenColumn while loop: ' + nextOpenColumn)
   return nextOpenColumn
 }
 
-//Find the next row that has no enties in it: 
+//Find the next row that has no enties in it:
 gg.nextOpenRow = (grid, startCell) => {
-  if(_.isUndefined(startCell)) startCell = 0  
-  var nextCellToCheck, 
+  if(_.isUndefined(startCell)) startCell = 0
+  var nextCellToCheck,
       nextOpenRow
   while(_.isUndefined(nextOpenRow)) {
     if(_.isUndefined(nextCellToCheck)) nextCellToCheck = startCell
@@ -603,7 +605,7 @@ gg.nextOpenRow = (grid, startCell) => {
       nextCellToCheck++
     }
   }
-  return nextOpenRow  
+  return nextOpenRow
 }
 
 gg.nextCellEast = (grid, currentCell) => {
@@ -614,15 +616,15 @@ gg.nextCellEast = (grid, currentCell) => {
 }
 
 gg.openCellsEast = (grid, startCell) => {
-  if(_.isUndefined(startCell)) startCell = 0  
+  if(_.isUndefined(startCell)) startCell = 0
   grid = gg.populateCells(grid)
   grid = gg.rcCells(grid)
 
-  //Determine which row is our starting cell; and get all enties in target row: 
-  var rowNum = gg.indexToRc(grid, startCell)[0], 
+  //Determine which row is our starting cell; and get all enties in target row:
+  var rowNum = gg.indexToRc(grid, startCell)[0],
       targetRow = _.filter(grid.cells, (cell) => cell.rc[0] === rowNum )
 
-  //Now iterate over it: 
+  //Now iterate over it:
   var openCells = 0
   targetRow.forEach((cell, index) => {
     if(!cell.enties.length) openCells++
@@ -636,11 +638,11 @@ gg.openCellsDown = (grid, startCell) => {
   grid = gg.rcCells(grid)
   //idea: is there a test that could be run, which is less expensive than always populating cells or rc'ing cells each function call ?
 
-  //Determine which row is our starting cell; and get all enties in target row: 
-  var columnNum = gg.indexToRc(grid, startCell)[1], 
+  //Determine which row is our starting cell; and get all enties in target row:
+  var columnNum = gg.indexToRc(grid, startCell)[1],
       targetColumn = _.filter(grid.cells, (cell) => cell.rc[1] === columnNum )
 
-  //Now iterate over it: 
+  //Now iterate over it:
   var openCells = []
   targetColumn.forEach((cell, index) => {
     if(!cell.enties.length) openCells.push(cell)
@@ -666,7 +668,7 @@ gg.column = (grid, cell) => {
 }
 
 gg.teleport = (grid, cellOrEnty, destinationCell) => {
-  //Teleport an enty to a different position of the grid:  
+  //Teleport an enty to a different position of the grid:
 
 }
 
@@ -675,19 +677,19 @@ gg.entiesBelowInColumn = () => {
 }
 
 gg.columnIsFull = (grid, column) => {
-  //Returns true if each cell in a given column is occupied by an enty: 
+  //Returns true if each cell in a given column is occupied by an enty:
   var colCells = gg.columnCells(grid, column)
   //var everyCellHasEnty = _.every(colCells, (cell) => cell.enties && cell.enties.length )
   var everyCellHasEnty = _.every(colCells, (cell) => grid.cells[cell].enties && grid.cells[cell].enties.length)
-  if( everyCellHasEnty ) return true 
+  if( everyCellHasEnty ) return true
   else return false
 }
 
 gg.anyColumnIsFull = (grid) => {
-  //Returns true if ANY column of the grid is fully occupied by enties 
-  //(at least one enty occupies each cell of the column): 
-  var columns = _.range(grid.width) 
-  var anyColumnIsFull 
+  //Returns true if ANY column of the grid is fully occupied by enties
+  //(at least one enty occupies each cell of the column):
+  var columns = _.range(grid.width)
+  var anyColumnIsFull
   columns.some((col, index) => {
     var colCells = gg.columnCells(grid, index)
     anyColumnIsFull = gg.columnIsFull(grid, col)
@@ -699,12 +701,12 @@ gg.anyColumnIsFull = (grid) => {
 gg.someEntyIsOnBottomEdge = (grid) => {
   if(!grid.height) return false
   if(grid.height == 1) {
-    if(grid.cells[0].enties) return true 
-    else return false 
+    if(grid.cells[0].enties) return true
+    else return false
   }
-  //find the bottom row:  
+  //find the bottom row:
   var bottomRowCells = gg.rowCells(grid, [grid.height -1, 0])
-  if(!bottomRowCells.length) return false 
+  if(!bottomRowCells.length) return false
   var someEntyIsOnBottomEdge = bottomRowCells.some((cell) => {
     return gg.examine(grid, cell)
   })
@@ -714,12 +716,12 @@ gg.someEntyIsOnBottomEdge = (grid) => {
 gg.someEntyIsOnRightEdge = (grid) => {
   if(!grid.width) return false
   if(grid.width == 1) {
-    if(grid.cells[0].enties) return true 
-    else return false 
+    if(grid.cells[0].enties) return true
+    else return false
   }
-  //find the right column:  
+  //find the right column:
   var rightEdgeColumnCells = gg.columnCells(grid, [0, grid.width -1])
-  if(!rightEdgeColumnCells.length) return false 
+  if(!rightEdgeColumnCells.length) return false
   var someEntyIsOnRightEdge = rightEdgeColumnCells.some((cell) => {
     return gg.examine(grid, cell)
   })
