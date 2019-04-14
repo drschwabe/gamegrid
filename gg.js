@@ -16,20 +16,30 @@ gg.getDirection = function(keyCode) {
   return null
 }
 
-gg.move = function(grid, entyOrCellOrIdOrLabel, direction) {
-  var enty
-  if(_.isNumber(entyOrCellOrIdOrLabel)) {
-    enty = gg.find(grid, entyOrCellOrIdOrLabel)
-  } else if(_.isString(entyOrCellOrIdOrLabel)) {
+gg.move = function(...args) {
+  //grid, entyOrCellOrIdOrLabel, direction
+  let grid, enty, cell, idOrLabel, direction
+  grid = gg._grid ? gg._grid : args[0]
+
+  enty = _.find( args, (arg) => _.isObject( arg ) )
+
+  cell = _.find( args, (arg) => _.isNumber( arg ))
+
+  direction = _.find( args, (arg) => _.isString(arg) && _.contains(['north', 'south', 'east', 'west'], arg))
+
+  idOrLabel = _.find( args, (arg) => _.isString( arg ) && arg != direction )
+
+
+  if( _.isNumber(cell)) {
+    enty = gg.find(grid, cell)
+  } else if(!enty && idOrLabel) {
     //first search by ID
-    enty = _.findWhere(grid.enties, { _id : entyOrCellOrIdOrLabel })
+    enty = _.findWhere(grid.enties, { _id : idOrLabel })
     if(!enty) { //if not found by ID, try by label:
-      enty = _.findWhere(grid.enties, { label : entyOrCellOrIdOrLabel })
+      enty = _.findWhere(grid.enties, { label : idOrLabel })
     } else {
       throw 'Cannot find enty'
     }
-  } else { //otherwise an object was provided:
-    enty = entyOrCellOrIdOrLabel
   }
   function nextCell(grid, enty, direction) {
     //Returns the cell # for the nearest cell in the given direction:
@@ -86,7 +96,9 @@ gg.move = function(grid, entyOrCellOrIdOrLabel, direction) {
   if(intendedPosition == 'map edge') {
     enty.onMapEdge = true
     if(gg._render) gg.render(grid)
-    return grid
+    if(!gg._grid) return grid
+    gg._grid = grid
+    return
   }
 
   //Prevent movement (but update facing) if the object we are facing is impassable:
@@ -105,7 +117,9 @@ gg.move = function(grid, entyOrCellOrIdOrLabel, direction) {
 
   if(gg._render) gg.render(grid)
   //return grid (which contains enty):
-  return grid
+  if(!gg._grid) return grid
+  gg._grid = grid
+  return
 }
 
 gg.revise = function(enty) {
@@ -153,7 +167,9 @@ gg.create = function(width, height, type, name) {
   }
   if(!type){
     if(gg._render) gg.render(grid)
-    return grid
+    if(!gg._grid) return grid
+    gg._grid = grid
+    return
   }
   var rotMap
   //Accommodate for additional params:
@@ -188,7 +204,9 @@ gg.create = function(width, height, type, name) {
     cellCount++;
   })
   if(gg._render) gg.render(grid)
-  return grid
+  if(!gg._grid) return grid
+  gg._grid = grid
+  return
 }
 
 gg.createGrid = gg.create
@@ -252,7 +270,7 @@ gg.insert = function(...args) {
   enty._id = uuid.v4()
   grid.enties.push(enty)
   if(gg._render) gg.render(grid)
-  return grid
+  if(!gg._grid) return grid
 }
 
 gg.insertEnty  = gg.insert
