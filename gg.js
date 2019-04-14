@@ -148,7 +148,8 @@ gg.create = function(width, height, type, name) {
     _id : id,
     width: width,
     height: height,
-    enties: []
+    enties: [],
+    type : 'grid'
   }
   if(!type){
     if(gg._render) gg.render(grid)
@@ -213,29 +214,47 @@ gg.isTouching = function (grid, enty, entyOrGroup) {
   }
 }
 
-gg.insert = function(grid, cellOrEnty, label, extras) {
-  //(obj, int, str, obj)
+gg.insert = function(...args) {
+  //grid, cellOrEnty, label, extras
+  //(obj, int/obj, str, obj)
 
-  var enty
-  //If the second param is an object, it's already an enty object:
-  if(_.isObject(cellOrEnty)) {
-    enty = cellOrEnty
+  let grid, enty, label, extras
+
+  if(gg._grid) {
+    grid = gg._grid
   } else {
+    grid = args[0]
+  }
+
+  label = _.find( args, (arg) => _.isString(arg) )
+
+  cell = _.find( args, (arg) => _.isNumber(arg) || arg === 0)
+
+  if(_.isNumber(cell) && _.isObject( _.last(args) ) ) {
+    extras = _.last(args)
+  } else {
+    enty = _.find( args, (arg) => _.isObject(arg) && arg.type != 'grid')
+  }
+
+  //If the second param is an object, it's already an enty object:
+  if(_.isNumber(cell) && !enty) {
     enty = { //Otherwise create an enty object from the params:
       label: label,
-      cell: cellOrEnty
+      cell: cell
     }
   }
+  //Apply any additional properties:
+  if(extras) enty = _.extend(enty, extras )
+
   //Convert to linear number if an array ([row,col]) was provided as cell:
   if(_.isArray(enty.cell)) enty.cell = gg.rc(grid, enty.cell)
 
-  //Apply any additional properties:
-  if(extras) enty = _.extend(enty, extras )
   enty._id = uuid.v4()
   grid.enties.push(enty)
   if(gg._render) gg.render(grid)
   return grid
 }
+
 gg.insertEnty  = gg.insert
 
 gg.remove = function(grid, cellOrEnty) {
