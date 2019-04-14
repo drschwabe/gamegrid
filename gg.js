@@ -140,7 +140,7 @@ gg.find = (grid, cellOrRc, predicate) => {
 }
 //WIP / TODO factor in predicate
 
-gg.createGrid = function(width, height, type, name) {
+gg.create = function(width, height, type, name) {
   var id
   if(name) id = name
   else id = 'grid_0'
@@ -189,6 +189,8 @@ gg.createGrid = function(width, height, type, name) {
   if(gg._render) gg.render(grid)
   return grid
 }
+
+gg.createGrid = gg.create
 
 //Returns an enty if the supplied enty is sharing the same cell as the supplied group:
 gg.isTouching = function (grid, enty, entyOrGroup) {
