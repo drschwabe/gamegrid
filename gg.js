@@ -275,36 +275,31 @@ gg.insert = function(...args) {
 
 gg.insertEnty  = gg.insert
 
-gg.remove = function(grid, cellOrEnty) {
-  var enty
+gg.remove = function(...args) {
+  //grid, cellOrEntyOrIdOrLabel
+  var grid = gg._grid ? gg._grid : args[0]
+  var enty, cell, idOrLabel
+  cell = _.find( args, (arg) => _.isNumber(arg)  )
   //Find the enty based on the cell
-  if( _.isNumber(cellOrEnty)) {
-    var entyOrEnties = gg.examine(grid.enties, cellOrEnty)
+  if(_.isNumber(cell)) enty = gg.examine(grid, cell)
+  //Accommodate for array result:
+  if( _.isNumber(cell) && _.isArray(enty)) enty = enty[0]
 
-    //Accommodate for array result:
-    if( _.isArray(entyOrEnties)) enty = entyOrEnties[0]
-    else enty = entyOrEnties
+  idOrLabel = _.find( args, (arg) =>  _.isString(arg) )
 
-  } else if( _.isObject(cellOrEnty)) {
-    //console.log('is object')
-    enty = cellOrEnty
+  if(idOrLabel) {
+    enty = _.findWhere(grid.enties, { _id : idOrLabel })
+    if(!enty) _.findWhere(grid.enties, { label : idOrLabel })
+  }
 
-  } else if(_.isString(cellOrEnty)) {
-    //console.log('is a string')
-    //remove the enty based on that string
-    enty = _.findWhere(grid.enties, { _id : cellOrEnty })
-    //console.log('TARGET ENTRY')
-  } else if(_.isUndefined(cellOrEnty) || _.isNull(cellOrEnty) ) {
-    //console.log('is undefined or null or a string')
-    //console.log('gg error (gg.removeEnty): No valid cell or enty provided.  This is what was provided: ')
-    //console.log(cellOrEnty)
-    return
+  if(!enty && !gg.grid) {
+    enty = args[1]
   }
   grid.enties = _.without(grid.enties, enty)
 
-  //Update the counter for the group... though not sure why not just use length... maybe axe counter feature
   if(gg._render) gg.render(grid)
-  return grid
+  if(!gg._grid) return grid
+  gg._grid = grid
 }
 gg.removeEnty = gg.remove
 
