@@ -16,10 +16,21 @@ gg.getDirection = function(keyCode) {
   return null
 }
 
-gg.move = function(grid, entyOrCell, direction) {
+gg.move = function(grid, entyOrCellOrIdOrLabel, direction) {
   var enty
-  if(_.isNumber(entyOrCell)) enty = gg.find(grid, entyOrCell)
-  else enty = entyOrCell
+  if(_.isNumber(entyOrCellOrIdOrLabel)) {
+    enty = gg.find(grid, entyOrCellOrIdOrLabel) 
+  } else if(_.isString(entyOrCellOrIdOrLabel)) {
+    //first search by ID
+    enty = _.findWhere(grid.enties, { _id : entyOrCellOrIdOrLabel })
+    if(!enty) { //if not found by ID, try by label:
+      enty = _.findWhere(grid.enties, { label : entyOrCellOrIdOrLabel })
+    } else {
+      throw 'Cannot find enty'
+    }
+  } else { //otherwise an object was provided:
+    enty = entyOrCellOrIdOrLabel
+  }
   function nextCell(grid, enty, direction) {
     //Returns the cell # for the nearest cell in the given direction:
     var nextCell,
