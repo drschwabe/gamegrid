@@ -1,28 +1,12 @@
-const gg = require('../../gg.js')
+var gg = require('../../gg.js')
 const _ = require('underscore')
 
-var grid = gg.createGrid(6,6)
-var renderGrid = (grid) => {
-  grid = gg.populateCells(grid)
-  //chunk the grid into smaller arrays (each array a row)
-  var rows = _.chunk(grid.cells, 6)
-  var cellCount = 0
-  //loop over each row:
-  rows.forEach((row, rowIndex) => {
-    var output
-    row.forEach((cell, colIndex) => {
-      if(colIndex == 0) output = '[ '
-      if(cell.enties.length) {
-        cell.enties.forEach((enty) => {
-          output = output + ` ${enty.name} `
-        })
-      } else {
-        output = output + ` . `
-      }
-      cellCount++
-    }) //output the value of the row:
-    console.log(output + ' ]')
-  })
-}
 
-renderGrid(grid)
+//extend gg with terminal-grid lib:
+gg = require('./lib.js')(gg)
+
+gg._render = true //< auto rendering
+
+var grid = gg.createGrid(3,3)
+grid = gg.insertEnty(grid, 3, 'H')
+grid = gg.move(grid, 'H', 'east')

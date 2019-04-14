@@ -19,7 +19,7 @@ gg.getDirection = function(keyCode) {
 gg.move = function(grid, entyOrCellOrIdOrLabel, direction) {
   var enty
   if(_.isNumber(entyOrCellOrIdOrLabel)) {
-    enty = gg.find(grid, entyOrCellOrIdOrLabel) 
+    enty = gg.find(grid, entyOrCellOrIdOrLabel)
   } else if(_.isString(entyOrCellOrIdOrLabel)) {
     //first search by ID
     enty = _.findWhere(grid.enties, { _id : entyOrCellOrIdOrLabel })
@@ -85,6 +85,7 @@ gg.move = function(grid, entyOrCellOrIdOrLabel, direction) {
   var intendedPosition = nextCell(grid, enty, direction)
   if(intendedPosition == 'map edge') {
     enty.onMapEdge = true
+    if(gg._render) gg.render(grid)
     return grid
   }
 
@@ -102,6 +103,7 @@ gg.move = function(grid, entyOrCellOrIdOrLabel, direction) {
   //Also update the direction enty is pointed:
   enty.direction = direction
 
+  if(gg._render) gg.render(grid)
   //return grid (which contains enty):
   return grid
 }
@@ -148,7 +150,10 @@ gg.createGrid = function(width, height, type, name) {
     height: height,
     enties: []
   }
-  if(!type) return grid
+  if(!type){
+    if(gg._render) gg.render(grid)
+    return grid
+  }
   var rotMap
   //Accommodate for additional params:
   if(type == 'Rogue') {
@@ -181,7 +186,8 @@ gg.createGrid = function(width, height, type, name) {
     if(value) grid.enties.push(blockEnty)
     cellCount++;
   })
-  return grid;
+  if(gg._render) gg.render(grid)
+  return grid
 }
 
 //Returns an enty if the supplied enty is sharing the same cell as the supplied group:
@@ -225,6 +231,7 @@ gg.insert = function(grid, cellOrEnty, label, extras) {
   if(extras) enty = _.extend(enty, extras )
   enty._id = uuid.v4()
   grid.enties.push(enty)
+  if(gg._render) gg.render(grid)
   return grid
 }
 gg.insertEnty  = gg.insert
@@ -257,7 +264,7 @@ gg.remove = function(grid, cellOrEnty) {
   grid.enties = _.without(grid.enties, enty)
 
   //Update the counter for the group... though not sure why not just use length... maybe axe counter feature
-
+  if(gg._render) gg.render(grid)
   return grid
 }
 gg.removeEnty = gg.remove
