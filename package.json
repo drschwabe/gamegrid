@@ -6,6 +6,7 @@
   "author": "Derrick Schwabe <admin@nerdbusiness.com>",
   "private": true,
   "dependencies": {
+    "array-grid": "^1.5.0",
     "mathjs": "2.3.0",
     "node-uuid": "1.4.3",
     "rot-js": "0.6.0",
