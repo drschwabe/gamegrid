@@ -1,0 +1,8 @@
+{
+  "name": "demo",
+  "version": "0.0.1",
+  "main" : "lib.js",
+  "scripts" : {
+    "test" : "../../node_modules/.bin/tape test.js | ../../node_modules/.bin/tap-spec"
+  }
+}
