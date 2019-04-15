@@ -13,7 +13,7 @@
     "underscore": "1.9.1"
   },
   "scripts": {
-    "test": "tape test.js | tap-spec"
+    "test": "tape test.js | tap-spec; cd mods/terminal-render; tape test.js | tap-spec"
   },
   "devDependencies": {
     "tap-spec": "4.1.1",
