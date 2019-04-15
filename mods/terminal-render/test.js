@@ -2,8 +2,8 @@ const test = require('tape')
 const childProcess = require('child_process')
 const _s = require('underscore.string')
 
-test('"Terminal Grid" demo renders as expected', (t) => {
-  t.plan(3)
+test(`"terminal-render" mod's demo renders as expected`, (t) => {
+  t.plan(2)
 
   //run the demo and collect output as a string:
   var output = childProcess.execSync('node ./demo.js').toString()
