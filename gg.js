@@ -267,7 +267,6 @@ gg.insert = function(...args) {
   //Convert to linear number if an array ([row,col]) was provided as cell:
   if(_.isArray(enty.cell)) enty.cell = gg.rc(grid, enty.cell)
 
-  enty._id = uuid.v4()
   grid.enties.push(enty)
   if(gg._render) gg.render(grid)
   if(!gg._grid) return grid
