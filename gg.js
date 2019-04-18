@@ -248,6 +248,8 @@ gg.insert = function(...args) {
 
   cell = _.find( args, (arg) => _.isNumber(arg) || arg === 0)
 
+  if(!cell) cell = 0
+
   if(_.isNumber(cell) && _.isObject( _.last(args) ) ) {
     extras = _.last(args)
   } else {
