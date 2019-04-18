@@ -15,9 +15,7 @@ module.exports = (gg) => {
       row.forEach((cell, colIndex) => {
         if(colIndex == 0) output = '[ '
         if(cell.enties.length) {
-          cell.enties.forEach((enty) => {
-            output = output + ` ${enty.label} `
-          })
+            output = output + ` ${cell.enties[0].label} `
         } else {
           output = output + ` . `
         }
