@@ -1,7 +1,9 @@
 const _ = require('underscore')
 
 module.exports = (gg) => {
+  gg._render = true
   gg.render = (grid) => {
+    if(!grid) grid = gg._grid
     console.log('')
     grid = gg.populateCells(grid)
     //chunk the grid into smaller arrays (each array a row)
