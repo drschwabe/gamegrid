@@ -127,7 +127,16 @@ gg.revise = function(enty) {
   return enty
 }
 
-gg.examine = function(grid, cellOrRc) {
+gg.examine = function(...args) {
+  //grid, cellOrRc
+  let grid, cellOrRc
+  if(args.length == 1) {
+    grid = gg._grid
+    cellOrRc = args[0]
+  } else {
+    grid = args[0]
+    cellOrRc = args[1]
+  }
   var cell
   if(_.isArray(cellOrRc)) cell = gg.rcToIndex(grid, cellOrRc)
   else cell = cellOrRc
