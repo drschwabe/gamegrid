@@ -21,14 +21,13 @@ gg.move = function(...args) {
   let grid, enty, cell, idOrLabel, direction
   grid = gg._grid ? gg._grid : args[0]
 
-  enty = _.find( args, (arg) => _.isObject( arg ) )
+  enty = _.find( args, (arg) => _.isObject( arg ) && arg.type != 'grid' )
 
   cell = _.find( args, (arg) => _.isNumber( arg ))
 
   direction = _.find( args, (arg) => _.isString(arg) && _.contains(['north', 'south', 'east', 'west'], arg))
 
   idOrLabel = _.find( args, (arg) => _.isString( arg ) && arg != direction )
-
 
   if( _.isNumber(cell)) {
     enty = gg.find(grid, cell)
@@ -37,6 +36,9 @@ gg.move = function(...args) {
     enty = _.findWhere(grid.enties, { _id : idOrLabel })
     if(!enty) { //if not found by ID, try by label:
       enty = _.findWhere(grid.enties, { label : idOrLabel })
+      if(!enty) {
+        enty = _.findWhere(grid.enties, { name : idOrLabel })
+      }
     } else {
       throw 'Cannot find enty'
     }
