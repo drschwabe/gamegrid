@@ -257,6 +257,8 @@ gg.insert = function(...args) {
     grid = gg._grid
   } else {
     grid = args[0]
+    //accommodate for if second param is another grid (ie- a grid within a grid)
+    if(args[1] && args[1].type == 'grid')  enty = args[1]
   }
 
   label = _.find( args, (arg) => _.isString(arg) )
@@ -267,7 +269,7 @@ gg.insert = function(...args) {
 
   if(_.isNumber(cell) && _.isObject( _.last(args) ) ) {
     extras = _.last(args)
-  } else {
+  } else if(!enty) {
     enty = _.find( args, (arg) => _.isObject(arg) && arg.type != 'grid')
   }
 
@@ -280,6 +282,8 @@ gg.insert = function(...args) {
   }
   //Apply any additional properties:
   if(extras) enty = _.extend(enty, extras )
+
+  if(!enty.cell) enty.cell = cell 
 
   //Convert to linear number if an array ([row,col]) was provided as cell:
   if(_.isArray(enty.cell)) enty.cell = gg.rc(grid, enty.cell)
