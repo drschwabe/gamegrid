@@ -309,7 +309,7 @@ gg.remove = function(...args) {
 
   if(idOrLabel) {
     enty = _.findWhere(grid.enties, { _id : idOrLabel })
-    if(!enty) _.findWhere(grid.enties, { label : idOrLabel })
+    if(!enty) enty = _.findWhere(grid.enties, { label : idOrLabel })
   }
 
   if(!enty && !gg.grid) {
