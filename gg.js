@@ -105,8 +105,12 @@ gg.move = function(...args) {
 
   //Prevent movement (but update facing) if the object we are facing is impassable:
   enty.facing = this.examine(grid, intendedPosition)
-  if(enty.facing && enty.facing.passable === false) return enty
-  //^ (unchanged)
+  if(enty.facing && enty.facing.passable === false) {
+    if(gg._render) gg.render(grid)
+    if(!gg._grid) return grid
+    gg._grid = grid
+    return 
+  }
 
   //Modify the enty's cell to simulate the movement:
   enty.cell = intendedPosition
