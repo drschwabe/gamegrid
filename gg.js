@@ -180,12 +180,8 @@ gg.create = function(width, height, type, name) {
     enties: [],
     type : 'grid'
   }
-  if(!type){
-    if(gg._render) gg.render(grid)
-    if(!gg._grid) return grid
-    gg._grid = grid
-    return
-  }
+  if(!type) return this.type == 'grid' ? null : grid
+
   var rotMap
   //Accommodate for additional params:
   if(type == 'Rogue') {
@@ -218,10 +214,8 @@ gg.create = function(width, height, type, name) {
     if(value) grid.enties.push(blockEnty)
     cellCount++;
   })
-  if(gg._render) gg.render(grid)
-  if(!gg._grid) return grid
-  gg._grid = grid
-  return
+
+  return this.type == 'grid' ? null : grid
 }
 
 gg.createGrid = gg.create
@@ -248,49 +242,37 @@ gg.isTouching = function (grid, enty, entyOrGroup) {
 }
 
 gg.insert = function(...args) {
-  //grid, cellOrEnty, label, extras
-  //(obj, int/obj, str, obj)
-
   let grid, enty, label, extras
+  //(obj, int/obj, str, obj)
+  //parse args to establish what we working with:
 
-  if(gg._grid) {
-    grid = gg._grid
-  } else {
+  if( _.isObject(args[0]) && args[0].type == 'grid') {
     grid = args[0]
-    //accommodate for if second param is another grid (ie- a grid within a grid)
-    if(args[1] && args[1].type == 'grid')  enty = args[1]
+  } else {
+    grid = this
   }
 
+  enty = _.find( args, (arg) => _.isObject(arg) && enty != grid)
+  cell = _.find( args, (arg) => _.isNumber(arg) || arg === 0 || _.isArray(arg))
   label = _.find( args, (arg) => _.isString(arg) )
-
-  cell = _.find( args, (arg) => _.isNumber(arg) || arg === 0)
+  extras = _.find( args, (arg) => _.isObject(arg) && arg.type != 'grid' && arg != enty)
 
   if(!cell) cell = 0
-
-  if(_.isNumber(cell) && _.isObject( _.last(args) ) ) {
-    extras = _.last(args)
-  } else if(!enty) {
-    enty = _.find( args, (arg) => _.isObject(arg) && arg.type != 'grid')
-  }
-
-  //If the second param is an object, it's already an enty object:
-  if(_.isNumber(cell) && !enty) {
-    enty = { //Otherwise create an enty object from the params:
-      label: label,
-      cell: cell
-    }
-  }
-  //Apply any additional properties:
-  if(extras) enty = _.extend(enty, extras )
-
-  if(!enty.cell) enty.cell = cell 
-
+  if(enty && !enty.cell) enty.cell = cell
+  if(!enty) enty = { cell : cell }
   //Convert to linear number if an array ([row,col]) was provided as cell:
   if(_.isArray(enty.cell)) enty.cell = gg.rc(grid, enty.cell)
 
+  if(label) enty.label = label
+
+  //Apply any additional properties:
+  if(extras) enty = _.extend(enty, extras )
+
   grid.enties.push(enty)
-  if(gg._render) gg.render(grid)
-  if(!gg._grid) return grid
+
+  //if this operation was called from an instance of GG do not return
+  //(since said instance is also the grid) otherwise return the grid:
+  return this.type == 'grid' ? null : grid
 }
 
 gg.insertEnty  = gg.insert
@@ -776,6 +758,26 @@ gg.someEntyIsOnRightEdge = (grid) => {
     return gg.examine(grid, cell)
   })
   return someEntyIsOnRightEdge
+}
+
+//### gg.grid ###
+//this function is to be called with new operator
+//ie:
+//var GG = require('gg')
+//var grid = new GG
+//^ now you get a grid and the API in same object;
+//operations called will modify said grid
+//this is to shortcut having to do myGrid = grid.move(myGrid, etc); now you can just do myGrid.move()
+gg.grid = function(...args) {
+  this._grid = true
+  let newGrid = gg.createGrid(...args)
+  _.extend(this, newGrid)
+  _.each( gg, (val, key) => {
+    Object.defineProperty(this, key, {
+      enumerable : false,
+      value : val
+    })
+  })
 }
 
 module.exports = gg
