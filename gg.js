@@ -19,7 +19,12 @@ gg.getDirection = function(keyCode) {
 gg.move = function(...args) {
   //grid, entyOrCellOrIdOrLabel, direction
   let grid, enty, cell, idOrLabel, direction
-  grid = gg._grid ? gg._grid : args[0]
+
+  if( _.isObject(args[0]) && args[0].type == 'grid') {
+    grid = args[0]
+  } else {
+    grid = this
+  }
 
   enty = _.find( args, (arg) => _.isObject( arg ) && arg.type != 'grid' )
 
@@ -109,7 +114,7 @@ gg.move = function(...args) {
     if(gg._render) gg.render(grid)
     if(!gg._grid) return grid
     gg._grid = grid
-    return 
+    return
   }
 
   //Modify the enty's cell to simulate the movement:
@@ -270,6 +275,7 @@ gg.insert = function(...args) {
 
   grid.enties.push(enty)
 
+  if(grid._render) gg.render(grid)
   //if this operation was called from an instance of GG do not return
   //(since said instance is also the grid) otherwise return the grid:
   return this.type == 'grid' ? null : grid
@@ -758,6 +764,31 @@ gg.someEntyIsOnRightEdge = (grid) => {
     return gg.examine(grid, cell)
   })
   return someEntyIsOnRightEdge
+}
+
+gg.render = (grid) => {
+  if(!grid) grid = this
+  console.log('')
+  grid = gg.populateCells(grid)
+  //chunk the grid into smaller arrays (each array a row)
+  var rows = _.chunk(grid.cells, grid.width)
+  var cellCount = 0
+  //loop over each row:
+  rows.forEach((row, rowIndex) => {
+    var output
+    row.forEach((cell, colIndex) => {
+      if(colIndex == 0) output = '[ '
+      if(cell.enties.length) {
+        output = output + ` ${cell.enties[0].label} `
+      } else {
+        output = output + ` . `
+      }
+      cellCount++
+    }) //output the value of the row:
+    console.log(output + ' ]')
+  })
+  console.log('')
+  return
 }
 
 //### gg.grid ###
