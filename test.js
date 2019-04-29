@@ -548,3 +548,13 @@ test('gg.someEntyIsOnRightEdge', (t) => {
 
 })
 
+
+requireUncached = require('require-uncached')
+
+test('Can use a grid as gg API', (t) => {
+  t.plan(1)
+  var GG = requireUncached('./gg.js')
+  var grid = new GG.grid(3,3)
+  var width =  grid.width
+  t.equals(width, 3 )
+})
