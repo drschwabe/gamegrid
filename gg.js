@@ -277,7 +277,7 @@ gg.insert = function(...args) {
   if(grid._render) gg.render(grid)
   //if this operation was called from an instance of GG do not return
   //(since said instance is also the grid) otherwise return the grid:
-  return this.type == 'grid' ? null : grid
+  return this.type == 'grid' ? undefined : grid
 }
 
 gg.insertEnty  = gg.insert
