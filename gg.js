@@ -256,8 +256,7 @@ gg.insert = function(...args) {
   } else {
     grid = this
   }
-
-  enty = _.find( args, (arg) => _.isObject(arg) && enty != grid)
+  enty = _.find( args, (arg) => _.isObject(arg) && arg != grid)
   cell = _.find( args, (arg) => _.isNumber(arg) || arg === 0 || _.isArray(arg))
   label = _.find( args, (arg) => _.isString(arg) )
   extras = _.find( args, (arg) => _.isObject(arg) && arg.type != 'grid' && arg != enty)
@@ -336,8 +335,12 @@ gg.randomMapEdge = function(min, max, grid) {
   return randomNum - math.mod(randomNum, grid.width)
 }
 
-gg.populateCells = (grid, fill) => {
+gg.populateCells = function(...args) {
+  //(grid, fill)
+  let grid = _.isObject(args[0]) && args[0].type == 'grid' ? args[0] : this
+  let fill = _.find(args, (arg) => _.isBoolean(arg))
   if(_.isUndefined(fill)) fill = true //< Fill by default.
+
   grid.cells = []
   if(fill) { //Make a cell for every cell of the grid:
     grid.cells = _.map(_.range(grid.width * grid.height), (cell, index) => {
@@ -766,7 +769,7 @@ gg.someEntyIsOnRightEdge = (grid) => {
   return someEntyIsOnRightEdge
 }
 
-gg.render = (grid) => {
+gg.render = function(grid) {
   if(!grid) grid = this
   console.log('')
   grid = gg.populateCells(grid)

@@ -1,6 +1,6 @@
-var gg = require('./gg.js'), 
-    test = require('tape'), 
-    _ = require('underscore') 
+var gg = require('./gg.js'),
+    test = require('tape'),
+    _ = require('underscore')
 
 test('Grid is created', (t) => {
   t.plan(4)
@@ -15,7 +15,7 @@ test('Can insert an enty', (t) => {
   t.plan(2)
   var grid = gg.createGrid(3,3)
   gg.insertEnty(grid, {
-    name : 'mushroom', 
+    name : 'mushroom',
     cell : 3
   })
   t.equals(grid.enties[0].name, 'mushroom', "enty's name is correct")
@@ -34,16 +34,41 @@ test('Can determine a linear cell # based on xy coordinates', (t) => {
 
 
 test('Can find the next open cell', (t) => {
-  t.plan(1)
-  var grid = gg.createGrid(3,3) 
+  t.plan(6)
+  var gg = requireUncached('./gg.js')
+  var grid = gg.createGrid(3,3)
   // [apple,   pear,   2,  <-- row0
   //  banana,   4,   5   <-- row1
-  //  6,   7,   8]   <-- row2  
+  //  6,   7,   8]   <-- row2
   grid = gg.insertEnty(grid, { name : 'apple', cell : 0 })
   grid = gg.insertEnty(grid, { name : 'pear', cell : 1 })
   grid = gg.insertEnty(grid, { name : 'banana', cell : 3 })
   grid = gg.populateCells(grid)
-  debugger
+
+  t.equals( grid.cells[1].enties[0].name, 'pear', 'enty was inserted correctly')
+  t.equals( gg.nextOpenCell(grid), 2, 'found the next open cell')
+
+  //try with portable API:
+  var gg = requireUncached('./gg.js')
+  var grid = new gg.grid(3,3)
+  grid.insert({ name : 'apple', cell : 0 })
+  grid.insert({ name : 'pear', cell : 1 })
+  grid.insert({ name : 'banana', cell : 3 })
+  grid.populateCells()
+
+  t.equals( grid.cells[1].enties[0].name, 'pear', 'enty was inserted correctly')
+  t.equals( gg.nextOpenCell(grid), 2, 'found the next open cell')
+
+
+  //try with portable API, passing string and integers instead of object:
+  var gg = requireUncached('./gg.js')
+  var grid = new gg.grid(3,3)
+  grid.insert('apple', 0)
+  grid.insert('pear', 1)
+  grid.insert('banana', 3)
+  grid.populateCells()
+
+  t.equals( grid.cells[1].enties[0].label, 'pear', 'enty was inserted correctly')
   t.equals( gg.nextOpenCell(grid), 2, 'found the next open cell')
 })
 
@@ -51,7 +76,7 @@ test('Can find next cell south', (t) => {
   t.plan(2)
   var grid = gg.createGrid(2,2)
   console.log(`
-    0 1 
+    0 1
     2 3
   `)
   var nextCellSouth = gg.nextCellSouth(grid, 0)
@@ -59,9 +84,9 @@ test('Can find next cell south', (t) => {
 
   var gridX4 = gg.createGrid(4,4)
   console.log(`
-    0 1 2 3 
+    0 1 2 3
     4 5 6 7
-  `)  
+  `)
   var nextCellSouth = gg.nextCellSouth(gridX4, 3)
   t.equals(nextCellSouth, 7, '(4x4 grid) the next cell south of the fourth cell (3) is cell 7 (8th cell)')
 })
@@ -72,10 +97,10 @@ test('Can find the next open cell south', (t) => {
   grid = gg.insertEnty(grid, 0)
   grid = gg.insertEnty(grid, 3)
   grid = gg.populateCells(grid)
-  //Fill in column A with 2 values ie: 
-  // [x,   0,   0  
-  //  x,   0,   0  
-  //  0,   0,   0]   <-- cell #6 is the first open cell down  
+  //Fill in column A with 2 values ie:
+  // [x,   0,   0
+  //  x,   0,   0
+  //  0,   0,   0]   <-- cell #6 is the first open cell down
   var expectedResult = 6
   t.equals( gg.nextOpenCellSouth(grid), 6, "Correctly pinpointed next open cell down.")
 
@@ -83,11 +108,11 @@ test('Can find the next open cell south', (t) => {
   //Now again, but this time providing a start cell (2)
   var grid = gg.createGrid(3,3)
   grid = gg.insertEnty(grid, 0)
-  grid = gg.insertEnty(grid, 3)  
-  grid = gg.populateCells(grid)  
+  grid = gg.insertEnty(grid, 3)
+  grid = gg.populateCells(grid)
   var expectedResult = 4
-  //Start at cell #2: 
-  t.equals( gg.nextOpenCellSouth(grid, 1), 4, "Correctly pinpointed next open cell down.")  
+  //Start at cell #2:
+  t.equals( gg.nextOpenCellSouth(grid, 1), 4, "Correctly pinpointed next open cell down.")
 
 })
 
@@ -97,7 +122,7 @@ test('Return accurate xy coordinates from a given index', (t) => {
   var grid = gg.createGrid(3,3)
 
   var cellZero = gg.indexToRc(grid, 0), //< should be 0, 0
-      cellOne =  gg.indexToRc(grid, 1), //< 0, 1  
+      cellOne =  gg.indexToRc(grid, 1), //< 0, 1
       cellTwo =  gg.indexToRc(grid, 2), //< 0, 1
       cellThree = gg.indexToRc(grid, 3) //< 1, 2
       cellFour = gg.indexToRc(grid, 4) //< 1, 2
@@ -133,7 +158,7 @@ test('Return accurate xy coordinates from a given index', (t) => {
   expect = [2,2]
   t.ok( _.isEqual(cellEight, expect), 'Index 8 ok')
 
-  //Try on a bigger grid, using odd numbers: 
+  //Try on a bigger grid, using odd numbers:
 
   var grid2 = gg.createGrid(5,5)
 
@@ -147,7 +172,7 @@ test('Return accurate xy coordinates from a given index', (t) => {
   //[ 1  -   -   -   -  ]
   //[ 2  -   -   -   -  ]
   //[ 3  1  -   -   -   ]
-  //[ 4  -   -   -   4  ]  
+  //[ 4  -   -   -   4  ]
 
   //Cell 16 should be at 3, 1
 
@@ -165,7 +190,7 @@ test('Can expand a grid and enties remain in same place', (t) => {
   t.plan(4)
   let smallGrid = gg.createGrid(2,2)
 
-  var row = 1, 
+  var row = 1,
       column = 1
 
   smallGrid = gg.insertEnty(smallGrid, {name: 'frog', cell : gg.rcToIndex(smallGrid, [row, column])})
@@ -175,15 +200,15 @@ test('Can expand a grid and enties remain in same place', (t) => {
   // console.log('\n#### smallGrid ####')
   // console.log(smallGrid)
 
-  //2x2 grid structure with frog at cell [2,2] (cell 3): 
-  // col0 col1  
+  //2x2 grid structure with frog at cell [2,2] (cell 3):
+  // col0 col1
   // [0,   1] <-- row0
   //  2, frog] <-- row1
 
-  //Now if we increase the size of the grid, 
+  //Now if we increase the size of the grid,
   //the xy can stay the same but the cell # needs to update.
 
-  //4 x 4 grid structure with frog remaining at cell [2,2] (now cell 4): 
+  //4 x 4 grid structure with frog remaining at cell [2,2] (now cell 4):
   // col0 col1 col2
   // [0,   1,   2   <-- row0
   //  3,  frog, 5   <-- row1
@@ -224,39 +249,39 @@ test('Returns the complete range of cell (numbers) in a given column', (t) => {
   // [3, 4, 5] <- we will ask for column cells based from cell 5
   // [6, 7, 8] <- and from [2,2] (cell 6)
 
-  //Test providing cell #: 
+  //Test providing cell #:
   var columnCells = gg.columnCells(grid, 5)
   t.ok( _.isEqual( columnCells, [2, 5, 8]) )
 
-  //From xy array: 
+  //From xy array:
   var moreColumnCells = gg.columnCells(grid, [2,2])
-  t.ok( _.isEqual( moreColumnCells, [2, 5, 8]) )  
+  t.ok( _.isEqual( moreColumnCells, [2, 5, 8]) )
 })
 
 test('Finds the next open column', (t) => {
   t.plan(1)
   let grid = gg.createGrid(4,4)
   grid = gg.insertEnty(grid, 5)
-  grid = gg.insertEnty(grid, 10) 
+  grid = gg.insertEnty(grid, 10)
   grid = gg.populateCells(grid)
-  //grid = gg.insertEnty(grid, 5)  
+  //grid = gg.insertEnty(grid, 5)
   // [0, 1,  2, 3]
   // [4, x,  6, 7]
   // [8, 9, x, 11]
-  t.equals( gg.nextOpenColumn(grid, 1), 3)  
+  t.equals( gg.nextOpenColumn(grid, 1), 3)
 })
 
 test('Returns null if there is no next available column', (t) => {
   t.plan(1)
   let grid = gg.createGrid(4,4)
   grid = gg.insertEnty(grid, 5)
-  grid = gg.insertEnty(grid, 10) 
+  grid = gg.insertEnty(grid, 10)
   grid = gg.populateCells(grid)
-  //grid = gg.insertEnty(grid, 5)  
+  //grid = gg.insertEnty(grid, 5)
   // [0, 1,  2, 3]
   // [4, x,  6, 7]
   // [8, 9, x, 11]
-  t.equals( gg.nextOpenColumn(grid, 1), 3)  
+  t.equals( gg.nextOpenColumn(grid, 1), 3)
 })
 
 test('Determines the number of open cells east', (t) => {
@@ -264,15 +289,15 @@ test('Determines the number of open cells east', (t) => {
   let grid = gg.createGrid(4, 4)
 
   grid = gg.insertEnty(grid, 0)
-  grid = gg.insertEnty(grid, 1)  
+  grid = gg.insertEnty(grid, 1)
   grid = gg.populateCells(grid)
   grid = gg.rcCells(grid)
 
-  //This is what our first row looks like: 
+  //This is what our first row looks like:
   // [ 0  1  2  3  ]  or  [ x x o o ]
   //(there should be two open cells)
   var openCellsEast = gg.openCellsEast(grid, 0)
-  t.equals(openCellsEast, 2) 
+  t.equals(openCellsEast, 2)
 })
 
 test('Can move an enty to another cell in grid based on direction', (t) => {
@@ -297,16 +322,16 @@ test('Can move an enty to another cell in grid based on direction', (t) => {
   // [0,  1,   2,  3]
   // [4,  5,   6,  7]
   // [8,  X,  10, 11] <-- new position after moving south
-  // [12, 13, 14, 15]  
+  // [12, 13, 14, 15]
 
   t.equals(grid.enties[0].cell, 9, 'Enty was moved one cell south')
 
-  grid = gg.move(grid, 9, 'east') 
+  grid = gg.move(grid, 9, 'east')
 
   // [0,  1,   2,  3]
   // [4,  5,   6,  7]
   // [8,  9,  X,  11] <-- new position after moving east
-  // [12, 13, 14, 15]  
+  // [12, 13, 14, 15]
 
   t.equals(grid.enties[0].cell, 10, 'Enty was moved one cell east')
 
@@ -317,16 +342,16 @@ test('Can move an enty to another cell in grid based on direction', (t) => {
 test('Can examine a cell for any enties that might be there', (t) => {
   t.plan(2)
 
-  var grid = gg.createGrid(3,3) 
+  var grid = gg.createGrid(3,3)
   // [0,  1,   2]
   // [3,  4,   5]
   // [6,  7,  8]
 
   grid = gg.insertEnty(grid, { name : 'apple', cell : 5 })
 
-  t.ok( _.isNull( gg.examine(grid, 4) ), 'Examining an empty cell returns null')  //< Nothing is in this cell 
+  t.ok( _.isNull( gg.examine(grid, 4) ), 'Examining an empty cell returns null')  //< Nothing is in this cell
 
-  t.equals(   gg.examine(grid, 5).name, 'apple', 'gg.examine finds the enty we placed in the grid' ) 
+  t.equals(   gg.examine(grid, 5).name, 'apple', 'gg.examine finds the enty we placed in the grid' )
 
 })
 
@@ -334,18 +359,18 @@ test('Can examine a cell for any enties that might be there', (t) => {
 test('Examine a cell for ALL enties that might be there', (t) => {
   t.plan(6)
 
-  var grid = gg.createGrid(3,3) 
+  var grid = gg.createGrid(3,3)
   // [0,  1,   2]
   // [3,  4,   5]
-  // [6,  7,  8]  
+  // [6,  7,  8]
 
   grid = gg.insertEnty(grid, { cell: 6, name : 'orange' })
 
   grid = gg.insertEnty(grid, { cell: 6, name : 'blueberry' })
 
-  t.ok( _.isArray( gg.examineAll(grid, 6)) )  
+  t.ok( _.isArray( gg.examineAll(grid, 6)) )
 
-  t.equals( gg.examineAll(grid, 6).length,   2   ) 
+  t.equals( gg.examineAll(grid, 6).length,   2   )
 
   t.ok(   _.findWhere( gg.examineAll(grid, 6), { name : 'blueberry'}  )   )
 
@@ -361,19 +386,19 @@ test('Examine a cell for ALL enties that might be there', (t) => {
 test('gg.columnIsFull', (t) => {
   t.plan(2)
 
-  var grid = gg.createGrid(3,3) 
+  var grid = gg.createGrid(3,3)
   // [0,  1,   2]
   // [3,  4,   5]
-  // [6,  7,  8]  
+  // [6,  7,  8]
 
-  //put a single cell in column 0 (row 0): 
+  //put a single cell in column 0 (row 0):
   grid = gg.insertEnty(grid, { cell: 0 } )
   grid = gg.populateCells(grid)
 
-  //test to ensure the function returns not full: 
+  //test to ensure the function returns not full:
   t.notOk(  gg.columnIsFull(grid, 0) )
 
-  //now fill up the rest of the column up : 
+  //now fill up the rest of the column up :
   grid = gg.insertEnty(grid, { cell: 3} )
   grid = gg.insertEnty(grid, { cell: 6} )
   grid = gg.populateCells(grid)
@@ -386,7 +411,7 @@ test('gg.columnIsFull', (t) => {
 test('gg.anyColumnIsFull', (t) => {
   t.plan(2)
 
-  var grid = gg.createGrid(3,3) 
+  var grid = gg.createGrid(3,3)
   // [0,  1,   2]
   // [3,  4,   5]
   // [6,  7,   8]
@@ -405,65 +430,65 @@ test('gg.anyColumnIsFull', (t) => {
 
 
 test('gg.rowCells', (t) => {
-  t.plan(16) 
+  t.plan(16)
 
-  var grid = gg.createGrid(3,3) 
+  var grid = gg.createGrid(3,3)
   // [0,  1,   2]
   // [3,  4,   5]
   // [6,  7,   8]
 
-  var firstRowCells = gg.rowCells(grid, 0) 
+  var firstRowCells = gg.rowCells(grid, 0)
 
   console.log(firstRowCells)
-  t.ok(   _.every(firstRowCells, (cell) => _.contains([0, 1, 2], cell)) )  
+  t.ok(   _.every(firstRowCells, (cell) => _.contains([0, 1, 2], cell)) )
   t.equals(firstRowCells.length, 3)
 
-  var secondRowCells = gg.rowCells(grid, 3) 
+  var secondRowCells = gg.rowCells(grid, 3)
 
   console.log(firstRowCells)
-  t.ok(   _.every(secondRowCells, (cell) => _.contains([3, 4, 5], cell)) )  
+  t.ok(   _.every(secondRowCells, (cell) => _.contains([3, 4, 5], cell)) )
   t.equals(secondRowCells.length, 3)
 
-  var thirdRowCells = gg.rowCells(grid, 6) 
+  var thirdRowCells = gg.rowCells(grid, 6)
 
   console.log(thirdRowCells)
-  t.ok(   _.every(thirdRowCells, (cell) => _.contains([6, 7, 8], cell)) )  
-  t.equals(thirdRowCells.length, 3)  
+  t.ok(   _.every(thirdRowCells, (cell) => _.contains([6, 7, 8], cell)) )
+  t.equals(thirdRowCells.length, 3)
 
 
-  var grid = gg.createGrid(3,3) 
+  var grid = gg.createGrid(3,3)
   // [0,  1,   2]
   // [3,  4,   5]
   // [6,  7,   8]
 
   //Again, but supply gg.rowCells with an x, y
-  var firstRowCells = gg.rowCells(grid, [0, 0]) 
+  var firstRowCells = gg.rowCells(grid, [0, 0])
 
-  t.ok(   _.every(firstRowCells, (cell) => _.contains([0, 1, 2], cell)) )  
+  t.ok(   _.every(firstRowCells, (cell) => _.contains([0, 1, 2], cell)) )
   t.equals(firstRowCells.length, 3)
 
-  var secondRowCells = gg.rowCells(grid, [1, 0]) 
+  var secondRowCells = gg.rowCells(grid, [1, 0])
 
-  t.ok(   _.every(secondRowCells, (cell) => _.contains([3, 4, 5], cell)) )  
+  t.ok(   _.every(secondRowCells, (cell) => _.contains([3, 4, 5], cell)) )
   t.equals(secondRowCells.length, 3)
 
-  var thirdRowCells = gg.rowCells(grid, [2, 0]) 
+  var thirdRowCells = gg.rowCells(grid, [2, 0])
 
-  t.ok(   _.every(thirdRowCells, (cell) => _.contains([6, 7, 8], cell)) )  
-  t.equals(thirdRowCells.length, 3)    
+  t.ok(   _.every(thirdRowCells, (cell) => _.contains([6, 7, 8], cell)) )
+  t.equals(thirdRowCells.length, 3)
 
 
-  //Try with different size grids... 
+  //Try with different size grids...
   var grid = gg.createGrid(2,2) //(does not support any smaller than 2x2)
   // [0,  1]
   // [2,  3]
 
-  var firstRowCells = gg.rowCells(grid, [0, 0]) 
-  t.ok(   _.every(firstRowCells, (cell) => _.contains([0, 1], cell)) )  
+  var firstRowCells = gg.rowCells(grid, [0, 0])
+  t.ok(   _.every(firstRowCells, (cell) => _.contains([0, 1], cell)) )
   t.equals(firstRowCells.length, 2)
 
-  var secondRowCells = gg.rowCells(grid, [1, 0]) 
-  t.ok(   _.every(secondRowCells, (cell) => _.contains([2, 3], cell)) )  
+  var secondRowCells = gg.rowCells(grid, [1, 0])
+  t.ok(   _.every(secondRowCells, (cell) => _.contains([2, 3], cell)) )
   t.equals(secondRowCells.length, 2)
 
 })
@@ -471,7 +496,7 @@ test('gg.rowCells', (t) => {
 test('gg.someEntyIsOnBottomEdge', (t) => {
   t.plan(4)
 
-  var grid = gg.createGrid(3,3) 
+  var grid = gg.createGrid(3,3)
   // [0,  1,   2]
   // [3,  4,   5]
   // [6,  7,   8]
@@ -484,14 +509,14 @@ test('gg.someEntyIsOnBottomEdge', (t) => {
 
   t.ok( gg.someEntyIsOnBottomEdge(grid) )
 
-  //Try again with different grid config: 
+  //Try again with different grid config:
 
-  var grid = gg.createGrid(7,7) 
+  var grid = gg.createGrid(7,7)
   // [0,  1,   2,  3,  4,  5,  6 ]
   // [7,  8,   9,  10, 11, 12, 13 ]
   // [14, 15,  16, 17, 18, 19, 20 ]
   // [21, 22,  23, 24, 25, 26, 27 ]
-  // [28, 29,  30, 31, 32, 33, 34 ]  
+  // [28, 29,  30, 31, 32, 33, 34 ]
   // [35, 36,  37, 38, 39, 40, 41 ]
   // [42, 43,  44, 45, 46,  47, 48 ]
 
@@ -501,7 +526,7 @@ test('gg.someEntyIsOnBottomEdge', (t) => {
   t.notOk(gg.someEntyIsOnBottomEdge(grid))
 
   grid = gg.insertEnty(grid, 46)
-  grid = gg.populateCells(grid)  
+  grid = gg.populateCells(grid)
 
   t.ok( gg.someEntyIsOnBottomEdge(grid) )
 
@@ -511,7 +536,7 @@ test('gg.someEntyIsOnBottomEdge', (t) => {
 test('gg.someEntyIsOnRightEdge', (t) => {
   t.plan(4)
 
-  var grid = gg.createGrid(3,3) 
+  var grid = gg.createGrid(3,3)
   // [0,  1,   2]
   // [3,  4,   5]
   // [6,  7,   8]
@@ -524,14 +549,14 @@ test('gg.someEntyIsOnRightEdge', (t) => {
 
   t.ok( gg.someEntyIsOnRightEdge(grid) )
 
-  //Try again with different grid config: 
+  //Try again with different grid config:
 
-  var grid = gg.createGrid(7,7) 
+  var grid = gg.createGrid(7,7)
   // [0,  1,   2,  3,  4,  5,  6 ]
   // [7,  8,   9,  10, 11, 12, 13 ]
   // [14, 15,  16, 17, 18, 19, 20 ]
   // [21, 22,  23, 24, 25, 26, 27 ]
-  // [28, 29,  30, 31, 32, 33, 34 ]  
+  // [28, 29,  30, 31, 32, 33, 34 ]
   // [35, 36,  37, 38, 39, 40, 41 ]
   // [42, 43,  44, 45, 46,  47, 48 ]
 
@@ -541,7 +566,7 @@ test('gg.someEntyIsOnRightEdge', (t) => {
   t.notOk(gg.someEntyIsOnRightEdge(grid))
 
   grid = gg.insertEnty(grid, 48)
-  grid = gg.populateCells(grid)  
+  grid = gg.populateCells(grid)
 
   t.ok( gg.someEntyIsOnRightEdge(grid) )
 
@@ -553,8 +578,47 @@ requireUncached = require('require-uncached')
 
 test('Can use a grid as gg API', (t) => {
   t.plan(1)
-  var GG = requireUncached('./gg.js')
-  var grid = new GG.grid(3,3)
+  var gg = requireUncached('./gg.js')
+  var grid = new gg.grid(3,3)
   var width =  grid.width
   t.equals(width, 3 )
+})
+
+
+const childProcess = require('child_process')
+const _s = require('underscore.string')
+
+
+test(`gg.render renders as expected`, (t) => {
+  t.plan(5)
+
+  //run the demo and collect output as a string:
+  var output = childProcess.execSync('node ./demos/render.js').toString()
+
+  //in the demo grids are separated with the below string:
+  var grids = output.split('-------------')
+
+  //The demo renders grids to terminal automatically, so during each of
+  //these function calls during the demo (as noted below) a grid is generated...
+
+  //var grid = gg.createGrid(3,3)
+  console.log( grids[0] )
+  var firstGridDotCount = _s.count( grids[0], '.')
+  var firstGridEdgeCount = _s.count( grids[0], '[') + _s.count( grids[0], ']')
+
+  t.equals( firstGridDotCount , 9, 'There are 9 dots representing 9 blank cells ' )
+  t.equals( firstGridEdgeCount , 6, 'There are 6 brackets representing 6 edges')
+
+  //gg.insertEnty(3, 'H')
+  console.log( grids[1] )
+  var secondGridHasHero = _s.include( grids[1], 'H')
+  var cellsBeforeHero = _s( grids[1] ).strLeft('H' ).count('.')
+  var cellsAfterHero = _s( grids[1] ).strRight('H' ).count('.')
+
+  t.ok(secondGridHasHero, 'Hero is in the grid')
+  t.equals(cellsBeforeHero, 3, 'There are 3 cells before hero')
+  t.equals(cellsAfterHero, 5, 'There are 5 cells after hero')
+
+  //TODO try to make a test that can test the structure of the grid (output); ie- so it isnt rendering a jibberish mess...
+
 })
