@@ -335,7 +335,19 @@ test('Can move an enty to another cell in grid based on direction', (t) => {
 
   t.equals(grid.enties[0].cell, 10, 'Enty was moved one cell east')
 
+})
 
+test('Can move an enty to another cell in grid based on direction (with portable API)', (t) => {
+  t.plan(3)
+  //same as above test but with "portable API/grid in one":
+  var gg = requireUncached('./gg.js')
+  let grid = new gg.grid(4,4)
+  grid.insertEnty(5)
+  t.equals(grid.enties[0].cell, 5, 'Enty inserted to initial position on the grid')
+  grid.move(5, 'south')
+  t.equals(grid.enties[0].cell, 9, 'Enty was moved one cell south')
+  grid.move(9, 'east')
+  t.equals(grid.enties[0].cell, 10, 'Enty was moved one cell east')
 })
 
 
