@@ -769,8 +769,17 @@ gg.someEntyIsOnRightEdge = (grid) => {
   return someEntyIsOnRightEdge
 }
 
-gg.render = function(grid) {
-  if(!grid) grid = this
+gg.render = function(...args) {
+  //(grid, autoRender)
+  let grid
+  if( _.isObject(args[0]) && args[0].type == 'grid') {
+    grid = args[0]
+  } else {
+    grid = this
+  }
+  let autoRender = _.find( args, (arg) => _.isBoolean(arg) )
+  if(autoRender) grid._render = true //< turn on auto-rendering
+
   console.log('')
   grid = gg.populateCells(grid)
   //chunk the grid into smaller arrays (each array a row)
