@@ -313,7 +313,7 @@ gg.remove = function(...args) {
     if(!enty) enty = _.findWhere(grid.enties, { label : idOrLabel })
   }
 
-  if(!enty && !gg.grid) {
+  if(!enty && _.isObject(args[0]) && args[0].type == 'grid') {
     enty = args[1]
   }
   grid.enties = _.without(grid.enties, enty)
