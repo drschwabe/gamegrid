@@ -82,10 +82,12 @@ gg.move = function(...args) {
         nextCell = enty.cell - 1
         break
       default :
-        //If no direction supplied, just do a linear increment...
-        if(enty.cell == gridSize) nextCell = 0
-        //unless we are at the last cell, in which case we set the new position to 0 (ie: looping around a track)
-        else nextCell = enty.cell + 1
+        //If no direction supplied, just do a linear increment east
+        if( enty.cell % grid.width == grid.width - 1) {
+          nextCell = 'map edge'
+          break
+        }
+        nextCell = enty.cell + 1
         break
     }
     return nextCell
