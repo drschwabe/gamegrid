@@ -48,6 +48,18 @@ gg.move = function(...args) {
       throw 'Cannot find enty'
     }
   }
+
+  //also accommodate for just single letter directions:
+  if(!direction) {
+    args.forEach((arg) => {
+      if(arg == idOrLabel) return
+      if( _.isString(arg) && arg == 'n') direction = 'north'
+      if( _.isString(arg) && arg == 's') direction = 'south'
+      if( _.isString(arg) && arg == 'e') direction = 'east'
+      if( _.isString(arg) && arg == 'w') direction = 'west'
+    })
+  }
+
   function nextCell(grid, enty, direction) {
     //Returns the cell # for the nearest cell in the given direction:
     var nextCell,
