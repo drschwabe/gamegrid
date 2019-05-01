@@ -273,7 +273,7 @@ gg.insert = function(...args) {
   if(enty && !enty.cell) enty.cell = cell
   if(!enty) enty = { cell : cell }
   //Convert to linear number if an array ([row,col]) was provided as cell:
-  if(_.isArray(enty.cell)) enty.cell = gg.rc(grid, enty.cell)
+  if(_.isArray(enty.cell)) enty.cell = gg.rcToIndex(grid, enty.cell)
 
   if(label) enty.label = label
 
