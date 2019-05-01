@@ -280,7 +280,13 @@ gg.insertEnty  = gg.insert
 
 gg.remove = function(...args) {
   //grid, cellOrEntyOrIdOrLabel
-  var grid = gg._grid ? gg._grid : args[0]
+
+  if( _.isObject(args[0]) && args[0].type == 'grid') {
+    grid = args[0]
+  } else {
+    grid = this
+  }
+
   var enty, cell, idOrLabel
   cell = _.find( args, (arg) => _.isNumber(arg)  )
   //Find the enty based on the cell
@@ -299,10 +305,8 @@ gg.remove = function(...args) {
     enty = args[1]
   }
   grid.enties = _.without(grid.enties, enty)
-
-  if(gg._render) gg.render(grid)
-  if(!gg._grid) return grid
-  gg._grid = grid
+  if(grid._render) gg.render(grid)
+  return this.type == 'grid' ? undefined : grid
 }
 gg.removeEnty = gg.remove
 
