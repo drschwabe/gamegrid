@@ -806,8 +806,8 @@ gg.render = function(...args) {
 //### gg.grid ###
 //this function is to be called with new operator
 //ie:
-//var GG = require('gg')
-//var grid = new GG
+//var gg = require('gg')
+//var grid = new gg.grid(3, 3)
 //^ now you get a grid and the API in same object;
 //operations called will modify said grid
 //this is to shortcut having to do myGrid = grid.move(myGrid, etc); now you can just do myGrid.move()
