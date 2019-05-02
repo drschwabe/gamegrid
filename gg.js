@@ -1,7 +1,6 @@
 var gg = {},
     ROT = require('rot-js'),
     _ = require('underscore'),
-    uuid = require('node-uuid'),
     math = require('mathjs')
 
 gg.isArrowKey = function(keyCode) {
@@ -141,10 +140,6 @@ gg.move = function(...args) {
   return this.type == 'grid' ? undefined : grid
 }
 
-gg.revise = function(enty) {
-  enty._rev = uuid.v4() //< Creates a unique revision stamp.
-  return enty
-}
 
 gg.examine = function(...args) {
   //grid, cellOrRc
@@ -818,17 +813,17 @@ gg.enter = function(...args) {
     return false
   }
 
-  
+
   //we will enter the grid in current cell
   if(!destinationGrid) {
     destinationGrid = entrance.destination
   }
-  
+
   if(!destinationGrid) {
     console.warn('nothing here is enterable')
     return false
   }
-  
+
   enty.cell = entrance.destination_entry ?  entrance.destination_entry : 0
 
   destinationGrid = gg.insert(destinationGrid, enty)
