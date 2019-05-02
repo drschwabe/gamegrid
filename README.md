@@ -1,26 +1,38 @@
-# Game Grid
-Game Grid is a library for creating 2D grid based games or apps.
+![gamegrid logo](./logo.svg)
+
+a library for creating 2D grids for games (or apps)
 
 ### install
 
 ```javascript
-var gg = require('gamegrids')
+const gg = require('gamegrids')
 ```
 
 ### introduction
 
-Some terminology/assumptions:
+*Some terminology...*
 
-**grid**: This is the object which contains all of the interesting things
+**gg**: This is the library
 
-**enty (or enties)**: These are the 'interesting things' in your grid, typically defined by something that has information, moves, is interactive or has some other  functionality.  Each enty has at least one property called `cell` which is used as the basis for its location within the grid.  
+**grid**: This is your grid, you put interesting things in it
+
+(you can optionally combine library & grid into one object by instantiating a var with `new gg.grid(width, height)`)
+
+**enty (or enties)**: These are the interesting things in your grid, typically defined by something that has information, moves, is interactive or has some other functionality you give it (p.s. - you still have to do most of the work).  Each enty has at least one property called `cell` which is used as the basis for its location within the grid.  
 
 
 ## API
 ---------
 
-**createGrid**  
-`gg.createGrid(width, height)`  
+**grid**
+`new gg.grid(width, height)`  
+Instantiates a new grid, passes arguments to gg.create (below)
+```javascript
+var grid = new gg.grid(3,3)
+```
+
+**create**  
+`gg.create(width, height)`  
 Returns a grid object with the specified width and height.
 
 ```javascript
@@ -109,6 +121,30 @@ gg.rcToIndex(2, 0)
 //> 6
 ```
 
-### Tips & Hints
+#### TODO
+- finish documentation (check the library for other functions/features not yet documented)
+- write tests for functions that are not yet tested
+- write more tests for functions that are not thoroughly tested
+- world domination
 
-Note that all functions can also accept a grid as a parameter.  If a grid param is supplied a grid will be returned otherwise the default grid stored as `gg._grid` is updated (and the function returns `null`)
+#### Tips & Hints  
+
+Functions can also accept a grid as a parameter.  If a grid param is supplied a grid will be returned.  
+
+Otherwise the instance/portable API will be modified in place.
+
+Ex:
+```javascript
+//portable API / grid in one deal:
+var grid = new gg.grid(6,6)
+grid.insert('hero')
+var grid2 = new gg.grid(12,12)
+grid2.insert('zombie')
+//(there is a hero in grid one but not grid2)
+
+//alternatively, use functional style:
+var grid = gg.create(6,6)
+grid = grid.insert('hero')
+var grid2 = gg.create(12,12)
+grid2 = gg.insert('zombie')
+```

@@ -1,13 +1,12 @@
 {
   "name": "gamegrids",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "a utility toolbelt for making grids for games (or apps)",
   "main": "gg.js",
   "author": "Derrick Schwabe <admin@nerdbusiness.com>",
   "dependencies": {
     "array-grid": "^1.5.0",
     "mathjs": "2.3.0",
-    "node-uuid": "1.4.3",
     "rot-js": "0.6.0",
     "underscore": "1.9.1"
   },
