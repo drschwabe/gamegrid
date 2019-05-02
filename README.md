@@ -6,6 +6,7 @@ a library for creating 2D grids for games (or apps)
 
 ```javascript
 const gg = require('gamegrids')
+//don't forget the 's'     ^
 ```
 
 ### introduction
