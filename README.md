@@ -123,6 +123,7 @@ gg.rcToIndex(2, 0)
 
 #### TODO
 - finish documentation (check the library for other functions/features not yet documented)
+- fully integrate portable API with all functions (may or may not work in some situations)
 - write tests for functions that are not yet tested
 - write more tests for functions that are not thoroughly tested
 - world domination
