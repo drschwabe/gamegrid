@@ -4,7 +4,7 @@ Game Grid is a library for creating 2D grid based games or apps.
 ### install
 
 ```javascript
-var gg = require('game-grid')
+var gg = require('gamegrids')
 ```
 
 ### introduction
