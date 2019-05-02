@@ -255,7 +255,7 @@ gg.isTouching = function (grid, enty, entyOrGroup) {
 }
 
 gg.insert = function(...args) {
-  let grid, enty, label, extras
+  let grid, enty, cell, label, extras
   //(obj, int/obj, str, obj)
   //parse args to establish what we working with:
 
@@ -265,12 +265,16 @@ gg.insert = function(...args) {
     grid = this
   }
   enty = _.find( args, (arg) => _.isObject(arg) && arg != grid)
+  let cellArg = false
   cell = _.find( args, (arg) => _.isNumber(arg) || arg === 0 || _.isArray(arg))
+  if(cell) cellArg = true
   label = _.find( args, (arg) => _.isString(arg) )
   extras = _.find( args, (arg) => _.isObject(arg) && arg.type != 'grid' && arg != enty)
 
-  if(!cell) cell = 0
+  if(!cell && !_.isNumber(cell)) cell = 0
   if(enty && !enty.cell) enty.cell = cell
+  if(enty && cellArg && enty.cell ) enty.cell = cell
+  //^ overwrite any existing cell if it had one previously, if an explicit cell was also supplied
   if(!enty) enty = { cell : cell }
   //Convert to linear number if an array ([row,col]) was provided as cell:
   if(_.isArray(enty.cell)) enty.cell = gg.rcToIndex(grid, enty.cell)
@@ -780,6 +784,66 @@ gg.someEntyIsOnRightEdge = (grid) => {
   })
   return someEntyIsOnRightEdge
 }
+
+gg.enter = function(...args) {
+  let grid, enty , idOrLabel, destinationGrid
+  if( _.isObject(args[0]) && args[0].type == 'grid') {
+    grid = args[0]
+  } else {
+    grid = this
+  }
+
+  enty = _.find( args, (arg) => _.isObject( arg ) && arg.type != 'grid' )
+
+  idOrLabel = _.find( args, (arg) => _.isString( arg ) )
+
+  if(!enty && idOrLabel) {
+    //first search by ID
+    enty = _.findWhere(grid.enties, { _id : idOrLabel })
+    if(!enty) { //if not found by ID, try by label:
+      enty = _.findWhere(grid.enties, { label : idOrLabel })
+      if(!enty) {
+        enty = _.findWhere(grid.enties, { name : idOrLabel })
+      }
+    } else {
+      throw 'Cannot find enty'
+    }
+  }
+
+  //find the doorway
+  let entrance = _.find(grid.enties, (gEnty) => gEnty.destination && gEnty.cell == enty.cell )
+
+  if(!entrance) {
+    console.warn('nothing to enter here')
+    return false
+  }
+
+  
+  //we will enter the grid in current cell
+  if(!destinationGrid) {
+    destinationGrid = entrance.destination
+  }
+  
+  if(!destinationGrid) {
+    console.warn('nothing here is enterable')
+    return false
+  }
+  
+  enty.cell = entrance.destination_entry ?  entrance.destination_entry : 0
+
+  destinationGrid = gg.insert(destinationGrid, enty)
+
+  grid = gg.remove(grid, enty)
+
+  if(grid._render) {
+    gg.render(grid) //also render the destination grid:
+    gg.render(destinationGrid)
+  }
+  return this.type == 'grid' ? undefined : grid
+}
+
+
+
 
 gg.render = function(...args) {
   //(grid, autoRender)
