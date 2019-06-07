@@ -405,9 +405,9 @@ gg.rcToIndex = (grid, param1, param2) => {
   } else {
     row = param1
     col = param2
-  }
+  } 
   //Return the cell num:
-  var rc = ArrayGrid(grid.cells, [grid.width, grid.height]).index(row,col)
+  var rc = ArrayGrid(grid.cells, [grid.height, grid.width]).index(row,col)
   return rc
 }
 

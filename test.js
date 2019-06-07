@@ -23,13 +23,17 @@ test('Can insert an enty', (t) => {
 })
 
 test('Can determine a linear cell # based on xy coordinates', (t) => {
-  t.plan(1)
+  t.plan(2)
   var grid = gg.createGrid(3,3)
   t.equals( gg.rcToIndex(grid, 2, 2), 8, 'gg.xy pinpoints the correct linear cell number')
   // col0 col1 col2
   // [x,   x,   x   <-- row0
   //  x,   x,   x   <-- row1
   //  x,   x,   8]   <-- row2
+
+  var grid = gg.createGrid(3,1)
+  // [0,   1,   2 ]   <-- row0
+  t.equals( gg.rcToIndex(grid, 0, 1), 1, 'gg.rcToIndex pinpoints the correct linear cell number in a different shaped grid')
 })
 
 
