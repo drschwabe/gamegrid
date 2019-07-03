@@ -183,8 +183,8 @@ gg.create = function(width, height, mapType, name) {
   else id = 'grid_0'
   var grid = {
     _id : id,
-    width: width,
-    height: height,
+    width: parseInt(width),
+    height: parseInt(height),
     enties: [],
     type : 'grid'
   }
@@ -357,12 +357,18 @@ gg.populateCells = function(...args) {
   let fill = _.find(args, (arg) => _.isBoolean(arg))
   if(_.isUndefined(fill)) fill = true //< Fill by default.
 
+  //store properties of any existing cells ..
+  let oldCells
+  if( grid.cells ) oldCells = _.clone(grid.cells)
+
   grid.cells = []
   if(fill) { //Make a cell for every cell of the grid:
     grid.cells = _.map(_.range(grid.width * grid.height), (cell, index) => {
-      cell = {
-        enties : _.where(grid.enties, { cell: index })
-      }
+      cell = {}
+      //apply any properties of the old cells if any:
+      if( oldCells && oldCells[index] ) cell = _.extend( cell, oldCells[index]  )
+      //create new enties:
+      cell.enties = _.where(grid.enties, { cell: index })
       if(!cell.enties) delete cell.enties
       return cell
     })
