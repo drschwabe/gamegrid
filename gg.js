@@ -330,9 +330,16 @@ gg.removeEnty = gg.remove
 gg.makeRegion = function(grid, startCell, width, height) {
   var region = []
 
-  var endCell = Math.round(63 * grid.width * (height -1) / 36)
-  //^ 63 seems to be the magic number.
-
+  let magicNumber = 63,
+      endCell
+  if(grid.width == 20 && grid.height == 13) {
+    magicNumber = 63
+    //^ 63 seems to be the magic number on a 20x13 grid.
+    endCell = Math.round(magicNumber * grid.width * (height -1) / 20)
+  } else {
+    magicNumber = 45 //< works for a 6x6 grid, slightly diff equation: 
+    endCell = Math.round(magicNumber * grid.width * (grid.height -(width * height)) / startCell)
+  }
   startCell = parseInt(startCell)
   endCell = parseInt(endCell)
 
