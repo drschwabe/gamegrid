@@ -336,8 +336,11 @@ gg.makeRegion = function(grid, startCell, width, height) {
     magicNumber = 63
     //^ 63 seems to be the magic number on a 20x13 grid.
     endCell = Math.round(magicNumber * grid.width * (height -1) / 20)
+  } else if(grid.width == 16 && grid.height == 11) {
+    magicNumber = 8
+    endCell = Math.round(magicNumber * grid.width * (grid.height -(width * height)) / startCell)
   } else {
-    magicNumber = 45 //< works for a 6x6 grid, slightly diff equation: 
+    magicNumber = 45 //< works for a 6x6 grid, slightly diff equation:
     endCell = Math.round(magicNumber * grid.width * (grid.height -(width * height)) / startCell)
   }
   startCell = parseInt(startCell)
