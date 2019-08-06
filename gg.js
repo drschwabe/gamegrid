@@ -332,7 +332,12 @@ gg.makeRegion = function(grid, startCell, width, height) {
 
   let magicNumber = 63,
       endCell
-  if(grid.width == 20 && grid.height == 13) {
+
+  //3x2 structure in 16x11 grid:
+  if(grid.width == 16 && grid.height == 11 && width == 3 && height == 2) {
+    magicNumber = 10
+    endCell = Math.round(magicNumber * grid.width * (grid.height -(width * height)) / startCell)
+  } else if(grid.width == 20 && grid.height == 13) {
     magicNumber = 63
     //^ 63 seems to be the magic number on a 20x13 grid.
     endCell = Math.round(magicNumber * grid.width * (height -1) / 20)
