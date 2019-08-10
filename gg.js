@@ -451,9 +451,12 @@ gg.rcCells = (grid) => {
 
 gg.xyCells = gg.rcCells
 
-gg.nextOpenCell = (grid, startCell) => {
+gg.nextOpenCell = function(...args) {
+  let grid = _.isObject(args[0]) && args[0].type == 'grid' ? args[0] : this
+
+  let startCell = _.find(args, (arg) => _.isNumber(arg) )
+
   //Return the cell # of the next open cell (a cell that does not contain any enties)
-  //return grid.cells.length
   var openCell
   if(!startCell) startCell = 0
   grid.cells.some( (cell, index) => {
