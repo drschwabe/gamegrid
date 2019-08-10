@@ -2,14 +2,18 @@
 
 a library for creating 2D grids for games (or apps)
 
-### install
+### usage
+
+```bash
+npm install gamegrids
+```
 
 ```javascript
 const gg = require('gamegrids')
 //don't forget the 's'     ^
 ```
 
-### introduction
+#### introduction
 
 *Some terminology...*
 
@@ -17,27 +21,31 @@ const gg = require('gamegrids')
 
 **grid**: This is your grid, you put interesting things in it
 
-(you can optionally combine library & grid into one object by instantiating a var with `new gg.grid(width, height)`)
-
-**enty (or enties)**: These are the interesting things in your grid, typically defined by something that has information, moves, is interactive or has some other functionality you give it (p.s. - you still have to do most of the work).  Each enty has at least one property called `cell` which is used as the basis for its location within the grid.  
+**enty (or enties)**: These are the interesting things in your grid, typically defined by something that has information, moves, is interactive or has some other functionality you give it (p.s. - you still have to do most of the work).  Each enty has at least one property called `cell` which represents its place in grid.  
 
 
 ## API
 ---------
 
-**grid**
+**grid**  
 `new gg.grid(width, height)`  
-Instantiates a new grid, passes arguments to gg.create (below)
+Instantiates a new grid object & library combo (calls gg.create with supplied arguments)
 ```javascript
-var grid = new gg.grid(3,3)
+var grid = new gg.grid(2,2)
+
+  [  .  .  ]
+  [  .  .  ]
+
+  //{ width: 2, height: 2, enties: [] }
 ```
 
 **create**  
 `gg.create(width, height)`  
-Returns a grid object with the specified width and height.
+Returns a grid object with the specified width and height
+(note: the forthcoming documentation will assume you are using the the library & grid combo object as documented above)
 
 ```javascript
-gg.create(3,3)
+var grid = gg.create(3,3)
 
   [  .  .  .  ]
   [  .  .  .  ]
@@ -79,7 +87,7 @@ Enty will not be moved if destination cell is either beyond grid's edge (ie- bot
 
 
 **examine**  
-`gg.examine(enty)`  
+`gg.examine(cellNum)`  
 
 Returns the first enty in a given cell.
 
@@ -95,7 +103,7 @@ gg.examine(4)
 
 
 **examineAll**  
-`gg.examineAll(cell)`
+`gg.examineAll(cell)`  
 Returns an array of all enties in a given cell
 
 
@@ -104,9 +112,9 @@ Returns an array of all enties in a given cell
 Converts an index value (ie- cell number) to the equivalent row/column (array) value.
 
 ```javascript
-  [  0  1  2  ]
-  [  3  4  5  ]
-  [  6  7  8  ]
+[  0  1  2  ]
+[  3  4  5  ]
+[  6  7  8  ]
 
 gg.indexToRc(6)
 //> [2, 0]
@@ -122,18 +130,24 @@ gg.rcToIndex(2, 0)
 //> 6
 ```
 
-#### TODO
-- finish documentation (check the library for other functions/features not yet documented)
-- fully integrate portable API with all functions (may or may not work in some situations)
-- write tests for functions that are not yet tested
-- write more tests for functions that are not thoroughly tested
-- world domination
+**nextOpenCell**  
+Returns the next open cell in the grid
+`gg.nextOpenCell(startCell)`  
+```javascript
+[  .  .  %  ]
+[  &  #  .  ]
+[  .  .  .  ]
 
-#### Tips & Hints  
+gg.nextOpenCell(2)
+//> 5
+```
+
+
+#### Functional style vs portable API + grid object in 1  
 
 Functions can also accept a grid as a parameter.  If a grid param is supplied a grid will be returned.  
 
-Otherwise the instance/portable API will be modified in place.
+Otherwise the instance/portable API will be modified in place*
 
 Ex:
 ```javascript
@@ -150,3 +164,12 @@ grid = grid.insert('hero')
 var grid2 = gg.create(12,12)
 grid2 = gg.insert('zombie')
 ```
+
+*WIP as not all functions support the single instance/portable API technique
+
+#### TODO
+- finish documentation (refer to ./gg.js for other functions/features not yet documented)
+- fully integrate portable API with all functions (not all functions support grid as standalone API; when in doubt use functional style outlined above) 
+- write tests for functions that are not yet tested
+- write more tests for functions that are not thoroughly tested
+- world domination
