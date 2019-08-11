@@ -186,8 +186,8 @@ test('Return accurate xy coordinates from a given index', (t) => {
 
   t.ok( _.isEqual( gg.indexToRc(grid2, 16)  , expect), 'Index 16 on 5x5 ok')
 
-  //Try using an uneven grid: 
-  var grid3 = gg.createGrid(1, 3) 
+  //Try using an uneven grid:
+  var grid3 = gg.createGrid(1, 3)
   //[ 0  1  2  ]
   expect = [0,1] //< Cell 1 should be at 0,1
   t.ok( _.isEqual( gg.indexToRc(grid2, 1)  , expect), 'Index 1 on 1x3 ok')
@@ -642,5 +642,44 @@ test(`gg.render renders as expected`, (t) => {
   t.equals(cellsAfterHero, 5, 'There are 5 cells after hero')
 
   //TODO try to make a test that can test the structure of the grid (output); ie- so it isnt rendering a jibberish mess...
+
+})
+
+test(`gg.makeRegion can return a square region of grid`, (t) => {
+  t.plan(4)
+
+  let gg = requireUncached('./gg.js')
+  let grid = new gg.grid(6,6)
+
+  //create a 2x6 region from the top left corner:
+  let region = gg.makeRegion(grid, 0, 6,2)
+  region.forEach((cellNum) => grid.insert({ cell: cellNum, label : '#' }))
+  grid.render()
+
+  //now test it:
+  let expectedRegion = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+  let regionFilled = _.every( expectedRegion, (cellNum) => {
+    return grid.cells[cellNum].enties[0
+    ].label == '#'
+  })
+  t.ok( regionFilled )
+
+  //create a 3x3 region in the bottom SE corner...
+  let startCell2 = grid.cells.length - 3 - (grid.width * 2)
+
+  let region2 = gg.makeRegion(grid, startCell2, 3,3)
+  region2.forEach((cellNum) => grid.insert({ cell: cellNum, label : '@' }))
+
+  grid.render()
+
+  //first and last cell is occupied by an @ symbol:
+  t.ok( grid.cells[startCell2].enties[0].label == '@' && grid.cells[grid.cells.length - 1].enties[0].label == '@' )
+
+  //there are only 12 '#' and 6 '@' as per the regions defined above:
+  let hashSymbols = _.where(grid.enties, { label : '#'})
+  let atSymbols = _.where(grid.enties, { label : '@'})
+
+  t.equals( hashSymbols.length, 12)
+  t.equals( atSymbols.length, 9)
 
 })

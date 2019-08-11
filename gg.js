@@ -327,38 +327,31 @@ gg.remove = function(...args) {
 gg.removeEnty = gg.remove
 
 //Returns an array of cell numbers representing a region of the grid:
-gg.makeRegion = function(grid, startCell, width, height) {
-  var region = []
-
-  let magicNumber = 63,
-      endCell
-
-  //3x2 structure in 16x11 grid:
-  if(grid.width == 16 && grid.height == 11 && width == 3 && height == 2) {
-    magicNumber = 10
-    endCell = Math.round(magicNumber * grid.width * (grid.height -(width * height)) / startCell)
-  } else if(grid.width == 20 && grid.height == 13) {
-    magicNumber = 63
-    //^ 63 seems to be the magic number on a 20x13 grid.
-    endCell = Math.round(magicNumber * grid.width * (height -1) / 20)
-  } else if(grid.width == 16 && grid.height == 11) {
-    magicNumber = 8
-    endCell = Math.round(magicNumber * grid.width * (grid.height -(width * height)) / startCell)
-  } else {
-    magicNumber = 45 //< works for a 6x6 grid, slightly diff equation:
-    endCell = Math.round(magicNumber * grid.width * (grid.height -(width * height)) / startCell)
+gg.makeRegion = function region(grid, startCell, width, height) {
+  let testcell = gg.indexToRc(grid,startCell)
+  let starter = {
+    row: testcell[0],
+    column: testcell[1]
   }
-  startCell = parseInt(startCell)
-  endCell = parseInt(endCell)
 
-  //Loop over each row:
-  _.range(startCell, endCell, grid.width).forEach(function(rowStart) {
-    //And populate each cell of the row with a block:
-    _.range(rowStart, rowStart + width).forEach(function(cell) {
-      region.push(cell)
-    })
-  })
-  return region
+  if(starter.column + width > grid.width) {
+    console.warn('Region extends beyond east wall.')
+    return false
+  }
+  if(starter.row + height > grid.height) {
+    console.warn('Region extends beyond south wall.')
+    return false
+  }
+
+  let output = []
+
+  for (i = 0; i < height; i++) {
+    for (j = 0; j < width; j++) {
+       output.push(gg.rcToIndex(grid,i + starter.row,j + starter.column))
+     }
+   }
+
+  return output
 }
 
 gg.randomMapEdge = function(min, max, grid) {
@@ -426,7 +419,7 @@ gg.rcToIndex = (grid, param1, param2) => {
   } else {
     row = param1
     col = param2
-  } 
+  }
   //Return the cell num:
   var rc = ArrayGrid(grid.cells, [grid.height, grid.width]).index(row,col)
   return rc
