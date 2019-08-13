@@ -31,7 +31,7 @@ const gg = require('gamegrids')
 `new gg.grid(width, height)`  
 Instantiates a new grid object & library combo (calls gg.create with supplied arguments)
 ```javascript
-var grid = new gg.grid(2,2)
+let grid = new gg.grid(2,2)
 
   [  .  .  ]
   [  .  .  ]
@@ -41,11 +41,11 @@ var grid = new gg.grid(2,2)
 
 **create**  
 `gg.create(width, height)`  
-Returns a grid object with the specified width and height
-(note: the forthcoming documentation will assume you are using the the library & grid combo object as documented above)
+Returns a grid object with the specified width and height  
+(*note: the forthcoming documentation will assume you are instead using the `new gg.grid` method as documented above*)
 
 ```javascript
-var grid = gg.create(3,3)
+let grid2 = gg.create(3,3)
 
   [  .  .  .  ]
   [  .  .  .  ]
@@ -56,11 +56,11 @@ var grid = gg.create(3,3)
 
 
 **insert**  
-`gg.insert(grid, label, cellOrEnty, extras)`  
+`grid.insert(label, cellOrEnty, extras)`  
 Creates an enty inserted to specified cell with an optional object for extra properties.
 
 ```javascript
-gg.insert('h', 1)
+grid.insert('h', 1)
 
   [  .  h  .  ]
   [  .  .  .  ]
@@ -71,12 +71,12 @@ gg.insert('h', 1)
 
 
 **move**  
-`gg.move(enty, direction)`  
+`grid.move(enty, direction)`  
 
 Move a given enty (an enty object or its label `string`) to the next adjacent cell in the given direction.
 
 ```javascript
-gg.move('h', 'south')
+grid.move('h', 'south')
 
   [  .  .  .  ]
   [  .  h  .  ]
@@ -87,12 +87,12 @@ Enty will not be moved if destination cell is either beyond grid's edge (ie- bot
 
 
 **examine**  
-`gg.examine(cellNum)`  
+`grid.examine(cellNum)`  
 
 Returns the first enty in a given cell.
 
 ```javascript
-gg.examine(4)
+grid.examine(4)
 
   [  .  .  .  ]
   [  .  h  .  ]
@@ -103,12 +103,12 @@ gg.examine(4)
 
 
 **examineAll**  
-`gg.examineAll(cell)`  
+`grid.examineAll(cell)`  
 Returns an array of all enties in a given cell
 
 
 **indexToRc**  
-`gg.indexToRc(cell)`  
+`grid.indexToRc(cell)`  
 Converts an index value (ie- cell number) to the equivalent row/column (array) value.
 
 ```javascript
@@ -116,29 +116,29 @@ Converts an index value (ie- cell number) to the equivalent row/column (array) v
 [  3  4  5  ]
 [  6  7  8  ]
 
-gg.indexToRc(6)
+grid.indexToRc(6)
 //> [2, 0]
 ```
 
 
 **rcToIndex**  
-`gg.rcToIndex(row, column)`  
+`grid.rcToIndex(row, column)`  
 Converts a row/column pair to the equivalent array index (ie- as spread out in a single row)
 
 ```javascript
-gg.rcToIndex(2, 0)
+grid.rcToIndex(2, 0)
 //> 6
 ```
 
 **nextOpenCell**  
 Returns the next open cell in the grid
-`gg.nextOpenCell(startCell)`  
+`grid.nextOpenCell(startCell)`  
 ```javascript
 [  .  .  %  ]
 [  &  #  .  ]
 [  .  .  .  ]
 
-gg.nextOpenCell(2)
+grid.nextOpenCell(2)
 //> 5
 ```
 
@@ -165,16 +165,16 @@ Otherwise the instance/portable API will be modified in place*
 Ex:
 ```javascript
 //portable API / grid in one deal:
-var grid = new gg.grid(6,6)
+let grid = new gg.grid(6,6)
 grid.insert('hero')
-var grid2 = new gg.grid(12,12)
+let grid2 = new gg.grid(12,12)
 grid2.insert('zombie')
 //(there is a hero in grid one but not grid2)
 
 //alternatively, use functional style:
-var grid = gg.create(6,6)
+let grid = gg.create(6,6)
 grid = grid.insert('hero')
-var grid2 = gg.create(12,12)
+let grid2 = gg.create(12,12)
 grid2 = gg.insert('zombie')
 ```
 
@@ -182,7 +182,7 @@ grid2 = gg.insert('zombie')
 
 #### TODO
 - finish documentation (refer to ./gg.js for other functions/features not yet documented)
-- fully integrate portable API with all functions (not all functions support grid as standalone API; when in doubt use functional style outlined above) 
+- fully integrate portable API with all functions (not all functions support grid as standalone API; when in doubt use functional style outlined above)
 - write tests for functions that are not yet tested
 - write more tests for functions that are not thoroughly tested
 - world domination
