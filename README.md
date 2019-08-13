@@ -142,6 +142,19 @@ gg.nextOpenCell(2)
 //> 5
 ```
 
+**makeRegion**  
+Returns an array of cell numbers that would fill a given region
+`grid.makeRegion(startCell, width, height)`  
+```javascript
+let grid = new gg.grid(3,3)
+let region = grid.makeRegion(1, 2, 2)
+//> [1, 2, 4, 5]
+region.forEach((cellNum) => grid.insert(cellNum, '#'))
+
+[  .  #  #  ]
+[  .  #  #  ]
+[  .  .  .  ]
+```
 
 #### Functional style vs portable API + grid object in 1  
 

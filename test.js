@@ -646,7 +646,7 @@ test(`gg.render renders as expected`, (t) => {
 })
 
 test(`gg.makeRegion can return a square region of grid`, (t) => {
-  t.plan(4)
+  t.plan(5)
 
   let gg = requireUncached('./gg.js')
   let grid = new gg.grid(6,6)
@@ -681,5 +681,22 @@ test(`gg.makeRegion can return a square region of grid`, (t) => {
 
   t.equals( hashSymbols.length, 12)
   t.equals( atSymbols.length, 9)
+
+  console.log('----------------------------')
+
+  //can use portable API...
+  let grid2 = new gg.grid(9,6)
+  let region3 = grid2.makeRegion(0, 6, 2) //< no grid param required
+
+  region3.forEach((cellNum) => grid2.insert({ cell: cellNum, label : '#' }))
+  grid2.render()
+
+  //now test it:
+  let expectedRegion3 = [0, 1, 2, 3, 4, 5, 9, 10, 11, 12, 13, 14]
+  let region3Filled = _.every( expectedRegion3, (cellNum) => {
+    return grid2.cells[cellNum].enties[0].label == '#'
+  })
+
+  t.ok( region3Filled )
 
 })

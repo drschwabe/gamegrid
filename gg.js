@@ -327,7 +327,22 @@ gg.remove = function(...args) {
 gg.removeEnty = gg.remove
 
 //Returns an array of cell numbers representing a region of the grid:
-gg.makeRegion = function region(grid, startCell, width, height) {
+//gg.makeRegion = function region(grid, startCell, width, height) {
+gg.makeRegion = function(...args) {
+  let grid, startCell, width, height
+  if( _.isObject(args[0]) && args[0].type == 'grid') {
+    grid = args[0]
+    startCell = args[1]
+    width = args[2]
+    height = args[3]
+  } else {
+    grid = this
+    startCell = args[0]
+    width = args[1]
+    height = args[2]
+  }
+  let enty = _.isObject(_.last(args)) ? _.last(args) : false
+
   let testcell = gg.indexToRc(grid,startCell)
   let starter = {
     row: testcell[0],
