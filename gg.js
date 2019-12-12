@@ -436,7 +436,9 @@ gg.rcToIndex = (grid, param1, param2) => {
     col = param2
   }
   //Return the cell num:
+  grid = gg.populateCells(grid)
   var rc = ArrayGrid(grid.cells, [grid.height, grid.width]).index(row,col)
+  if(_.isUndefined(rc)) console.warn("invalid cell; supplied row/column does not match this grid (try increasing your grid's size with gg.expandGrid)")
   return rc
 }
 
