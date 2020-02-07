@@ -436,7 +436,7 @@ gg.rcToIndex = (grid, param1, param2) => {
     col = param2
   }
   //Return the cell num:
-  grid = gg.populateCells(grid)
+  let gridCells = _.range(grid.width * grid.height) 
   var rc = ArrayGrid(grid.cells, [grid.height, grid.width]).index(row,col)
   if(_.isUndefined(rc) && grid.debug) console.warn("invalid cell; supplied row/column does not match this grid (try increasing your grid's size with gg.expandGrid)")
   return rc
@@ -993,19 +993,17 @@ gg.divide = (originalGrid, width, height) => {
           newGrid.push(newGridRowCells)
         })
         let newMiniGrid = gg.createGrid(width, height)
-        newMiniGrid = gg.populateCells(newMiniGrid)
         newGrid = _.flatten(newGrid)
-        newGrid.forEach(cell => {
+        newGrid.forEach((cell, index) => {
           let entyInOriginal = gg.examine(originalGrid, cell)
           if (entyInOriginal) {
             let newEnty = _.clone(entyInOriginal)
-            newEnty.cell = newMiniGrid.enties.length
+            newEnty.cell = index
             newEnty.originalCell = cell
             gg.insertEnty(newMiniGrid, newEnty)
-            newMiniGrid = gg.populateCells(newMiniGrid)
           } else { //insert a blank enty for now anyway for debugging:
-            gg.insertEnty(newMiniGrid, {originalCell: cell, cell: newMiniGrid.enties.length})
-            newMiniGrid = gg.populateCells(newMiniGrid)
+            //gg.insertEnty(newMiniGrid, {originalCell: cell, cell: newMiniGrid.enties.length})
+            //newMiniGrid = gg.populateCells(newMiniGrid)
           }
         })
         miniGrids.push(newMiniGrid)

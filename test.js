@@ -701,8 +701,8 @@ test(`gg.makeRegion can return a square region of grid`, (t) => {
 
 })
 
-test.only(`gg.divideGrid can return an array of smaller grids based off a larger grid`, t => {
-  t.plan(8)
+test(`gg.divideGrid can return an array of smaller grids based off a larger grid`, t => {
+  t.plan(9)
   let superGrid = gg.createGrid(4,4)
 
   // [  0,  1,  2,  3,  ]
@@ -760,5 +760,22 @@ test.only(`gg.divideGrid can return an array of smaller grids based off a larger
   //  [  0,  1,   0,  1,   0, X,   0, 1  ]  < treasure should be in grid6, cell 1
   //  [  2,  3,   2,  3,   2, 3,   2, 3  ]
 
+  miniGrids2[6] = gg.populateCells(miniGrids2[6])
   t.equals( miniGrids2[6].cells[1].enties[0].name, "treasure" , 'grid ouptut from sub divided (wide) grid contains enty that was in original grid' )
+
+
+  //massive supergrid test
+  let massiveGrid = gg.createGrid( 256, 88 )
+
+  massiveGrid = gg.insert( massiveGrid, { name : "treasure" , cell : [50, 192] })
+  t.equals( massiveGrid.enties[0].cell, 12992 )
+
+  let massiveMiniGrids = gg.divide(massiveGrid, 16, 8)
+  //massiveMiniGridWithTreasure =  gg.populateCells(massiveMiniGrids)
+//  t.equals( miniGrids2[6].cells[1].enties[0].name, "treasure" , 'grid ouptut from sub divided (wide) grid contains enty that was in original grid' )
+  //TODO: test that the treasure is where it's supposed to be !
+
+  console.log('complete')
+
+
 })
