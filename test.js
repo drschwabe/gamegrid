@@ -700,3 +700,65 @@ test(`gg.makeRegion can return a square region of grid`, (t) => {
   t.ok( region3Filled )
 
 })
+
+test.only(`gg.divideGrid can return an array of smaller grids based off a larger grid`, t => {
+  t.plan(8)
+  let superGrid = gg.createGrid(4,4)
+
+  // [  0,  1,  2,  3,  ]
+  // [  4,  5,  6,  7,  ]
+  // [  8,  9,  10, 11, ]
+  // [  12, X, 14, 15  ]
+
+  superGrid = gg.insert(superGrid, { name : "purple monster" , cell : 13 })
+
+  let miniGrids = gg.divide(superGrid, 2,2)
+
+  //check that we got all grids:
+  t.equals(miniGrids.length, 4)
+
+  //that they are correct size:
+  t.equals(miniGrids[0].width, 2)
+  t.equals(miniGrids[0].height, 2)
+
+  //that they contain enties from the original grid corresponding to original cell:
+
+  // [  0,  1,  2,  3,  ]
+  // [  4,  5,  6,  7,  ]
+  // [  8,  9,  10, 11, ]
+  // [  12, monster, 14, 15  ]  //< 4th mini grid, cell 1
+
+  t.equals( miniGrids[3].cells[1].enties[0].name, "purple monster" , 'grid ouptut from sub divided grid contains enty that was in original grid' )
+
+  //test on a wide grid...
+  let wideGrid = gg.createGrid(8,4)
+
+  // 0 [  0,  1,  2,  3,  4, 5, 6, 7  ]
+  // 1 [  0,  1,  2,  3,  4, 5, 6, 7  ]
+  // 2 [  0,  1,  2,  3,  4, X, 6, 7  ]  X = cell 21
+  // 3 [  0,  1,  2,  3,  4, 5, 6, 7  ]
+
+  wideGrid = gg.insert( wideGrid, { name : "treasure" , cell : [2, 5] })
+
+  //let miniGrids2 = gg.divide(wideGrid, 2,2)
+  let miniGrids2 = gg.divide(wideGrid, 2, 2)
+
+  //check that we got all grids:
+  t.equals(miniGrids2.length, 8)
+
+  //that they are correct size:
+  t.equals(miniGrids2[1].width, 2)
+  t.equals(miniGrids2[1].height, 2)
+
+  //in the case of a 8x4 original grid split into 2x2s:
+
+  //    grid0     grid1    grid2  grid3
+  //  [  0,  1,   0,  1,   0, 1,   0, 1  ]
+  //  [  2,  3,   2,  3,   2, 3,   2, 3  ]
+
+  //    grid4     grid5    grid6   grid7
+  //  [  0,  1,   0,  1,   0, X,   0, 1  ]  < treasure should be in grid6, cell 1
+  //  [  2,  3,   2,  3,   2, 3,   2, 3  ]
+
+  t.equals( miniGrids2[6].cells[1].enties[0].name, "treasure" , 'grid ouptut from sub divided (wide) grid contains enty that was in original grid' )
+})

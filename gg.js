@@ -438,7 +438,7 @@ gg.rcToIndex = (grid, param1, param2) => {
   //Return the cell num:
   grid = gg.populateCells(grid)
   var rc = ArrayGrid(grid.cells, [grid.height, grid.width]).index(row,col)
-  if(_.isUndefined(rc)) console.warn("invalid cell; supplied row/column does not match this grid (try increasing your grid's size with gg.expandGrid)")
+  if(_.isUndefined(rc) && grid.debug) console.warn("invalid cell; supplied row/column does not match this grid (try increasing your grid's size with gg.expandGrid)")
   return rc
 }
 
@@ -877,7 +877,152 @@ gg.enter = function(...args) {
 }
 
 
+gg.divide = (originalGrid, width, height) => {
+  let originalGridFlat = _.range(  originalGrid.width * originalGrid.height  )
+  let miniGrids = []
 
+  let rest
+  const divideGrid = range => {
+    if(!range) range = originalGridFlat
+    let miniGrid
+    if(originalGrid.width === originalGrid.height && width === height) {
+      miniGrid = math.resize(range, [width * height])
+    } else if(originalGrid.width !== originalGrid.height && width === height) {
+      miniGrid = math.resize( range, [width * height])
+    } else {
+      return console.warn('only works for even (square) proportions')
+    }
+    miniGrids.push(miniGrid)
+    //rest = _.rest( range,  _.last(   _.last(miniGrids)  ) + 1)
+    let nextMiniGridCell =  _.last(  miniGrid )
+    rest = _.rest( range, _.indexOf(range, nextMiniGridCell + 1) )
+
+    while(rest.length != 1) {
+      divideGrid(rest)
+    }
+  }
+  divideGrid()
+
+  //loop over each miniGrid to clone a copy of any enties in the given cell of original grid...
+  miniGrids = _.map( miniGrids, miniGrid => {
+    let grid = gg.create(width, height)
+    if(originalGridFlat.enties) return
+    miniGrid.forEach( (cellNum, index ) => {
+      let correspondingEnty = gg.examine( originalGrid, cellNum )
+      if(correspondingEnty) {
+        let newEnty = _.clone(correspondingEnty)
+        newEnty.cell = index
+        grid = gg.insert( grid, newEnty  )
+        grid = gg.populateCells(grid)
+      }
+    })
+    return grid
+  })
+  return miniGrids
+}
+
+gg.divide = (originalGrid, width, height) => {
+  const divideSquare = (originalGrid, width, height) => {
+    let originalGridFlat = _.range(originalGrid.width * originalGrid.height)
+    let miniGrids = []
+
+    let rest
+    const divideGrid = range => {
+      if (!range) range = originalGridFlat
+      let miniGrid
+      if (originalGrid.width === originalGrid.height && width === height) {
+        miniGrid = math.resize(range, [width * height])
+      } else if (originalGrid.width !== originalGrid.height && width === height) {
+        miniGrid = math.resize(range, [width * height])
+      } else {
+        return console.warn('only works for even (square) proportions')
+      }
+      miniGrids.push(miniGrid)
+      //rest = _.rest( range,  _.last(   _.last(miniGrids)  ) + 1)
+      let nextMiniGridCell = _.last(miniGrid)
+      rest = _.rest(range, _.indexOf(range, nextMiniGridCell + 1))
+
+      while (rest.length != 1) {
+        divideGrid(rest)
+      }
+    }
+    divideGrid()
+
+    //loop over each miniGrid to clone a copy of any enties in the given cell of original grid...
+    miniGrids = _.map(miniGrids, miniGrid => {
+      let grid = gg.create(width, height)
+      if (originalGridFlat.enties) return
+      miniGrid.forEach((cellNum, index) => {
+        let correspondingEnty = gg.examine(originalGrid, cellNum)
+        if (correspondingEnty) {
+          let newEnty = _.clone(correspondingEnty)
+          newEnty.cell = index
+          grid = gg.insert(grid, newEnty)
+          grid = gg.populateCells(grid)
+        }
+      })
+      return grid
+    })
+    return miniGrids
+
+
+  }
+
+  const divideWide = (originalGrid, width, height) => {
+    let miniGrids = []
+    //create an array of start cells in original grid that we will need to establish a grid corner point from...
+    let columnCells = gg.columnCells(originalGrid, 0)
+    //[0,
+    // 8,
+    // 16,
+    // 24 ]
+    //now split into smaller arrays based on the height provided by user...
+    let startingRows = _.chunk(columnCells, height)
+
+    startingRows.forEach((startingRow, rowIndex) => {
+      let cornerCell = startingRow[0]
+      let heightOffset = cornerCell
+      let originalRow = gg.rowCells(originalGrid, cornerCell)
+      let lastCellofOriginalRow = _.last(originalRow)
+      while (cornerCell < lastCellofOriginalRow) { //< this should work as long as grid is evenly divisible and also wider than taller
+        let newGrid = []
+        _.range(height).forEach(index => {
+          let rowStartCell = ((rowIndex * height) * originalGrid.width) + (index * originalGrid.width)
+          let originalGridRowCells = gg.rowCells(originalGrid, rowStartCell)
+          let newGridRowCells = originalGridRowCells.slice((cornerCell - heightOffset), (cornerCell - heightOffset) + width)
+          newGrid.push(newGridRowCells)
+        })
+        let newMiniGrid = gg.createGrid(width, height)
+        newMiniGrid = gg.populateCells(newMiniGrid)
+        newGrid = _.flatten(newGrid)
+        newGrid.forEach(cell => {
+          let entyInOriginal = gg.examine(originalGrid, cell)
+          if (entyInOriginal) {
+            let newEnty = _.clone(entyInOriginal)
+            newEnty.cell = newMiniGrid.enties.length
+            newEnty.originalCell = cell
+            gg.insertEnty(newMiniGrid, newEnty)
+            newMiniGrid = gg.populateCells(newMiniGrid)
+          } else { //insert a blank enty for now anyway for debugging:
+            gg.insertEnty(newMiniGrid, {originalCell: cell, cell: newMiniGrid.enties.length})
+            newMiniGrid = gg.populateCells(newMiniGrid)
+          }
+        })
+        miniGrids.push(newMiniGrid)
+        cornerCell = cornerCell + width
+      }
+    })
+    return miniGrids
+  }
+
+  let result
+  if(originalGrid.width === originalGrid.height && width === height) {
+    result = divideSquare(originalGrid, width, height)
+  } else {
+    result = divideWide(originalGrid, width, height)
+  }
+  return result
+}
 
 gg.render = function(...args) {
   //(grid, autoRender)
