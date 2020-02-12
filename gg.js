@@ -26,14 +26,15 @@ gg.move = function(...args) {
   }
 
   enty = _.find( args, (arg) => _.isObject( arg ) && arg.type != 'grid' )
-
+  
   cell = _.find( args, (arg) => _.isNumber( arg ))
+  if(_.isUndefined(cell) && enty) cell = enty.cell 
 
   direction = _.find( args, (arg) => _.isString(arg) && _.contains(['north', 'south', 'east', 'west'], arg))
 
   idOrLabel = _.find( args, (arg) => _.isString( arg ) && arg != direction )
 
-  if( _.isNumber(cell)) {
+  if( !enty && _.isNumber(cell)) {
     enty = gg.find(grid, cell)
   } else if(!enty && idOrLabel) {
     //first search by ID
