@@ -1023,6 +1023,36 @@ gg.divide = (originalGrid, width, height) => {
   return result
 }
 
+gg.zoomOut = grid  => {
+  grid = gg.expandGrid(grid)
+  grid = gg.expandGrid(grid)
+  grid = gg.populateCells(grid)
+  grid.enties = _.map(grid.enties, enty => {
+    if (enty.passable === false) {
+      enty.temporarily_passable = true
+      enty.passable = true
+    }
+    return enty
+  })
+  grid = gg.populateCells(grid)
+  grid.enties.forEach(enty => {
+    grid = gg.move(grid, enty, 'east')
+    grid = gg.populateCells(grid)
+    grid = gg.move(grid, enty, 'south')
+    grid = gg.populateCells(grid)
+  })
+  grid = gg.populateCells(grid)
+  grid.enties = _.map(grid.enties, enty => {
+    if (enty.temporarily_passable) {
+      delete enty.temporarily_passable
+      enty.passable = false
+    }
+    return enty
+  })
+  return grid 
+}
+
+
 gg.render = function(...args) {
   //(grid, autoRender)
   let grid
