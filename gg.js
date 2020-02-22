@@ -1023,6 +1023,7 @@ gg.divide = (originalGrid, width, height) => {
   return result
 }
 
+
 gg.zoomOut = grid  => {
   grid = gg.expandGrid(grid)
   grid = gg.expandGrid(grid)
@@ -1035,10 +1036,37 @@ gg.zoomOut = grid  => {
     return enty
   })
   grid = gg.populateCells(grid)
+  //determine the grid size ratio which will determine how to move the existing cells relative to center
+  let ratio = grid.width / grid.height 
+  let stepsEast
+  let stepsSouth 
+
+  
+  //stepsEast = math.round (   (grid.width - grid.height) / 2  )  //< seems to work ok for 16x11 one time maybe twice 
+  //stepsEast = math.round(   (grid.width - grid.height) / math.ceil(ratio * ratio) )  //< seems to be OK as well but veers off 
+  stepsEast = math.floor (   math.cbrt( grid.width )  -  ratio     ) 
+  stepsSouth = math.round (  grid.height  / ( stepsEast  + grid.width  ) ) //good enough; slightly offcenter but not bad (16x11) 
+  debugger
+
+  //south expansion... this logic seems to work for 16x11 grid
+  // if(ratio == 1) {
+  //   stepsSouth = stepsEast
+  // } else if(ratio < 1.5 && ratio > 1.3) {
+  //   stepsSouth = stepsEast - 2
+  // } else {
+  //   stepsSouth = 1
+  // }
+
+  //... math hard, being lazy..
+
   grid.enties.forEach(enty => {
-    grid = gg.move(grid, enty, 'east')
+    _.range(stepsEast).forEach(step => {
+      grid = gg.move(grid, enty, 'east')
+    })
     grid = gg.populateCells(grid)
-    grid = gg.move(grid, enty, 'south')
+    _.range(stepsSouth).forEach(step => {
+      grid = gg.move(grid, enty, 'south')
+    })
     grid = gg.populateCells(grid)
   })
   grid = gg.populateCells(grid)
