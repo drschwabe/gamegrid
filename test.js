@@ -22,6 +22,17 @@ test('Can insert an enty', (t) => {
   t.equals(grid.enties[0].cell, 3, "enty was inserted into the correct cell")
 })
 
+test('Can insert an enty (grid as library)', (t) => {
+  t.plan(2)
+  var grid = new gg.grid(3,3)
+  grid.insertEnty({
+    name : 'mushroom',
+    cell : 3
+  })
+  t.equals(grid.enties[0].name, 'mushroom', "enty's name is correct")
+  t.equals(grid.enties[0].cell, 3, "enty was inserted into the correct cell")
+})
+
 test('Can determine a linear cell # based on xy coordinates', (t) => {
   t.plan(2)
   var grid = gg.createGrid(3,3)
