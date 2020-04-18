@@ -591,6 +591,7 @@ gg.nextOccupiedCellEast = (grid, startCell) => {
   var nextOccupiedCellEast
   var nextCell = startCell
   while (_.isUndefined(nextOccupiedCellEast)) {
+    if(gg.isEastEdge(grid,nextCell)) return nextOccupiedCellEast = null //< Return null if we are already at edge.
     nextCell = nextCell + 1
     var nextCellContents = gg.examine(grid, nextCell)
     if(nextCellContents) return nextOccupiedCellEast = nextCell

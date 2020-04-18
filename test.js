@@ -250,17 +250,20 @@ test('Can expand a grid and enties remain in same place', (t) => {
 })
 
 test('Finds the next occupied cell east', (t) => {
-  t.plan(1)
+  t.plan(2)
   let grid = gg.createGrid(4,4)
   grid = gg.insertEnty(grid, { cell: 0, name: 'apple' })
   grid = gg.insertEnty(grid, { cell: 1, name: 'banana' })
   grid = gg.insertEnty(grid, { cell: 3, name: 'cherry' })
+  grid = gg.insertEnty(grid, { cell: 6, name: 'orange' })
   /*
     [ apple bannana  2  cherry ]
-    [ 4       5      6     7   ]
+    [ 4       5    orange     7   ]
     [ 8       9      10   11  ]
   */
   t.equals( gg.nextOccupiedCellEast(grid, 1), 3, 'gg.nextOccupiedCellEast can find the next occupied cell east')
+  t.equals( gg.nextOccupiedCellEast(grid, 3), null, 'if there is no cell east gg.nextOccupiedCellEast returns null')
+
 })
 
 test('Returns the complete range of cell (numbers) in a given column', (t) => {
