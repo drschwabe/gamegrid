@@ -122,7 +122,10 @@ gg.move = function(...args) {
 
   //Prevent movement (but update facing) if the object we are facing is impassable:
   enty.facing = this.examine(grid, intendedPosition)
-  if(enty.facing && enty.facing.passable === false) {
+  if(enty.facing && enty.facing.length) {
+    let nonPassableEnties = _.some(enty.facing, enty => !enty.passable)
+    if(nonPassableEnties) return this.type == 'grid' ? undefined : grid
+  } else if(enty.facing && enty.facing.passable === false) {
     if(grid._render) gg.render(grid)
     return this.type == 'grid' ? undefined : grid
   }
