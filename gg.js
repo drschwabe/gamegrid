@@ -544,7 +544,15 @@ gg.nextRow = (grid, cell, loop) => {
   return enties //< Returns an array.
 }
 
-gg.expandGrid = (oldGrid) => {
+gg.expandGrid = (...args) => {
+  let oldGrid
+
+  if( _.isObject(args[0]) && args[0].type == 'grid') {
+    oldGrid = args[0]
+  } else {
+    oldGrid = this
+  }
+
   //Perform a single cell top-left diagonal expansion)...
   //store reference to original x and y coordinates:
   oldGrid.enties = _.map(oldGrid.enties, (enty) => {
@@ -564,7 +572,13 @@ gg.expandGrid = (oldGrid) => {
     return enty
   }).value()
 
-  return newGrid
+  if( this.type == 'grid' ) {
+    oldGrid.enties = newGrid.enties
+    //this is where we would cache the previous one optionally
+    return undefined
+  } else {
+    return newGrid
+  }
 }
 
 //Determine the next enty that exists over:
