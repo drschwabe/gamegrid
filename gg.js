@@ -718,6 +718,37 @@ gg.nextOpenRow = (grid, startCell) => {
   return nextOpenRow
 }
 
+//Find the next row that has no enties in it to the east of startCell
+//(ie- ignore occupied cells in columns to the west)
+gg.nextOpenRowEast = (grid, startCell) => {
+  if(_.isUndefined(startCell)) startCell = 0
+  var nextCellToCheck,
+      nextOpenRow,
+      currentColumn = gg.indexToRc(grid, startCell)[1]
+
+  while(_.isUndefined(nextOpenRow)) {
+    if(_.isUndefined(nextCellToCheck)) nextCellToCheck = startCell + grid.width
+    var rowCells = gg.rowCells(grid, nextCellToCheck)
+    let isOpen = true
+    rowCells.some( (cell,index) => {
+      if(index < currentColumn ) return false
+      if(gg.examine(grid, cell)) {
+        isOpen = false
+        return true
+      } else {
+        isOpen = true
+        return false
+      }
+    })
+    if(isOpen) {
+      nextOpenRow = gg.indexToRc(grid, nextCellToCheck)[0]
+    } else {
+      nextCellToCheck = gg.nextCellSouth(grid, nextCellToCheck)
+    }
+  }
+  return nextOpenRow
+}
+
 gg.nextCellEast = (grid, currentCell) => {
   if( currentCell % grid.width == grid.width - 1) {
     return null

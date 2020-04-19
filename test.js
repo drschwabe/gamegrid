@@ -131,6 +131,42 @@ test('Can find the next open cell south', (t) => {
 
 })
 
+test.only('Can find the next open row, ignoring cells to the west', t => {
+  t.plan(3)
+  var grid = gg.createGrid(3,3)
+  grid = gg.insertEnty(grid, 1)
+  grid = gg.insertEnty(grid, 5)
+  grid = gg.insertEnty(grid, 6)
+  grid = gg.populateCells(grid)
+  // [0,   S,   2  <--- row #0 is start cell
+  //  3,   4,   x  <--- row #1 has an enty here so is not open
+  //  x,   7,   8]   <-- row #2 is the first open row to the east of start cell
+  t.equals( gg.nextOpenRowEast(grid, 1), 2, "Correctly pinpointed first open row to the east of start cell")
+
+  var grid2 = gg.createGrid(6,6)
+  grid2 = gg.insertEnty(grid2, 10)
+  grid2 = gg.insertEnty(grid2, 15)
+  grid2 = gg.insertEnty(grid2, 22)
+  grid2 = gg.insertEnty(grid2, 24)
+  grid2 = gg.insertEnty(grid2, 25)
+  grid2 = gg.populateCells(grid2)
+  // [ 0    1    2   3    4   5
+  //   6    7    8   S    x   11
+  //  12   13   14   x   16   17
+  //  18   19   20   21   x   23
+  //  x     x   26   27  28   29
+  //  30   31   32   33  34   35 ]
+  t.equals( gg.nextOpenRowEast(grid2, 9), 4, "Correct again, in larger grid")
+  grid2 = gg.removeEnty(grid2, 22)
+  grid2 = gg.populateCells(grid2)
+  // [ 0    1    2   3    4   5
+  //   6    7    8   S    x   11
+  //  12   13   14   x   16   17
+  //  18   19   20   21   22   23 //< Row 3 is now open
+  //  x     x   26   27  28   29
+  //  30   31   32   33  34   35 ]
+  t.equals( gg.nextOpenRowEast(grid2, 9), 3, "Correct again, after removing an enty previously in a higher row")
+})
 
 test('Return accurate xy coordinates from a given index', (t) => {
   t.plan(11)
@@ -791,5 +827,92 @@ test(`gg.divideGrid can return an array of smaller grids based off a larger grid
 
   console.log('complete')
 
+
+})
+
+test('gg.zoomOut', t => {
+  t.plan(2)
+  let gg = requireUncached('./gg.js')
+  let grid = gg.createGrid(5,5)
+
+  //insert a tree along every edge of the grid so we can visualize the expansion 'zoomout' after it occurs
+
+  //first row #####
+  gg.rowCells(grid, 0).forEach( cell => {
+    grid = gg.insert(grid, '#', cell)
+  })
+
+  //leftmost column # <
+  gg.columnCells(grid, 0).forEach( cell => {
+    if(cell === 0) return
+    grid = gg.insert(grid, '#', cell)
+  })
+
+  //bottom row #####
+  gg.rowCells(grid, [4, 0]).forEach( cell => {
+    if(gg.find(grid, cell)) return
+    grid = gg.insert(grid, '#', cell)
+  })
+
+  gg.columnCells(grid, 4).forEach( cell => {
+    if(gg.find(grid, cell)) return
+    grid = gg.insert(grid, '#', cell)
+  })
+
+  grid = gg.populateCells( grid )
+  gg.render(grid)
+  //grid.render()
+
+  //now do a zoom and make sure all cells open and then all these other cellsa rew wehre we expect them to be...
+  t.pass()
+
+  grid = gg.zoomOut(grid)
+  grid = gg.populateCells( grid )
+  gg.render(grid)
+
+  t.ok( grid.width === 6 && grid.height === 6, 'grid width/height updated internally')
+
+})
+
+test.skip('gg.zoomOut (grid as library)', t => {
+  t.plan(2)
+  let gg = requireUncached('./gg.js')
+  let grid = new gg.grid(5,5)
+
+  //first row #####
+  gg.rowCells(grid, 0).forEach( cell => {
+    grid.insert(grid, '#', cell)
+  })
+
+  //leftmost column # <
+  gg.columnCells(grid, 0).forEach( cell => {
+    if(cell === 0) return
+    grid.insert(grid, '#', cell)
+  })
+
+  //bottom row #####
+  gg.rowCells(grid, [4, 0]).forEach( cell => {
+    if(gg.find(grid, cell)) return
+    grid.insert(grid, '#', cell)
+  })
+
+  gg.columnCells(grid, 4).forEach( cell => {
+    if(gg.find(grid, cell)) return
+    grid.insert(grid, '#', cell)
+  })
+
+  grid.populateCells()
+  grid.render()
+
+  //now do a zoom and make sure all cells open and then all these other cellsa rew wehre we expect them to be...
+  t.pass()
+
+  debugger
+
+  grid.zoomOut()
+  grid.populateCells()
+  grid.render()
+
+  t.ok( grid.width === 6 && grid.height === 6, 'grid width/height updated internally')
 
 })
