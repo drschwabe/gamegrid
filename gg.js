@@ -928,50 +928,6 @@ gg.enter = function(...args) {
 
 
 gg.divide = (originalGrid, width, height) => {
-  let originalGridFlat = _.range(  originalGrid.width * originalGrid.height  )
-  let miniGrids = []
-
-  let rest
-  const divideGrid = range => {
-    if(!range) range = originalGridFlat
-    let miniGrid
-    if(originalGrid.width === originalGrid.height && width === height) {
-      miniGrid = math.resize(range, [width * height])
-    } else if(originalGrid.width !== originalGrid.height && width === height) {
-      miniGrid = math.resize( range, [width * height])
-    } else {
-      return console.warn('only works for even (square) proportions')
-    }
-    miniGrids.push(miniGrid)
-    //rest = _.rest( range,  _.last(   _.last(miniGrids)  ) + 1)
-    let nextMiniGridCell =  _.last(  miniGrid )
-    rest = _.rest( range, _.indexOf(range, nextMiniGridCell + 1) )
-
-    while(rest.length != 1) {
-      divideGrid(rest)
-    }
-  }
-  divideGrid()
-
-  //loop over each miniGrid to clone a copy of any enties in the given cell of original grid...
-  miniGrids = _.map( miniGrids, miniGrid => {
-    let grid = gg.create(width, height)
-    if(originalGridFlat.enties) return
-    miniGrid.forEach( (cellNum, index ) => {
-      let correspondingEnty = gg.examine( originalGrid, cellNum )
-      if(correspondingEnty) {
-        let newEnty = _.clone(correspondingEnty)
-        newEnty.cell = index
-        grid = gg.insert( grid, newEnty  )
-        grid = gg.populateCells(grid)
-      }
-    })
-    return grid
-  })
-  return miniGrids
-}
-
-gg.divide = (originalGrid, width, height) => {
   const divideSquare = (originalGrid, width, height) => {
     let originalGridFlat = _.range(originalGrid.width * originalGrid.height)
     let miniGrids = []
