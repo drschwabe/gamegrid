@@ -564,7 +564,7 @@ gg.expandGrid = (...args) => {
     return enty
   })
 
-  //create a blank new, larger grid:
+  //create a blank new, larger grid...
   var newGrid = gg.createGrid(oldGrid.height + 1 , oldGrid.width + 1)
 
   //apply original x and y coordinates; correcting cell numbers:
@@ -1029,8 +1029,10 @@ gg.divide = (originalGrid, width, height) => {
 }
 
 
-gg.zoomOut = grid  => {
-  grid = gg.expandGrid(grid)
+gg.zoomOut = (...args)  => {
+  let grid = _.isObject(args[0]) && args[0].type == 'grid' ? args[0] : this
+
+  //grid = gg.expandGrid(grid)
   grid = gg.expandGrid(grid)
   grid = gg.populateCells(grid)
   grid.enties = _.map(grid.enties, enty => {
@@ -1069,7 +1071,7 @@ gg.zoomOut = grid  => {
     }
     return enty
   })
-  return grid 
+  return this.type == 'grid' ? undefined : grid
 }
 
 
