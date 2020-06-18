@@ -26,9 +26,9 @@ gg.move = function(...args) {
   }
 
   enty = _.find( args, (arg) => _.isObject( arg ) && arg.type != 'grid' )
-  
+
   cell = _.find( args, (arg) => _.isNumber( arg ))
-  if(_.isUndefined(cell) && enty) cell = enty.cell 
+  if(_.isUndefined(cell) && enty) cell = enty.cell
 
   direction = _.find( args, (arg) => _.isString(arg) && _.contains(['north', 'south', 'east', 'west'], arg))
 
@@ -440,7 +440,7 @@ gg.rcToIndex = (grid, param1, param2) => {
     col = param2
   }
   //Return the cell num:
-  let gridCells = _.range(grid.width * grid.height) 
+  let gridCells = _.range(grid.width * grid.height)
   var rc = ArrayGrid(grid.cells, [grid.height, grid.width]).index(row,col)
   if(_.isUndefined(rc) && grid.debug) console.warn("invalid cell; supplied row/column does not match this grid (try increasing your grid's size with gg.expandGrid)")
   return rc
@@ -1044,13 +1044,13 @@ gg.zoomOut = (...args)  => {
   })
   grid = gg.populateCells(grid)
   //determine the grid size ratio which will determine how to move the existing cells relative to center
-  let ratio = grid.width / grid.height 
+  let ratio = grid.width / grid.height
   let stepsEast
   let stepsSouth
-  
-  //stepsEast = math.round (   (grid.width - grid.height) / 2  )  //< seems to work ok for 16x11 one time maybe twice 
-  //stepsEast = math.round(   (grid.width - grid.height) / math.ceil(ratio * ratio) )  //< seems to be OK as well but veers off 
-  stepsEast = math.floor (   math.cbrt( grid.width )  -  ratio     ) 
+
+  //stepsEast = math.round (   (grid.width - grid.height) / 2  )  //< seems to work ok for 16x11 one time maybe twice
+  //stepsEast = math.round(   (grid.width - grid.height) / math.ceil(ratio * ratio) )  //< seems to be OK as well but veers off
+  stepsEast = math.floor (   math.cbrt( grid.width )  -  ratio     )
   stepsSouth = math.round (  grid.height  / ( stepsEast  + grid.width  ) ) //good enough; slightly offcenter but not bad (16x11)
 
   grid.enties.forEach(enty => {
@@ -1075,45 +1075,29 @@ gg.zoomOut = (...args)  => {
 }
 
 gg.combine = (grids) => {
-
-  let gridCells = []
-  // let combinedGridWidth =  _.reduce(grids, (memo, grid) =>
-  //    memo + grid.width, 0)
-
   let combinedGridWidth = (grids[0].width * grids.length) / grids[0].height
-
-  // let combinedGridHeight =  _.reduce(grids, (memo, grid) =>
-  //       memo + grid.height, 0)
-
   let combinedGridHeight = (grids[0].height * grids.length) / grids[0].width
-  debugger
-
 
   let combinedGrid = gg.createGrid( combinedGridWidth, combinedGridHeight  )
-  //combinedGrid = gg.populateCells( combinedGrid )
 
+  let combinedCells = []
 
-
-
-  let combinedCellIndex = 0
   grids.forEach( (grid, index) => {
     //if(!grid.cells) grid.cells = _.range(grid.width * grid.height)
     if(!grid.cells) grid = gg.populateCells(grid)
-    //gridCells.push(grid.cells)
-    grid.cells.forEach( (cell, cellIndex) => {
-      if(cell.enties.length) {
-        cell.enties.forEach( enty => {
-          let convertedEnty = _.clone(enty)
-          convertedEnty.cell = combinedCellIndex
-          combinedGrid = gg.insert(combinedGrid, convertedEnty)
-        })
-      }
-      combinedCellIndex++
-    })
-    //debugger
-    combinedCellIndex = combinedCellIndex + (grid.width * grid.height)
-    //combinedCellIndex = combinedCellIndex + ((grid.width * grid.height) -1)
+    combinedCells.push( ...grid.cells )
   })
+
+  combinedCells.forEach( (cell, index)=> {
+    if(cell.enties.length) {
+      cell.enties.forEach( enty => {
+        let convertedEnty = _.clone(enty)
+        convertedEnty.cell = index
+        combinedGrid = gg.insert(combinedGrid, convertedEnty)
+      })
+    }
+  })
+
   return combinedGrid
 }
 

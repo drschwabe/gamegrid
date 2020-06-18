@@ -917,18 +917,15 @@ test.skip('gg.zoomOut (grid as library)', t => {
 
 })
 
-test.only('can combine multiple grids', t => {
+test('Can combine multiple grids', t => {
   t.plan(2)
   let superGrid = gg.createGrid(4,4)
-
-  debugger
+  superGrid = gg.insert(superGrid, { name : "purple monster" , cell : 13 })
 
   // [  0,  1,  2,  3,  ]
   // [  4,  5,  6,  7,  ]
   // [  8,  9,  10, 11, ]
-  // [  12, X,  14, 15  ]
-
-  superGrid = gg.insert(superGrid, { name : "purple monster" , cell : 13 })
+  // [  12, monster,  14, 15  ]
 
   let miniGrids = gg.divide(superGrid, 2,2)
 
@@ -939,15 +936,12 @@ test.only('can combine multiple grids', t => {
   let superGrid2 = gg.combine(miniGrids)
   superGrid2 = gg.populateCells(superGrid2)
 
-  debugger
-
-
-  //that they contain enties from the original grid corresponding to original cell:
+  //check that it contains enty from the original grid:
 
   // [  0,  1,  2,  3,  ]
   // [  4,  5,  6,  7,  ]
   // [  8,  9,  10, 11, ]
   // [  12, monster, 14, 15  ]  //< back in original cell
 
-  t.equals( superGrid2.cells[13].name, "purple monster" , 'grid ouptut from sub divided grid contains enty that was in original grid' )
+  t.equals( superGrid2.cells[13].enties[0].name, "purple monster" , 'combined grid contains enty that was previously in a separate grid.' )
 })
