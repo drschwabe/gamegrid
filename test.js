@@ -131,7 +131,7 @@ test('Can find the next open cell south', (t) => {
 
 })
 
-test.only('Can find the next open row, ignoring cells to the west', t => {
+test('Can find the next open row, ignoring cells to the west', t => {
   t.plan(3)
   var grid = gg.createGrid(3,3)
   grid = gg.insertEnty(grid, 1)
@@ -915,4 +915,39 @@ test.skip('gg.zoomOut (grid as library)', t => {
 
   t.ok( grid.width === 6 && grid.height === 6, 'grid width/height updated internally')
 
+})
+
+test.only('can combine multiple grids', t => {
+  t.plan(2)
+  let superGrid = gg.createGrid(4,4)
+
+  debugger
+
+  // [  0,  1,  2,  3,  ]
+  // [  4,  5,  6,  7,  ]
+  // [  8,  9,  10, 11, ]
+  // [  12, X,  14, 15  ]
+
+  superGrid = gg.insert(superGrid, { name : "purple monster" , cell : 13 })
+
+  let miniGrids = gg.divide(superGrid, 2,2)
+
+  //check that we got all grids:
+  t.equals(miniGrids.length, 4)
+
+  //now combine them back into a super grid...
+  let superGrid2 = gg.combine(miniGrids)
+  superGrid2 = gg.populateCells(superGrid2)
+
+  debugger
+
+
+  //that they contain enties from the original grid corresponding to original cell:
+
+  // [  0,  1,  2,  3,  ]
+  // [  4,  5,  6,  7,  ]
+  // [  8,  9,  10, 11, ]
+  // [  12, monster, 14, 15  ]  //< back in original cell
+
+  t.equals( superGrid2.cells[13].name, "purple monster" , 'grid ouptut from sub divided grid contains enty that was in original grid' )
 })

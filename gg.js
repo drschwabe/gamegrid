@@ -1074,6 +1074,49 @@ gg.zoomOut = (...args)  => {
   return this.type == 'grid' ? undefined : grid
 }
 
+gg.combine = (grids) => {
+
+  let gridCells = []
+  // let combinedGridWidth =  _.reduce(grids, (memo, grid) =>
+  //    memo + grid.width, 0)
+
+  let combinedGridWidth = (grids[0].width * grids.length) / grids[0].height
+
+  // let combinedGridHeight =  _.reduce(grids, (memo, grid) =>
+  //       memo + grid.height, 0)
+
+  let combinedGridHeight = (grids[0].height * grids.length) / grids[0].width
+  debugger
+
+
+  let combinedGrid = gg.createGrid( combinedGridWidth, combinedGridHeight  )
+  //combinedGrid = gg.populateCells( combinedGrid )
+
+
+
+
+  let combinedCellIndex = 0
+  grids.forEach( (grid, index) => {
+    //if(!grid.cells) grid.cells = _.range(grid.width * grid.height)
+    if(!grid.cells) grid = gg.populateCells(grid)
+    //gridCells.push(grid.cells)
+    grid.cells.forEach( (cell, cellIndex) => {
+      if(cell.enties.length) {
+        cell.enties.forEach( enty => {
+          let convertedEnty = _.clone(enty)
+          convertedEnty.cell = combinedCellIndex
+          combinedGrid = gg.insert(combinedGrid, convertedEnty)
+        })
+      }
+      combinedCellIndex++
+    })
+    //debugger
+    combinedCellIndex = combinedCellIndex + (grid.width * grid.height)
+    //combinedCellIndex = combinedCellIndex + ((grid.width * grid.height) -1)
+  })
+  return combinedGrid
+}
+
 
 gg.render = function(...args) {
   //(grid, autoRender)
