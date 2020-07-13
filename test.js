@@ -917,8 +917,8 @@ test.skip('gg.zoomOut (grid as library)', t => {
 
 })
 
-test('Can combine multiple grids', t => {
-  t.plan(2)
+test.only('Can combine multiple grids', t => {
+  t.plan(9)
   let superGrid = gg.createGrid(4,4)
   superGrid = gg.insert(superGrid, { name : "purple monster" , cell : 13 })
 
@@ -944,4 +944,46 @@ test('Can combine multiple grids', t => {
   // [  12, monster, 14, 15  ]  //< back in original cell
 
   t.equals( superGrid2.cells[13].enties[0].name, "purple monster" , 'combined grid contains enty that was previously in a separate grid.' )
+
+  //test on a wide grid...
+  let wideGrid = gg.createGrid(8,4)
+
+  // 0 [  0,  1,  2,  3,  4, 5, 6, 7  ]
+  // 1 [  0,  1,  2,  3,  4, 5, 6, 7  ]
+  // 2 [  0,  1,  2,  3,  4, X, 6, 7  ]  X = cell 21
+  // 3 [  0,  1,  2,  3,  4, 5, 6, 7  ]
+
+  wideGrid = gg.insert( wideGrid, { name : "treasure" , cell : [2, 5] })
+
+  //let miniGrids2 = gg.divide(wideGrid, 2,2)
+  let miniGrids2 = gg.divide(wideGrid, 2, 2)
+
+  t.equals(  miniGrids2.length, 8, 'grid divided')
+
+  let wideGridCombined = gg.combine(miniGrids, 8, 4)
+
+  t.equals( wideGridCombined.width, 8 )
+  t.equals( wideGridCombined.height, 4 )
+
+  let newGrids = [gg.createGrid(16,11), gg.createGrid(16,11), gg.createGrid(16,11), gg.createGrid(16,11)]
+
+  newGrids[0] = gg.insertEnty(newGrids[0], 'A')
+  newGrids[1] = gg.insertEnty(newGrids[1], 'B')
+  newGrids[2] = gg.insertEnty(newGrids[2], 'C')
+  newGrids[3] = gg.insertEnty(newGrids[3], 'D')
+
+
+  let newGridsCombined = gg.combine2(newGrids)
+
+
+  let entyA = _.findWhere( newGridsCombined.enties, { label : 'A' })
+  t.equals(entyA.cell, 0)
+  let entyB = _.findWhere( newGridsCombined.enties, { label : 'B' })
+  t.equals(entyB.cell, 16)
+  let entyC = _.findWhere( newGridsCombined.enties, { label : 'C' })
+  t.equals(entyC.cell, 320)
+  let entyD = _.findWhere( newGridsCombined.enties, { label : 'D' })
+  t.equals(entyD.cell, 336)
+  debugger
+
 })

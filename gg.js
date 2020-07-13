@@ -440,7 +440,8 @@ gg.rcToIndex = (grid, param1, param2) => {
     col = param2
   }
   //Return the cell num:
-  let gridCells = _.range(grid.width * grid.height)
+  //let gridCells = _.range(grid.width * grid.height)
+  if(!grid.cells) grid = gg.populateCells(grid)
   var rc = ArrayGrid(grid.cells, [grid.height, grid.width]).index(row,col)
   if(_.isUndefined(rc) && grid.debug) console.warn("invalid cell; supplied row/column does not match this grid (try increasing your grid's size with gg.expandGrid)")
   return rc
@@ -1074,11 +1075,13 @@ gg.zoomOut = (...args)  => {
   return this.type == 'grid' ? undefined : grid
 }
 
-gg.combine = (grids) => {
-  let combinedGridWidth = (grids[0].width * grids.length) / grids[0].height
-  let combinedGridHeight = (grids[0].height * grids.length) / grids[0].width
+gg.combine = (grids, width, height) => {
+  if(!width) width = grids[0].width * (grids.length / 2)
+  if(!height) height = grids[0].height * (grids.length / 2)
+  //^ if no width or height we just assume square grid...actually...
+  //TODO: test this;
 
-  let combinedGrid = gg.createGrid( combinedGridWidth, combinedGridHeight  )
+  let combinedGrid = gg.createGrid( width, height )
 
   let combinedCells = []
 
@@ -1101,6 +1104,56 @@ gg.combine = (grids) => {
   return combinedGrid
 }
 
+gg.combine2 = (grids, width, height) => {
+  if(!width) width = grids[0].width * (grids.length / 2)
+  if(!height) height = grids[0].height * (grids.length / 2)
+  //^ if no width or height we just assume square grid
+  let combinedGrid = gg.createGrid( width, height )
+
+  let columnCells = gg.columnCells(combinedGrid, 0)
+  let rowStartCells = _.chunk(columnCells, height)
+  // rowStartCells.forEach((rowStartCell, rowIndex) => {
+  //   debugger
+  //   //find the corresponding cell... .
+  // })
+  //loop over each row...
+  // _.range(width).forEach(index => {
+  //   let focusedGrid
+  //   if(index < (width / grids.length )) focusedGrid = grids[0]
+  // })
+  //nah, loop over each grid
+  //create a temproary 'world' grid; this helps us easily calcualte heightOffset
+  let worldGridWidth = combinedGrid.width / grids[0].width
+  let worldGridHeight = combinedGrid.height / grids[0].height
+  let worldGrid = gg.createGrid( worldGridWidth, worldGridHeight )
+  grids.forEach((grid, index) => worldGrid = gg.insert(worldGrid, grid, index))
+
+  grids.forEach((grid, index) => {
+    let widthOffset = gg.column( worldGrid, index) * grid.width
+    //let heightOffset = gg.row(worldGrid, index) * (grid.height -1) / index )
+    let heightOffset = gg.row(worldGrid, index) * (grid.height -1 )
+    // if(_.isNaN(heightOffset)) heightOffset = 0
+    // heightOffset = parseInt(heightOffset)
+   // let heightOffset = grid.height / index
+    if(!grid.cells) grid = gg.populateCells(grid)
+    //loop over each cell in each grid...
+    grid.cells.forEach( (cell, cellIndex) => {
+      let currentRow = gg.row(grid, cellIndex)
+      if(cell.enties && cell.enties.length) {//loop over each enty in the cell:
+        cell.enties.forEach( enty => {
+          let updatedEnty = _.clone(enty)
+          let row = currentRow + heightOffset
+          let column = cellIndex + widthOffset
+          updatedEnty.cell = gg.rcToIndex(combinedGrid, row, column )
+          //^ assign the correct cell in the new combined grid
+          combinedGrid = gg.insert(combinedGrid, updatedEnty)
+        })
+      }
+    })
+  })
+  debugger
+  return combinedGrid
+}
 
 gg.render = function(...args) {
   //(grid, autoRender)
