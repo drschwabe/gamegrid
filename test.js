@@ -907,8 +907,6 @@ test.skip('gg.zoomOut (grid as library)', t => {
   //now do a zoom and make sure all cells open and then all these other cellsa rew wehre we expect them to be...
   t.pass()
 
-  debugger
-
   grid.zoomOut()
   grid.populateCells()
   grid.render()
@@ -917,7 +915,7 @@ test.skip('gg.zoomOut (grid as library)', t => {
 
 })
 
-test.only('Can combine multiple grids', t => {
+test('Can combine multiple grids', t => {
   t.plan(9)
   let superGrid = gg.createGrid(4,4)
   superGrid = gg.insert(superGrid, { name : "purple monster" , cell : 13 })
@@ -973,7 +971,7 @@ test.only('Can combine multiple grids', t => {
   newGrids[3] = gg.insertEnty(newGrids[3], 'D')
 
 
-  let newGridsCombined = gg.combine2(newGrids)
+  let newGridsCombined = gg.combine(newGrids)
 
 
   let entyA = _.findWhere( newGridsCombined.enties, { label : 'A' })
