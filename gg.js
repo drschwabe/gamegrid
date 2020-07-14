@@ -1075,6 +1075,8 @@ gg.zoomOut = (...args)  => {
   return this.type == 'grid' ? undefined : grid
 }
 
+const cloneDeep = require('clone-deep')
+
 gg.combine = (grids, width, height) => {
 
   const combineSquare = (grids, width, height) => {
@@ -1112,23 +1114,45 @@ gg.combine = (grids, width, height) => {
     //^ if no width or height we just assume square grid
     let combinedGrid = gg.createGrid( width, height )
 
-    let columnCells = gg.columnCells(combinedGrid, 0)
-    let rowStartCells = _.chunk(columnCells, height)
-    // rowStartCells.forEach((rowStartCell, rowIndex) => {
-    //   debugger
-    //   //find the corresponding cell... .
-    // })
-    //loop over each row...
-    // _.range(width).forEach(index => {
-    //   let focusedGrid
-    //   if(index < (width / grids.length )) focusedGrid = grids[0]
-    // })
-    //nah, loop over each grid
+    let rowStartCells = gg.columnCells(combinedGrid, 0)
+
     //create a temproary 'world' grid; this helps us easily calcualte heightOffset
     let worldGridWidth = combinedGrid.width / grids[0].width
     let worldGridHeight = combinedGrid.height / grids[0].height
     let worldGrid = gg.createGrid( worldGridWidth, worldGridHeight )
     grids.forEach((grid, index) => worldGrid = gg.insert(worldGrid, grid, index))
+    worldGrid = gg.populateCells(worldGrid)
+
+    let worldGridCells = []
+
+    rowStartCells.forEach( (rowStartCell, rowIndex) => {
+      //get the corresponding cell/enty from the grid...
+      //create arrays for each grid ...
+
+      let currentGrid = rowIndex * grids[0].width //WIP calc to determine which grid to pull cells from
+
+      let rowCells = []
+      //loop over each grid in worldgrid row and get all cells
+      let worldGridRowCells = gg.rowCells(worldGrid, math.mod(rowIndex, worldGrid.height))
+      let worldGridsInRow = _.map(worldGridRowCells, cell => worldGrid.cells[cell].enties[0])
+      worldGridsInRow.forEach( grid => {
+        let rowCellsInGrid = gg.rowCells(grid, rowIndex)
+        rowCellsInGrid.forEach( cellNum => {
+          //put the cell in rowCells as is; then after this operation...
+          let newCell = cloneDeep(grid.cells[cellNum])
+          rowCells.push( newCell )
+        })
+      })
+      worldGridCells.push(...rowCells)
+    })
+
+    debugger
+    //change the value of each enty in grid to match their host cell; ie- by loping over each cell.
+    worldGridCells.forEach( cellObj => {
+      debugger
+    })
+
+    return
 
     grids.forEach((grid, index) => {
       let widthOffset = gg.column( worldGrid, index) * grid.width
@@ -1145,7 +1169,8 @@ gg.combine = (grids, width, height) => {
           cell.enties.forEach( enty => {
             let updatedEnty = _.clone(enty)
             let row = currentRow + heightOffset
-            let column = cellIndex + widthOffset
+            let column = (cellIndex - (row * width))
+            if(_.isNaN(column)) column = 0
             updatedEnty.cell = gg.rcToIndex(combinedGrid, row, column )
             //^ assign the correct cell in the new combined grid
             combinedGrid = gg.insert(combinedGrid, updatedEnty)
