@@ -1130,25 +1130,24 @@ gg.combine = (grids, width, height) => {
     // [ 32 x x ... and so forth ]
     let rowStartCells = gg.columnCells(combinedGrid, 0)
     let targetRow = 0
+    let gridRowsComplete = 0
     //loop over each row and build the cells one row at a time...
     rowStartCells.forEach( (rowStartCell, rowNumIndex) => {
+      if(rowNumIndex === grids[0].height) {
+        targetRow = 0
+        gridRowsComplete++
+      }
+      //^ reset targetRow back to zero after we loop through one of the grids vertically
 
-      //TODO; instead of trying to compute the math for each cell placement
-      //just do chunks based on number of grids
-      //and loop over each cunk
-
-      if(rowNumIndex === grids[0].height) targetRow = 0
-      //^ reset rowNum back to zero after we loop through one of the grids vertically
-
+      //build each row based on chunks by number of grids;
+      //use the chunked array's index to determine what target grid we are pulling from...
       let rowCells = []
       let rowCellsByGrid = _.chunk( _.range(combinedGrid.width), grids[0].width )
       rowCellsByGrid.forEach((chunkOfCells, gridIndex) => {
         chunkOfCells = _.map( chunkOfCells, (cell, cellIndexInRow) => {
-          let cellIndexInGrid = gg.rcToIndex(grids[gridIndex], targetRow, cellIndexInRow)
-          if( !grids[gridIndex].cells[cellIndexInGrid] ) {
-            debugger
-          }
-          return { enties : grids[gridIndex].cells[cellIndexInGrid].enties }
+          let targetGrid = gg.examine(worldGrid, [gridRowsComplete, gridIndex])
+          let cellIndexInGrid = gg.rcToIndex(targetGrid, targetRow, cellIndexInRow)
+          return { enties : targetGrid.cells[cellIndexInGrid].enties }
         })
         rowCells.push(...chunkOfCells)
       })
