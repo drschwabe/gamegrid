@@ -1191,6 +1191,23 @@ gg.combine = (grids, width, height) => {
   return result
 }
 
+gg.populateEnties = grid => {
+  if(!grid.cells) return console.warn('no cells to populate enties with')
+  if(!grid.enties) grid.enties = []
+  grid.cells.forEach( (cell, index) => {
+    if(cell.enties && cell.enties.length) {
+      cell.enties.forEach( enty => {
+        let entyClone = _.clone(enty)
+        entyClone.cell = index
+        //^ ensure all enties have a matching cell # corresponding to index in this cells array
+        //gg.insert(grid, enty)
+        grid.enties.push( entyClone )
+      })
+    }
+  })
+  return grid
+}
+
 gg.render = function(...args) {
   //(grid, autoRender)
   let grid
