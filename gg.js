@@ -1114,8 +1114,6 @@ gg.combine = (grids, width, height) => {
     //^ if no width or height we just assume square grid
     let combinedGrid = gg.createGrid( width, height )
 
-    let rowStartCells = gg.columnCells(combinedGrid, 0)
-
     //create a temproary 'world' grid; this helps us easily calcualte heightOffset
     let worldGridWidth = combinedGrid.width / grids[0].width
     let worldGridHeight = combinedGrid.height / grids[0].height
@@ -1123,61 +1121,43 @@ gg.combine = (grids, width, height) => {
     grids.forEach((grid, index) => worldGrid = gg.insert(worldGrid, grid, index))
     worldGrid = gg.populateCells(worldGrid)
 
-    let worldGridCells = []
+    //master list of all cells:
+    let combinedGridCells = []
 
-    rowStartCells.forEach( (rowStartCell, rowIndex) => {
-      //get the corresponding cell/enty from the grid...
-      //create arrays for each grid ...
+    //get each row start cell; ie- in a 16x11 grid: [0, 16, 32...] or alt example below:
+    // [ 0 < only get the first cell from each row ...  ]
+    // [ 16 x x ...  ]
+    // [ 32 x x ... and so forth ]
+    let rowStartCells = gg.columnCells(combinedGrid, 0)
+    let targetRow = 0
+    //loop over each row and build the cells one row at a time...
+    rowStartCells.forEach( (rowStartCell, rowNumIndex) => {
 
-      let currentGrid = rowIndex * grids[0].width //WIP calc to determine which grid to pull cells from
+      //TODO; instead of trying to compute the math for each cell placement
+      //just do chunks based on number of grids
+      //and loop over each cunk
+
+      if(rowNumIndex === grids[0].height) targetRow = 0
+      //^ reset rowNum back to zero after we loop through one of the grids vertically
 
       let rowCells = []
-      //loop over each grid in worldgrid row and get all cells
-      let worldGridRowCells = gg.rowCells(worldGrid, math.mod(rowIndex, worldGrid.height))
-      let worldGridsInRow = _.map(worldGridRowCells, cell => worldGrid.cells[cell].enties[0])
-      worldGridsInRow.forEach( grid => {
-        let rowCellsInGrid = gg.rowCells(grid, rowIndex)
-        rowCellsInGrid.forEach( cellNum => {
-          //put the cell in rowCells as is; then after this operation...
-          let newCell = cloneDeep(grid.cells[cellNum])
-          rowCells.push( newCell )
+      let rowCellsByGrid = _.chunk( _.range(combinedGrid.width), grids[0].width )
+      rowCellsByGrid.forEach((chunkOfCells, gridIndex) => {
+        chunkOfCells = _.map( chunkOfCells, (cell, cellIndexInRow) => {
+          let cellIndexInGrid = gg.rcToIndex(grids[gridIndex], targetRow, cellIndexInRow)
+          if( !grids[gridIndex].cells[cellIndexInGrid] ) {
+            debugger
+          }
+          return { enties : grids[gridIndex].cells[cellIndexInGrid].enties }
         })
+        rowCells.push(...chunkOfCells)
       })
-      worldGridCells.push(...rowCells)
+      combinedGridCells.push(...rowCells)
+      targetRow++ //< increment target row, then proceed to next row:
     })
-
-    debugger
-    //change the value of each enty in grid to match their host cell; ie- by loping over each cell.
-    worldGridCells.forEach( cellObj => {
-      debugger
-    })
-
-    return
-
-    grids.forEach((grid, index) => {
-      let widthOffset = gg.column( worldGrid, index) * grid.width
-      //let heightOffset = gg.row(worldGrid, index) * (grid.height -1) / index )
-      let heightOffset = gg.row(worldGrid, index) * (grid.height -1 )
-      // if(_.isNaN(heightOffset)) heightOffset = 0
-      // heightOffset = parseInt(heightOffset)
-      // let heightOffset = grid.height / index
-      if(!grid.cells) grid = gg.populateCells(grid)
-      //loop over each cell in each grid...
-      grid.cells.forEach( (cell, cellIndex) => {
-        let currentRow = gg.row(grid, cellIndex)
-        if(cell.enties && cell.enties.length) {//loop over each enty in the cell:
-          cell.enties.forEach( enty => {
-            let updatedEnty = _.clone(enty)
-            let row = currentRow + heightOffset
-            let column = (cellIndex - (row * width))
-            if(_.isNaN(column)) column = 0
-            updatedEnty.cell = gg.rcToIndex(combinedGrid, row, column )
-            //^ assign the correct cell in the new combined grid
-            combinedGrid = gg.insert(combinedGrid, updatedEnty)
-          })
-        }
-      })
-    })
+    combinedGrid.cells = combinedGridCells
+    combinedGrid = gg.populateEnties(combinedGrid)
+    combinedGrid = gg.populateCells(combinedGrid)
     return combinedGrid
   }
 
