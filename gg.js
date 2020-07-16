@@ -1133,7 +1133,7 @@ gg.combine = (grids, width, height) => {
     let gridRowsComplete = 0
     //loop over each row and build the cells one row at a time...
     rowStartCells.forEach( (rowStartCell, rowNumIndex) => {
-      if(rowNumIndex === grids[0].height) {
+      if(targetRow === grids[0].height) {
         targetRow = 0
         gridRowsComplete++
       }

@@ -958,7 +958,7 @@ test('Can combine multiple grids', t => {
 
   t.equals(  miniGrids2.length, 8, 'grid divided')
 
-  let wideGridCombined = gg.combine(miniGrids, 8, 4)
+  let wideGridCombined = gg.combine(miniGrids2, 8, 4)
 
   t.equals( wideGridCombined.width, 8 )
   t.equals( wideGridCombined.height, 4 )
@@ -975,13 +975,12 @@ test('Can combine multiple grids', t => {
 
 
   let entyA = _.findWhere( newGridsCombined.enties, { label : 'A' })
-  t.equals(entyA.cell, 0)
+  t.equals(entyA.cell, 0, 'entyA is at cell 0')
   let entyB = _.findWhere( newGridsCombined.enties, { label : 'B' })
-  t.equals(entyB.cell, 16)
+  t.equals(entyB.cell, 16, 'entyB is at cell 16')
   let entyC = _.findWhere( newGridsCombined.enties, { label : 'C' })
-  t.equals(entyC.cell, 320)
+  t.equals(entyC.cell, 352, 'entyC is at cell 352')
   let entyD = _.findWhere( newGridsCombined.enties, { label : 'D' })
-  t.equals(entyD.cell, 336)
-  debugger
+  t.equals(entyD.cell, 368, 'entyD is at cell 368')
 
 })
