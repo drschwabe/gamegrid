@@ -1079,6 +1079,12 @@ const cloneDeep = require('clone-deep')
 
 gg.combine = (grids, width, height) => {
 
+  //if the supplied grid is a world grid (by examining below) then just
+  //do user a favor and grab the grid.enties cause that is what we need...
+  if(grids.enties && grids.enties[0].type === 'grid') {
+    grids = _.chain(grids.enties).where({ type : 'grid' }).sortBy('cell').value()
+  }
+
   const combineSquare = (grids, width, height) => {
     if(!width) width = grids[0].width * (grids.length / 2)
     if(!height) height = grids[0].height * (grids.length / 2)
