@@ -345,7 +345,7 @@ test('Returns null if there is no next available column', (t) => {
 })
 
 test('Determines the number of open cells east', (t) => {
-  t.plan(1)
+  t.plan(2)
   let grid = gg.createGrid(4, 4)
 
   grid = gg.insertEnty(grid, 0)
@@ -358,6 +358,44 @@ test('Determines the number of open cells east', (t) => {
   //(there should be two open cells)
   var openCellsEast = gg.openCellsEast(grid, 0)
   t.equals(openCellsEast, 2)
+
+  let grid2 = gg.createGrid(4,4)
+  grid2 = gg.insertEnty(grid2, 2 )
+  grid2 = gg.populateCells(grid2)
+  grid2 = gg.rcCells(grid2)
+
+  //      v<--- start here
+  // [ 0  1  2  3  ]  or  [ o o x o ]
+  //(there should be only one open cell east of cell 1)
+  var openCellsEast2 = gg.openCellsEast(grid2, 1)
+  t.equals(openCellsEast2, 1)
+})
+
+test('Determines the number of open cells west', t => {
+  t.plan(2)
+  let grid = gg.createGrid(4, 4)
+
+  grid = gg.insertEnty(grid, 0)
+  grid = gg.insertEnty(grid, 1)
+  grid = gg.populateCells(grid)
+  grid = gg.rcCells(grid)
+
+  //This is what our first row looks like:
+  // [ 0  1  2  3  ]  or  [ x x o o ]
+  //(there should be no open cells west)
+  var openCellsWest = gg.openCellsWest(grid, 0)
+  t.equals(openCellsWest, 0)
+
+  let grid2 = gg.createGrid(4, 4)
+  grid2 = gg.insertEnty(grid2, 2)
+  grid2 = gg.populateCells(grid2)
+  grid2 = gg.rcCells(grid2)
+
+  //This is what our first row looks like:
+  // [ 0  1  2  3  ]  or  [ o o x o ]
+  //(there should be 2 open cells west)
+  var openCellsWest2 = gg.openCellsWest(grid2, 2)
+  t.equals(openCellsWest2, 2)
 })
 
 test('Can move an enty to another cell in grid based on direction', (t) => {

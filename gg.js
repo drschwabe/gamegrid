@@ -777,10 +777,28 @@ gg.openCellsEast = (grid, startCell) => {
   //Now iterate over it:
   var openCells = 0
   targetRow.forEach((cell, index) => {
+    if(index <= startCell) return
     if(!cell.enties.length) openCells++
   })
   return openCells
 }
+
+gg.openCellsWest = (grid, startCell) => {
+  if(_.isUndefined(startCell)) startCell = 0
+  grid = gg.populateCells(grid)
+  grid = gg.rcCells(grid)
+
+  var rowNum = gg.indexToRc(grid, startCell)[0],
+      targetRow = _.filter(grid.cells, (cell) => cell.rc[0] === rowNum )
+
+  var openCells = 0
+  targetRow.forEach((cell, index) => {
+    if(index >= startCell) return
+    if(!cell.enties.length) openCells++
+  })
+  return openCells
+}
+
 
 gg.openCellsDown = (grid, startCell) => {
   var openCellsDown = []
@@ -1037,6 +1055,9 @@ gg.divide = (originalGrid, width, height) => {
   return result
 }
 
+gg.divideAndCombine = (originalGrid, targetWidth, targetHeight) => {
+  //take the originalGrid, divide it into ....
+}
 
 gg.zoomOut = (...args)  => {
   let grid = _.isObject(args[0]) && args[0].type == 'grid' ? args[0] : this
@@ -1086,6 +1107,9 @@ gg.zoomOut = (...args)  => {
 const cloneDeep = require('clone-deep')
 
 gg.combine = (grids, width, height) => {
+  //^ ie- 4 grids (of 16x11) with target size of 32x22 will result in a single grid 32x22
+  //TODO: accommodate for a single integer that can act as multipler ie- gg.combine(grids, 4) or maybe no need to provide width / height at all
+  //can be a little confusing; you have to remember the original grid size is parsed from the grids themselves; and thus not a parameter
 
   //if the supplied grid is a world grid (by examining below) then just
   //do user a favor and grab the grid.enties cause that is what we need...
@@ -1104,6 +1128,10 @@ gg.combine = (grids, width, height) => {
     let combinedCells = []
 
     grids.forEach( (grid, index) => {
+      let hero = _.findWhere(grid.enties, { label : 'hero' })
+      if(hero) {
+        debugger
+      }
       //if(!grid.cells) grid.cells = _.range(grid.width * grid.height)
       if(!grid.cells) grid = gg.populateCells(grid)
       combinedCells.push( ...grid.cells )
@@ -1114,6 +1142,9 @@ gg.combine = (grids, width, height) => {
         cell.enties.forEach( enty => {
           let convertedEnty = _.clone(enty)
           convertedEnty.cell = index
+          if(convertedEnty.label === 'hero') {
+            debugger
+          }
           combinedGrid = gg.insert(combinedGrid, convertedEnty)
         })
       }
@@ -1160,7 +1191,18 @@ gg.combine = (grids, width, height) => {
       rowCellsByGrid.forEach((chunkOfCells, gridIndex) => {
         chunkOfCells = _.map( chunkOfCells, (cell, cellIndexInRow) => {
           let targetGrid = gg.examine(worldGrid, [gridRowsComplete, gridIndex])
+          if(!targetGrid) {
+            console.warn('no targetGrid')
+          }
           let cellIndexInGrid = gg.rcToIndex(targetGrid, targetRow, cellIndexInRow)
+          if(_.isUndefined(cellIndexInGrid)) {
+            console.warn('cellIndexInGrid undefined')
+          }
+          let hero = _.findWhere(targetGrid.cells[cellIndexInGrid].enties , { label : 'hero' })
+          if(hero) {
+            debugger
+          }
+
           return { enties : targetGrid.cells[cellIndexInGrid].enties }
         })
         rowCells.push(...chunkOfCells)
