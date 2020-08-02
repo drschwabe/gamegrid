@@ -26,7 +26,14 @@ gg.move = function(...args) {
   }
 
   enties = _.find( args, arg => _.isArray(arg))
-  if(enties) return enties.forEach( cellNum => gg.move(grid, cellNum))
+  if(enties) {
+    enties.forEach( cellNum => {
+      grid = gg.move(grid, cellNum)
+    })
+    //return grid (which contains enty):
+    if(grid._render) gg.render(grid)
+    return this.type == 'grid' ? undefined : grid
+  }
 
   enty = _.find( args, (arg) => _.isObject( arg ) && arg.type != 'grid' && !_.isArray(arg)  )
 
