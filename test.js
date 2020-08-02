@@ -751,6 +751,43 @@ test(`gg.makeRegion can return a square region of grid`, (t) => {
 
 })
 
+test(`gg.move can move a region`, t => {
+  t.plan(5)
+
+  let gg = requireUncached('./gg.js')
+  let grid = new gg.grid(6,6)
+
+  //create a 2x2 region from the top left corner:
+  let region = gg.makeRegion(grid, 0, 2, 2)
+  region.forEach((cellNum) => grid.insert({ cell: cellNum, label : '#' }))
+  grid.render()
+
+  // [  #  #  .  .  .  .  ]
+  // [  #  #  .  .  .  .  ]
+  // [  .  .  .  .  .  .  ]
+  // [  .  .  .  .  .  .  ]
+  // [  .  .  .  .  .  .  ]
+  // [  .  .  .  .  .  .  ]
+
+  console.log('----------------------------')
+
+  grid.move( region )
+  grid.render()
+
+  // [  .  #  #  .  .  .  ]
+  // [  .  #  #  .  .  .  ]
+  // [  .  .  .  .  .  .  ]
+  // [  .  .  .  .  .  .  ]
+  // [  .  .  .  .  .  .  ]
+  // [  .  .  .  .  .  .  ]
+
+  t.notOk(grid.cells[0].enties.length, 'region was moved')
+  t.equals(grid.cells[1].enties[0].label, '#', 'region topleft existing in expected cell after move')
+  t.equals(grid.cells[2].enties[0].label, '#', 'region topright existing in expected cell after move')
+  t.equals(grid.cells[7].enties[0].label, '#', 'region bottomleft existing in expected cell after move')
+  t.equals(grid.cells[8].enties[0].label, '#', 'region bottomright existing in expected cell after move')
+})
+
 test(`gg.divideGrid can return an array of smaller grids based off a larger grid`, t => {
   t.plan(9)
   let superGrid = gg.createGrid(4,4)

@@ -17,7 +17,7 @@ gg.getDirection = function(keyCode) {
 
 gg.move = function(...args) {
   //grid, entyOrCellOrIdOrLabel, direction
-  let grid, enty, cell, idOrLabel, direction
+  let grid, enty, enties, cell, idOrLabel, direction
 
   if( _.isObject(args[0]) && args[0].type == 'grid') {
     grid = args[0]
@@ -25,7 +25,10 @@ gg.move = function(...args) {
     grid = this
   }
 
-  enty = _.find( args, (arg) => _.isObject( arg ) && arg.type != 'grid' )
+  enties = _.find( args, arg => _.isArray(arg))
+  if(enties) return enties.forEach( cellNum => gg.move(grid, cellNum))
+
+  enty = _.find( args, (arg) => _.isObject( arg ) && arg.type != 'grid' && !_.isArray(arg)  )
 
   cell = _.find( args, (arg) => _.isNumber( arg ))
   if(_.isUndefined(cell) && enty) cell = enty.cell
@@ -44,7 +47,7 @@ gg.move = function(...args) {
       if(!enty) {
         enty = _.findWhere(grid.enties, { name : idOrLabel })
       }
-    } else {
+    } else if(!enties) {
       throw 'Cannot find enty'
     }
   }
@@ -268,7 +271,7 @@ gg.insert = function(...args) {
   } else {
     grid = this
   }
-  enty = _.find( args, (arg) => _.isObject(arg) && arg != grid)
+  enty = _.find( args, (arg) =>  _.isObject(arg) && arg != grid && !_.isArray(arg))
   let cellArg = false
   cell = _.find( args, (arg) => _.isNumber(arg) || arg === 0 || _.isArray(arg))
   if(_.isNumber(cell) || _.isArray(cell)) cellArg = true
@@ -520,6 +523,11 @@ gg.isEdge = (grid, cell) => {
   if(cell > (grid.width * grid.height) - (grid.width +1)) return true //< South edge
   if(cell % grid.width == 0) return true //< West edge
   return false //< not an edge!
+}
+
+gg.isNorthEdge = (grid, cell) => {
+  if(cell < grid.width ) return true
+  return false
 }
 
 gg.isEastEdge = (grid, cell) => {
@@ -927,8 +935,8 @@ gg.enter = function(...args) {
   return this.type == 'grid' ? undefined : grid
 }
 
-
 gg.divide = (originalGrid, width, height) => {
+  //^ should be resulting targetWidth, targetHeight (of each grid output a result of dividing originalGrid
   const divideSquare = (originalGrid, width, height) => {
     let originalGridFlat = _.range(originalGrid.width * originalGrid.height)
     let miniGrids = []
