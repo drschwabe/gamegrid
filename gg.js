@@ -392,18 +392,29 @@ gg.populateCells = function(...args) {
   //(grid, fill)
   let grid = _.isObject(args[0]) && args[0].type == 'grid' ? args[0] : this
   let fill = _.find(args, (arg) => _.isBoolean(arg))
+  let options = _.find(args, (arg) => _.isObject(arg) && args[0].type != 'grid' )
+  if(options && options.fill) fill = options.fill 
   if(_.isUndefined(fill)) fill = true //< Fill by default.
+  let extend = false 
+  if(options && options.extend) extend = true 
 
   //store properties of any existing cells ..
-  let oldCells
-  if( grid.cells ) oldCells = _.clone(grid.cells)
+  let oldCells //(if extend is true)
+  if(extend && grid.cells ) oldCells = _.clone(grid.cells)
 
   grid.cells = []
-  if(fill) { //Make a cell for every cell of the grid:
+  if(fill && !extend) { //Make a cell for every cell of the grid:
+    grid.cells = Array.apply(null, Array(grid.width * grid.height)).map(function () {})
+    grid.enties.forEach( enty => {
+      if(_.isObject( grid.cells[enty.cell]) ) return grid.cells[enty.cell].enties.push(enty)
+      grid.cells[enty.cell] = { enties : [enty] }
+    })
+    grid.cells = _.map(grid.cells, cell => _.isUndefined(cell) ? { enties : [] } : cell  ) 
+  } else if(fill) {
     grid.cells = _.map(_.range(grid.width * grid.height), (cell, index) => {
       cell = {}
       //apply any properties of the old cells if any:
-      if( oldCells && oldCells[index] ) cell = _.extend( cell, oldCells[index]  )
+      if( extend && oldCells && oldCells[index] ) cell = _.extend( cell, oldCells[index]  )
       //create new enties:
       cell.enties = _.where(grid.enties, { cell: index })
       if(!cell.enties) delete cell.enties
