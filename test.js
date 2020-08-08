@@ -833,9 +833,9 @@ test(`gg.divideGrid can return an array of smaller grids based off a larger grid
   // [  0,  1,  2,  3,  ]
   // [  4,  5,  6,  7,  ]
   // [  8,  9,  10, 11, ]
-  // [  12, X, 14, 15  ]
+  // [  12, X,  14, 15  ]
 
-  superGrid = gg.insert(superGrid, { name : "purple monster" , cell : 13 })
+  superGrid = gg.insert(superGrid, { name : "monster" , cell : 13, label : "M" })
 
   let miniGrids = gg.divide(superGrid, 2,2)
 
@@ -848,12 +848,15 @@ test(`gg.divideGrid can return an array of smaller grids based off a larger grid
 
   //that they contain enties from the original grid corresponding to original cell:
 
-  // [  0,  1,  2,  3,  ]
-  // [  4,  5,  6,  7,  ]
-  // [  8,  9,  10, 11, ]
-  // [  12, monster, 14, 15  ]  //< 4th mini grid, cell 1
+  // [  0,  1, ]  [  0,  1, ]
+  // [  2,  3  ]  [  2,  3 ]
+  //
+  // [  0,  1, ]  [ 0,  1, ]
+  // [  2, M ]   [  2,  3  ]
+  //      ^3rd [2] mini grid, cell 3
 
-  t.equals( miniGrids[3].cells[1].enties[0].name, "purple monster" , 'grid ouptut from sub divided grid contains enty that was in original grid' )
+  let miniGridWithMonster =  gg.populateCells(  miniGrids[2] )
+  t.equals(miniGridWithMonster.cells[3].enties[0].name, "monster" , 'grid ouptut from sub divided grid contains enty that was in original grid' )
 
   //test on a wide grid...
   let wideGrid = gg.createGrid(8,4)
@@ -901,8 +904,49 @@ test(`gg.divideGrid can return an array of smaller grids based off a larger grid
   //TODO: test that the treasure is where it's supposed to be !
 
   console.log('complete')
+})
 
+test('gg.divide again', (t) => {
+  t.plan(4)
+  //another test...
 
+  let sourceGrid = gg.create(8,8)
+  sourceGrid = gg.insert( sourceGrid, 'g', [2,2])
+  sourceGrid = gg.insert( sourceGrid, 'b', [4,5])
+  //"g" for 'grave' and "b" for 'bush'
+
+  // [  .  .  .  .  .  .  .  .  ]
+  // [  .  .  .  .  .  .  .  .  ]
+  // [  .  .  g  .  .  .  .  .  ]
+  // [  .  .  .  .  .  .  .  .  ]
+  // [  .  .  .  .  .  b  .  .  ]
+  // [  .  .  .  .  .  .  .  .  ]
+  // [  .  .  .  .  .  .  .  .  ]
+  // [  .  .  .  .  .  .  .  .  ]
+
+  let dividedGrids = gg.divide(sourceGrid)
+
+  //should look like...
+
+  //      grid 0             grid 1
+  // [  .  .  .  .  ]   [  .  .  .  .  ]
+  // [  .  .  .  .  ]   [  .  .  .  .  ]
+  // [  .  .  g  .  ]   [  .  .  .  .  ]
+  // [  .  .  .  .  ]   [  .  .  .  .  ]
+
+  //      grid 2             grid 3
+  // [  .  .  .  .  ]   [  .  b  .  .  ]
+  // [  .  .  .  .  ]   [  .  .  .  .  ]
+  // [  .  .  .  .  ]   [  .  .  .  .  ]
+  // [  .  .  .  .  ]   [  .  .  .  .  ]
+
+  let newGrave = gg.search(dividedGrids[0], 'g')
+  t.ok(newGrave, 'grave exists in the expected grid (apart of the divide results)')
+  t.equals( newGrave.cell, 10, 'grave was moved to correct cell' )
+
+  let newBush = gg.search(dividedGrids[3], 'b')
+  t.ok(newBush, 'bush exists in the expected grid (apart of the divide results)')
+  t.equals( newBush.cell, 1, 'bush was moved to correct cell' )
 })
 
 test('gg.zoomOut', t => {

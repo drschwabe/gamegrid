@@ -982,53 +982,12 @@ gg.enter = function(...args) {
 
 gg.divide = (originalGrid, width, height) => {
   //^ should be resulting targetWidth, targetHeight (of each grid output a result of dividing originalGrid
-  const divideSquare = (originalGrid, width, height) => {
-    let originalGridFlat = _.range(originalGrid.width * originalGrid.height)
-    let miniGrids = []
-
-    let rest
-    const divideGrid = range => {
-      if (!range) range = originalGridFlat
-      let miniGrid
-      if (originalGrid.width === originalGrid.height && width === height) {
-        miniGrid = math.resize(range, [width * height])
-      } else if (originalGrid.width !== originalGrid.height && width === height) {
-        miniGrid = math.resize(range, [width * height])
-      } else {
-        return console.warn('only works for even (square) proportions')
-      }
-      miniGrids.push(miniGrid)
-      //rest = _.rest( range,  _.last(   _.last(miniGrids)  ) + 1)
-      let nextMiniGridCell = _.last(miniGrid)
-      rest = _.rest(range, _.indexOf(range, nextMiniGridCell + 1))
-
-      while (rest.length != 1) {
-        divideGrid(rest)
-      }
-    }
-    divideGrid()
-
-    //loop over each miniGrid to clone a copy of any enties in the given cell of original grid...
-    miniGrids = _.map(miniGrids, miniGrid => {
-      let grid = gg.create(width, height)
-      if (originalGridFlat.enties) return
-      miniGrid.forEach((cellNum, index) => {
-        let correspondingEnty = gg.examine(originalGrid, cellNum)
-        if (correspondingEnty) {
-          let newEnty = _.clone(correspondingEnty)
-          newEnty.cell = index
-          grid = gg.insert(grid, newEnty)
-          grid = gg.populateCells(grid)
-        }
-      })
-      return grid
-    })
-    return miniGrids
-
-
+  if(!width && !height) {
+    //just divide the grids evenly...
+    width = originalGrid.width / 2
+    height = originalGrid.height / 2
   }
-
-  const divideWide = (originalGrid, width, height) => {
+  const divide = (originalGrid, width, height) => {
     let miniGrids = []
     //create an array of start cells in original grid that we will need to establish a grid corner point from...
     let columnCells = gg.columnCells(originalGrid, 0)
@@ -1073,13 +1032,7 @@ gg.divide = (originalGrid, width, height) => {
     return miniGrids
   }
 
-  let result
-  if(originalGrid.width === originalGrid.height && width === height) {
-    result = divideSquare(originalGrid, width, height)
-  } else {
-    result = divideWide(originalGrid, width, height)
-  }
-  return result
+  return divide(originalGrid, width, height)
 }
 
 gg.divideAndCombine = (originalGrid, targetWidth, targetHeight) => {
@@ -1144,43 +1097,7 @@ gg.combine = (grids, width, height) => {
     grids = _.chain(grids.enties).where({ type : 'grid' }).sortBy('cell').value()
   }
 
-  const combineSquare = (grids, width, height) => {
-    if(!width) width = grids[0].width * (grids.length / 2)
-    if(!height) height = grids[0].height * (grids.length / 2)
-    //^ if no width or height we just assume square grid...actually...
-    //TODO: test this;
-
-    let combinedGrid = gg.createGrid( width, height )
-
-    let combinedCells = []
-
-    grids.forEach( (grid, index) => {
-      let hero = _.findWhere(grid.enties, { label : 'hero' })
-      if(hero) {
-        debugger
-      }
-      //if(!grid.cells) grid.cells = _.range(grid.width * grid.height)
-      if(!grid.cells) grid = gg.populateCells(grid)
-      combinedCells.push( ...grid.cells )
-    })
-
-    combinedCells.forEach( (cell, index)=> {
-      if(cell.enties.length) {
-        cell.enties.forEach( enty => {
-          let convertedEnty = _.clone(enty)
-          convertedEnty.cell = index
-          if(convertedEnty.label === 'hero') {
-            debugger
-          }
-          combinedGrid = gg.insert(combinedGrid, convertedEnty)
-        })
-      }
-    })
-
-    return combinedGrid
-  }
-
-  const combineWide = (grids, width, height) => {
+  const combine = (grids, width, height) => {
     if(!width) width = grids[0].width * (grids.length / 2)
     if(!height) height = grids[0].height * (grids.length / 2)
     //^ if no width or height we just assume square grid
@@ -1242,15 +1159,7 @@ gg.combine = (grids, width, height) => {
     combinedGrid = gg.populateCells(combinedGrid)
     return combinedGrid
   }
-
-  //determine if wide or square...
-  let result
-  if(grids[0].width === grids[0].height && width === height) {
-    result = combineSquare(grids, width, height)
-  } else {
-    result = combineWide(grids, width, height)
-  }
-  return result
+  return combine(grids, width, height)
 }
 
 gg.populateEnties = grid => {
