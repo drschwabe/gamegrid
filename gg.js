@@ -1270,6 +1270,8 @@ gg.populateEnties = grid => {
   return grid
 }
 
+gg.search = (grid, label) => _.findWhere(grid.enties, { label: label })
+
 gg.render = function(...args) {
   //(grid, autoRender)
   let grid
