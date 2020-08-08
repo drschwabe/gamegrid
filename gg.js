@@ -449,6 +449,15 @@ gg.populateRowCells = (grid, row) => {
   return grid
 }
 
+//popuilate just one cell: 
+gg.populateCell = (grid, cellNum) => {
+  if(!grid.cells[cellNum]) return console.warn('the supplied cell ' + cellNum + ' does not exist')
+  grid.cells[cellNum] = {
+    enties : _.where(grid.enties, { cell : cellNum })
+  }
+  return grid 
+}
+
 var ArrayGrid = require('array-grid')
 
 gg.rcToIndex = (grid, param1, param2) => {
