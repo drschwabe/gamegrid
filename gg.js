@@ -283,7 +283,7 @@ gg.insert = function(...args) {
   cell = _.find( args, (arg) => _.isNumber(arg) || arg === 0 || _.isArray(arg))
   if(_.isNumber(cell) || _.isArray(cell)) cellArg = true
   label = _.find( args, (arg) => _.isString(arg) )
-  extras = _.find( args, (arg) => _.isObject(arg) && arg.type != 'grid' && arg != enty)
+  extras = _.find( args, (arg) => _.isObject(arg) && arg.type != 'grid' && arg != enty && !_.isArray(arg))
 
   if(!cell && !_.isNumber(cell)) cell = 0
   if(enty && !enty.cell) enty.cell = cell
