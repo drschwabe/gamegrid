@@ -1152,11 +1152,6 @@ gg.combine = (grids, width, height) => {
           if(_.isUndefined(cellIndexInGrid)) {
             console.warn('cellIndexInGrid undefined')
           }
-          let hero = _.findWhere(targetGrid.cells[cellIndexInGrid].enties , { label : 'hero' })
-          if(hero) {
-            debugger
-          }
-
           return { enties : targetGrid.cells[cellIndexInGrid].enties }
         })
         rowCells.push(...chunkOfCells)
