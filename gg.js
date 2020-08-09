@@ -704,8 +704,8 @@ gg.rowCells = (grid, cellOrRc) => {
   if(_.isArray(cellOrRc)) targetRow = cellOrRc[0]
   else targetRow = gg.indexToRc(grid, cellOrRc)[0]
   var rowCells = []
-  _.range(grid.width).forEach((column) => {
-    rowCells.push( gg.rcToIndex(grid, [targetRow, column ]) )
+  Array.from(Array(grid.width)).forEach((blank, index) => {
+    rowCells.push( gg.rcToIndex(grid, [targetRow, index ]) )
   })
   return rowCells
 }
@@ -992,7 +992,7 @@ gg.divide = (originalGrid, width, height) => {
     let newEnty = _.clone(originalEnty)
     newEnty.cell = index
     newEnty.originalCell = cell
-    gg.insertEnty(newMiniGrid, newEnty)
+    newMiniGrid.enties.push(newEnty)
   }
 
   const divide = (originalGrid, width, height) => {
@@ -1034,7 +1034,6 @@ gg.divide = (originalGrid, width, height) => {
             //newMiniGrid = gg.populateCells(newMiniGrid)
           }
         })
-        newMiniGrid.divisionOf = originalGrid
         miniGrids.push(newMiniGrid)
         cornerCell = cornerCell + width
       }
