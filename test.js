@@ -867,6 +867,7 @@ test(`gg.divideGrid can return an array of smaller grids based off a larger grid
   // 3 [  0,  1,  2,  3,  4, 5, 6, 7  ]
 
   wideGrid = gg.insert( wideGrid, { name : "treasure" , cell : [2, 5] })
+  wideGrid = gg.populateCells(wideGrid)
 
   //let miniGrids2 = gg.divide(wideGrid, 2,2)
   let miniGrids2 = gg.divide(wideGrid, 2, 2)
@@ -913,6 +914,7 @@ test('gg.divide again', (t) => {
   let sourceGrid = gg.create(8,8)
   sourceGrid = gg.insert( sourceGrid, 'g', [2,2])
   sourceGrid = gg.insert( sourceGrid, 'b', [4,5])
+  sourceGrid = gg.populateCells(sourceGrid)
   //"g" for 'grave' and "b" for 'bush'
 
   // [  .  .  .  .  .  .  .  .  ]

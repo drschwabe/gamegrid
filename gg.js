@@ -1022,16 +1022,11 @@ gg.divide = (originalGrid, width, height) => {
         let newMiniGrid = gg.createGrid(width, height)
         newGrid = _.flatten(newGrid)
         newGrid.forEach((cell, index) => {
-          let entyInOriginal = gg.examine(originalGrid, cell)
-          if (entyInOriginal) {
-            if(_.isArray(entyInOriginal)) {
-              entyInOriginal.forEach( originalEnty => reInsertEnty(originalEnty, index, cell, newMiniGrid))
-            } else {
-              reInsertEnty(entyInOriginal, index, cell, newMiniGrid)
-            }
-          } else { //insert a blank enty for now anyway for debugging:
-            //gg.insertEnty(newMiniGrid, {originalCell: cell, cell: newMiniGrid.enties.length})
-            //newMiniGrid = gg.populateCells(newMiniGrid)
+          let entiesInOriginal = originalGrid.cells[cell].enties
+          if (entiesInOriginal.length > 1) {
+            entiesInOriginal.forEach( originalEnty => reInsertEnty(originalEnty, index, cell, newMiniGrid))
+          } else if(entiesInOriginal.length > 0) {
+            reInsertEnty(entiesInOriginal[0], index, cell, newMiniGrid)
           }
         })
         miniGrids.push(newMiniGrid)
