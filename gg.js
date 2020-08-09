@@ -987,6 +987,14 @@ gg.divide = (originalGrid, width, height) => {
     width = originalGrid.width / 2
     height = originalGrid.height / 2
   }
+
+  const reInsertEnty = (originalEnty, index, cell, newMiniGrid) => {
+    let newEnty = _.clone(originalEnty)
+    newEnty.cell = index
+    newEnty.originalCell = cell
+    gg.insertEnty(newMiniGrid, newEnty)
+  }
+
   const divide = (originalGrid, width, height) => {
     let miniGrids = []
     //create an array of start cells in original grid that we will need to establish a grid corner point from...
@@ -1016,15 +1024,17 @@ gg.divide = (originalGrid, width, height) => {
         newGrid.forEach((cell, index) => {
           let entyInOriginal = gg.examine(originalGrid, cell)
           if (entyInOriginal) {
-            let newEnty = _.clone(entyInOriginal)
-            newEnty.cell = index
-            newEnty.originalCell = cell
-            gg.insertEnty(newMiniGrid, newEnty)
+            if(_.isArray(entyInOriginal)) {
+              entyInOriginal.forEach( originalEnty => reInsertEnty(originalEnty, index, cell, newMiniGrid))
+            } else {
+              reInsertEnty(entyInOriginal, index, cell, newMiniGrid)
+            }
           } else { //insert a blank enty for now anyway for debugging:
             //gg.insertEnty(newMiniGrid, {originalCell: cell, cell: newMiniGrid.enties.length})
             //newMiniGrid = gg.populateCells(newMiniGrid)
           }
         })
+        newMiniGrid.divisionOf = originalGrid
         miniGrids.push(newMiniGrid)
         cornerCell = cornerCell + width
       }
