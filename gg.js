@@ -1180,6 +1180,34 @@ gg.populateEnties = grid => {
 
 gg.search = (grid, label) => _.findWhere(grid.enties, { label: label })
 
+
+gg.makeWorldGrid = (grids, width, height) => {
+  if(!width) { //assume square if no w / h provided:
+    width = grids.length / 2
+    height = grids.length / 2
+  }
+  let newWorldGrid = gg.createGrid(width, height)
+  grids.forEach( (gridEnty, index) => {
+    gridEnty = gg.populateCells( gridEnty )
+    gridEnty.cell = index
+    gridEnty.world = newWorldGrid
+    newWorldGrid = gg.insertEnty(newWorldGrid, gridEnty)
+  })
+  return gg.populateCells(newWorldGrid)
+}
+
+gg.whichGridInWorld = (entyName,worldGrid) => {
+  let theGrid
+  worldGrid.enties.some( enty => {
+    let hasEnty = _.findWhere( enty.enties, { name: entyName } )
+    if(hasEnty) { //found enty!  In this cell of the world.
+      theGrid = enty
+      return true
+    }
+  })
+  return theGrid
+}
+
 gg.render = function(...args) {
   //(grid, autoRender)
   let grid
