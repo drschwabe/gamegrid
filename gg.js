@@ -196,7 +196,6 @@ gg.create = function(width, height, mapType, name) {
   if(name) id = name
   else id = 'grid_0'
   var grid = {
-    _id : id,
     width: parseInt(width),
     height: parseInt(height),
     enties: [],
