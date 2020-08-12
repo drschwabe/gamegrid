@@ -316,18 +316,19 @@ gg.remove = function(...args) {
     grid = this
   }
 
-  var enty, cell, idOrLabel
+  var enty, cell, idOrLabelOrName
   cell = _.find( args, (arg) => _.isNumber(arg)  )
   //Find the enty based on the cell
   if(_.isNumber(cell)) enty = gg.examine(grid, cell)
   //Accommodate for array result:
   if( _.isNumber(cell) && _.isArray(enty)) enty = enty[0]
 
-  idOrLabel = _.find( args, (arg) =>  _.isString(arg) )
+  idOrLabelOrName = _.find( args, (arg) =>  _.isString(arg) )
 
-  if(idOrLabel) {
-    enty = _.findWhere(grid.enties, { _id : idOrLabel })
-    if(!enty) enty = _.findWhere(grid.enties, { label : idOrLabel })
+  if(idOrLabelOrName) {
+    enty = _.findWhere(grid.enties, { _id : idOrLabelOrName })
+    if(!enty) enty = _.findWhere(grid.enties, { label : idOrLabelOrName })
+    if(!enty) enty = _.findWhere(grid.enties, { name : idOrLabelOrName })
   }
 
   if(!enty && _.isObject(args[0]) && args[0].type == 'grid') {
