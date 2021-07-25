@@ -131,7 +131,7 @@ gg.move = function(...args) {
   }
 
   //Prevent movement (but update facing) if the object we are facing is impassable:
-  enty.facing = this.examine(grid, intendedPosition)
+  enty.facing = gg.examine(grid, intendedPosition)
   if(enty.facing && enty.facing.length) {
     let nonPassableEnties = _.some(enty.facing, enty => enty.passable === false)
     if(nonPassableEnties) return this.type == 'grid' ? undefined : grid
@@ -144,7 +144,7 @@ gg.move = function(...args) {
   enty.cell = intendedPosition
 
   //Then update this enty's facing property again:
-  enty.facing = this.examine( grid, nextCell(grid, enty, direction) )
+  enty.facing = gg.examine( grid, nextCell(grid, enty, direction) )
 
   //Also update the direction enty is pointed:
   enty.direction = direction
