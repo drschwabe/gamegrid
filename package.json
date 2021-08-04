@@ -1,6 +1,6 @@
 {
   "name": "gamegrids",
-  "version": "0.8.8",
+  "version": "0.8.91",
   "description": "a utility toolbelt for making grids for games (or apps)",
   "main": "gg.js",
   "author": "Derrick Schwabe <admin@nerdbusiness.com>",
@@ -22,16 +22,15 @@
   "dependencies": {
     "array-grid": "1.5.0",
     "clone-deep": "^4.0.1",
-    "mathjs": "5.9.0",
+    "mathjs": "^9.4.4",
     "rot-js": "0.6.0",
-    "underscore": "1.9.1"
+    "underscore": "^1.13.1"
   },
   "scripts": {
-    "test": "tape test.js | tap-spec"
+    "test": "tape test.js"
   },
   "devDependencies": {
     "require-uncached": "2.0.0",
-    "tap-spec": "5.0.0",
     "tape": "4.6.3",
     "underscore.string": "3.3.5"
   }
