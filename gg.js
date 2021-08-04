@@ -561,8 +561,9 @@ gg.isEastEdge = (grid, cell) => {
   if(cell % grid.width == grid.width - 1) return true
   return false
 }
-gg.isSouthEdge = (grid, cell) => {
-  if(cell > (grid.width * grid.height) - (grid.width +1)) return true
+gg.isSouthEdge = (grid, cell, rowOffset) => {
+  if(!rowOffset) rowOffset = 0
+  if((cell) > (grid.width * (grid.height + rowOffset)) - (grid.width +1)) return true
   return false
 }
 
