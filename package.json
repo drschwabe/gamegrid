@@ -24,10 +24,11 @@
     "clone-deep": "^4.0.1",
     "mathjs": "^9.4.4",
     "rot-js": "0.6.0",
+    "tap-spek": "0.0.12",
     "underscore": "^1.13.1"
   },
   "scripts": {
-    "test": "tape test.js"
+    "test": "tape test.js | tap-spek"
   },
   "devDependencies": {
     "require-uncached": "2.0.0",
