@@ -259,10 +259,10 @@ gg.isTouching = function (grid, enty, entyOrGroup) {
     return false
   } else if(_.isObject(entyOrGroup)){
     //If we supply an object then we are looking for a more specific match:
-    var matchingenty = _.filter(grid.enties, function(theEnty) {
+    var matchingEnty = _.filter(grid.enties, function(theEnty) {
       return theEnty.cell == enty.cell && theEnty == entyOrGroup
     })
-    if(_.isEmpty(matchingEnty)) return false
+    if(!matchingEnty || _.isEmpty(matchingEnty)) return false
     return matchingEnty[0]
   }
 }
