@@ -1209,6 +1209,21 @@ gg.whichGridInWorld = (entyName,worldGrid) => {
   return theGrid
 }
 
+gg.pxLocation = (grid, enty) => {
+  if(!grid.tileWidth) {
+    grid.tileWidth = 16
+    grid.tileHeight = 16
+  }
+  
+  let cell = enty.cell
+  let row = gg.indexToRc(grid, cell)[0]
+  let col = gg.indexToRc(grid, cell)[1]
+  
+  let x = col * grid.tileWidth
+  let y = row * grid.tileHeight
+  return {x, y}
+}
+
 gg.render = function(...args) {
   //(grid, autoRender)
   let grid
