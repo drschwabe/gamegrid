@@ -249,7 +249,7 @@ gg.createGrid = gg.create
 //Returns an enty if the supplied enty is sharing the same cell as the supplied group:
 gg.isTouching = function (grid, enty, entyOrGroupOrNameOrCriteria) {
   var targetenty;
-  if(!_.isFunction(entyOrGroupOrNameOrCriteria)) {
+  if(_.isObject(entyOrGroupOrNameOrCriteria) && !entyOrGroupOrNameOrCriteria.cell) {
     const matchingEnties = _.filter(grid.enties, entyOrGroupOrNameOrCriteria)
     return _.findWhere(matchingEnties, { cell : enty.cell })
   } else if(!_.isObject(entyOrGroupOrNameOrCriteria)) {
