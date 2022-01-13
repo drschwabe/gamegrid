@@ -247,20 +247,24 @@ gg.create = function(width, height, mapType, name) {
 gg.createGrid = gg.create
 
 //Returns an enty if the supplied enty is sharing the same cell as the supplied group:
-gg.isTouching = function (grid, enty, entyOrGroup) {
+gg.isTouching = function (grid, enty, entyOrGroupOrNameOrCriteria) {
   var targetenty;
-  if(!_.isObject(entyOrGroup)) {
+  if(!_.isFunction(entyOrGroupOrNameOrCriteria)) {
+    const matchingEnties = _.filter(grid.enties, entyOrGroupOrNameOrCriteria)
+    return _.findWhere(matchingEnties, { cell : enty.cell })
+  } else if(!_.isObject(entyOrGroupOrNameOrCriteria)) {
     //Get any other enties in the same cell:
     var cellContents = _.filter(grid.enties, function(theEnty) {
-      return theEnty.cell == enty.cell && theEnty.group == entyOrGroup
+      return theEnty.cell == enty.cell && theEnty.group == entyOrGroupOrNameOrCriteria || 
+      theEnty.cell == enty.cell && theEnty.name == entyOrGroupOrNameOrCriteria
     })
     //Return said enty in the same cell otherwise, return false.
     if(cellContents.length > 0) return cellContents[0]
     return false
-  } else if(_.isObject(entyOrGroup)){
+  } else if(_.isObject(entyOrGroupOrNameOrCriteria)){
     //If we supply an object then we are looking for a more specific match:
     var matchingEnty = _.filter(grid.enties, function(theEnty) {
-      return theEnty.cell == enty.cell && theEnty == entyOrGroup
+      return theEnty.cell == enty.cell && theEnty == entyOrGroupOrNameOrCriteria
     })
     if(!matchingEnty || _.isEmpty(matchingEnty)) return false
     return matchingEnty[0]
