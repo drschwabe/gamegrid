@@ -793,6 +793,25 @@ gg.nextCellEast = (grid, currentCell) => {
   return currentCell + 1
 }
 
+gg.nextCellWest = (grid, currentCell) => {
+  if( currentCell % grid.width == grid.width - 1) {
+    return null
+  }
+  return currentCell - 1
+}
+
+gg.nextCellNorth = (grid, currentCell) => {
+  //todo: check that there is a row above
+  return currentCell - grid.width
+}
+
+gg.nextCell = (grid, currentCell, direction) => {
+  if(direction === 'north') return gg.nextCellNorth(grid, currentCell)
+  if(direction === 'west') return gg.nextCellWest(grid, currentCell)
+  if(direction === 'south') return gg.nextCellSouth(grid, currentCell)
+  if(direction === 'east') return gg.nextCellEast(grid, currentCell)
+}
+
 gg.openCellsEast = (grid, startCell) => {
   if(_.isUndefined(startCell)) startCell = 0
   grid = gg.populateCells(grid)
