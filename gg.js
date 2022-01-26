@@ -1232,18 +1232,27 @@ gg.whichGridInWorld = (entyName,worldGrid) => {
   return theGrid
 }
 
-gg.pxLocation = (grid, enty) => {
-  if(!grid.tileWidth) {
-    grid.tileWidth = 16
-    grid.tileHeight = 16
+gg.pxLocation = (grid, entyOrCell, tileWidth, tileHeight) => {
+  if(!grid.tileWidth && !tileWidth && !tileHeight) {
+    tileWidth = 16
+    tileHeight = 16
+  } else if(grid.tileWidth && !tileWidth && !tileHeight) {
+    tileWidth = grid.tileWidth
+    tileHeight = grid.tileHeight
+  }
+
+  let cell
+  if(_.isNumber(entyOrCell) ) {
+    cell = entyOrCell
+  } else {
+    cell = entyOrCell.cell 
   }
   
-  let cell = enty.cell
   let row = gg.indexToRc(grid, cell)[0]
   let col = gg.indexToRc(grid, cell)[1]
   
-  let x = col * grid.tileWidth
-  let y = row * grid.tileHeight
+  let x = col * tileWidth
+  let y = row * tileHeight
   return {x, y}
 }
 
