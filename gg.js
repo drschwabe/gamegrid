@@ -1290,6 +1290,43 @@ gg.render = function(...args) {
   return
 }
 
+gg.subDivideWorld = worldGrid => {
+  worldGrid.subdivisions = []
+
+  const divideAndCreateWorld = (localWidth, localHeight, worldWidth,  worldHeight ) => {
+    console.log(`make a new world ${worldWidth} x ${worldHeight} (local ${localWidth} x ${localHeight}`)
+    let newWorldGrids = gg.divide(worldGrid, localWidth, localHeight)
+    let newWorld = gg.makeWorldGrid(newWorldGrids, worldWidth, worldHeight)
+    //Re-apply meta: 
+    if(worldGrid.name) newWorld.name = worldGrid.name
+    if(worldGrid.TiledMap) newWorld.TiledMap = worldGrid.TiledMap
+    worldGrid.subdivisions.push (newWorld )
+  }
+
+  let localWidth = worldGrid.width
+  let localHeight = worldGrid.height
+
+  //as long as width can be halved while remaining greater than height, we can subdivide along width exclusively (assuming that width is greater than height by default):
+  while(localWidth / 2 > localHeight) {
+    localWidth = localWidth / 2
+    let worldWidth = worldGrid.width / localWidth
+    let worldHeight = worldGrid.height / localHeight
+    divideAndCreateWorld(localWidth, localHeight, worldWidth, worldHeight)
+  }
+
+  //then  when we are ready to halve height...
+  while (!math.isPrime(localHeight) ){
+    //each loop, divide both in half:
+    localWidth = localWidth / 2
+    localHeight = localHeight / 2
+    let worldWidth = worldGrid.width / localWidth
+    let worldHeight = worldGrid.height / localHeight
+    divideAndCreateWorld(localWidth, localHeight, worldWidth, worldHeight)
+  } 
+
+  return worldGrid 
+}
+
 //### gg.grid ###
 //this function is to be called with new operator
 //ie:
