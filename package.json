@@ -1,8 +1,8 @@
 {
   "name": "gamegrids",
-  "version": "0.8.95",
+  "version": "0.9.0",
   "description": "a utility toolbelt for making grids for games (or apps)",
-  "main": "gg.js",
+  "source": "gg.js",
   "author": "Derrick Schwabe <admin@nerdbusiness.com>",
   "homepage": "https://github.com/drschwabe/gamegrid",
   "repository": {
@@ -23,16 +23,25 @@
     "array-grid": "1.5.0",
     "clone-deep": "^4.0.1",
     "mathjs": "8.1.1",
-    "rot-js": "0.6.0",
-    "tap-spek": "0.0.12",
     "underscore": "^1.13.1"
   },
   "scripts": {
+    "parcel": "npx parcel build",
     "test": "tape test.js | tap-spek"
   },
   "devDependencies": {
+    "parcel": "^2.6.2",
     "require-uncached": "2.0.0",
     "tape": "4.6.3",
     "underscore.string": "3.3.5"
+  },
+  "type" : "module", 
+  "targets": {
+    "module": {
+      "includeNodeModules" : true, 
+      "engines": {
+        "browsers": "> 0.5%, last 2 versions, not dead"
+      }
+    }    
   }
 }
