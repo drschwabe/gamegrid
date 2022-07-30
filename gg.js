@@ -1300,6 +1300,8 @@ gg.subDivideWorld = worldGrid => {
     //Re-apply meta: 
     if(worldGrid.name) newWorld.name = worldGrid.name
     if(worldGrid.TiledMap) newWorld.TiledMap = worldGrid.TiledMap
+    if(worldGrid.backgroundColor) newWorld.backgroundColor = worldGrid.backgroundColor
+    //todo: grab all meta and apply all key/values without needing to know the specific keys
     worldGrid.subdivisions.push (newWorld )
   }
 
