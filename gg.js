@@ -1,7 +1,8 @@
-var gg = {},
-    ROT = require('rot-js'),
-    _ = require('underscore'),
-    math = require('mathjs')
+const gg = {}
+
+const ROT = require('rot-js')
+const _ = require('underscore')
+const math = require('mathjs')
 
 gg.isArrowKey = function(keyCode) {
   return _.contains([38, 39, 40, 37], keyCode)
