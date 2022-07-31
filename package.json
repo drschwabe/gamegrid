@@ -36,7 +36,6 @@
   },
   "scripts": {
     "test": "tape test.js | tap-spek",
-    "build": "vite build"
-  },
-  "type": "module"
+    "build": "vite build; mv dist/gamegrids.mjs dist/gamegrids-0.9.mjs"
+  }
 }
