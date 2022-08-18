@@ -1228,7 +1228,9 @@ gg.render = function(...args) {
     grid = this
   }
   let autoRender = _.find( args, (arg) => _.isBoolean(arg) )
-  if(autoRender) grid._render = true //< turn on auto-rendering
+  if(autoRender) grid._render = autoRender //< turn on auto-rendering
+  let numbered = _.find( 
+    args, arg => _.isBoolean(arg) && arg !== autoRender ) 
 
   console.log('')
   grid = gg.populateCells(grid)
@@ -1243,7 +1245,12 @@ gg.render = function(...args) {
       if(cell.enties.length) {
         output = output + ` ${cell.enties[0].label} `
       } else {
-        output = output + ` . `
+        if(numbered) {
+          output = output + 
+            ` ${gg.rcToIndex(grid, rowIndex, colIndex)} `
+        } else {
+          output = output + ` . `
+        }
       }
       cellCount++
     }) //output the value of the row:
