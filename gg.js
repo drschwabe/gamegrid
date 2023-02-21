@@ -347,8 +347,8 @@ gg.makeRegion = function(...args) {
 
   let output = []
 
-  for (i = 0; i < height; i++) {
-    for (j = 0; j < width; j++) {
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
        output.push(gg.rcToIndex(grid,i + starter.row,j + starter.column))
      }
    }
