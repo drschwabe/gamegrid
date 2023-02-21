@@ -273,7 +273,8 @@ gg.insert = function(...args) {
   if(grid._render) gg.render(grid)
   //if this operation was called from an instance of GG do not return
   //(since said instance is also the grid) otherwise return the grid:
-  return this.type == 'grid' ? undefined : grid
+  if(this && this.type === 'grid') return undefined
+  return grid
 }
 
 gg.insertEnty  = gg.insert
@@ -307,7 +308,8 @@ gg.remove = function(...args) {
   }
   grid.enties = _.without(grid.enties, enty)
   if(grid._render) gg.render(grid)
-  return this.type == 'grid' ? undefined : grid
+  if(this && this.type === 'grid') return undefined
+  return grid
 }
 gg.removeEnty = gg.remove
 
@@ -581,7 +583,7 @@ gg.expandGrid = (...args) => {
     return enty
   }).value()
 
-  if( this.type == 'grid' ) {
+  if( this && this.type == 'grid' ) {
     oldGrid.enties = newGrid.enties
     //this is where we would cache the previous one optionally
     return undefined
@@ -966,7 +968,8 @@ gg.enter = function(...args) {
     gg.render(grid) //also render the destination grid:
     gg.render(destinationGrid)
   }
-  return this.type == 'grid' ? undefined : grid
+  if(this && this.type === 'grid') return undefined
+  return grid 
 }
 
 gg.divide = (originalGrid, width, height) => {
@@ -1074,7 +1077,8 @@ gg.zoomOut = (...args)  => {
     }
     return enty
   })
-  return this.type == 'grid' ? undefined : grid
+  if(this && this.type === 'grid') return undefined
+  return grid         
 }
 
 gg.combine = (grids, width, height) => {
