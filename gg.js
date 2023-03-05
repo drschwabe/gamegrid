@@ -19,7 +19,7 @@ gg.getDirection = function(keyCode) {
 
 gg.move = function(...args) {
   //grid, entyOrCellOrIdOrLabel, direction
-  let grid, enty, enties, cell, idOrLabel, direction
+  let grid, enty, enties, cell, idOrLabel, direction, loopGrid
 
   if( _.isObject(args[0]) && args[0].type == 'grid') {
     grid = args[0]
@@ -108,10 +108,16 @@ gg.move = function(...args) {
       default :
         //If no direction supplied, just do a linear increment east
         if( enty.cell % grid.width == grid.width - 1) {
-          nextCell = 'map edge'
-          break
+          if(!loopGrid) { //only break if loopGrid falsey
+            nextCell = 'map edge'
+            break
+          }
         }
         nextCell = enty.cell + 1
+        //loop around if loopGrid option specified: 
+        if(loopGrid && nextCell > (grid.cells.length -1)) {
+          nextCell = 0
+        }
         break
     }
     return nextCell
