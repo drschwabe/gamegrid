@@ -37,14 +37,21 @@ gg.move = function(...args) {
     return this.type == 'grid' ? undefined : grid
   }
 
-  enty = _.find( args, (arg) => _.isObject( arg ) && arg.type != 'grid' && !_.isArray(arg)  )
+  enty = _.find( args, (arg) =>
+    _.isObject( arg ) && arg.type != 'grid' && !_.isArray(arg))
 
   cell = _.find( args, (arg) => _.isNumber( arg ))
   if(_.isUndefined(cell) && enty) cell = enty.cell
 
-  direction = _.find( args, (arg) => _.isString(arg) && _.contains(['north', 'south', 'east', 'west'], arg))
+  direction = _.find( args, (arg) =>
+    _.isString(arg) &&
+    _.contains(['north', 'south', 'east', 'west'], arg))
 
-  idOrLabel = _.find( args, (arg) => _.isString( arg ) && arg != direction )
+  idOrLabel = _.find( args, (arg) => 
+    _.isString( arg ) && arg != direction )
+
+  loopGrid = _.find( args, arg => 
+    _.isBoolean(arg) && arg === _.last(args) && arg === true )  
 
   if( !enty && _.isNumber(cell)) {
     enty = gg.find(grid, cell)
