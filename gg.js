@@ -783,10 +783,14 @@ gg.nextCellNorth = (grid, currentCell) => {
 }
 
 gg.nextCell = (grid, currentCell, direction) => {
-  if(direction === 'north') return gg.nextCellNorth(grid, currentCell)
-  if(direction === 'west') return gg.nextCellWest(grid, currentCell)
-  if(direction === 'south') return gg.nextCellSouth(grid, currentCell)
-  if(direction === 'east') return gg.nextCellEast(grid, currentCell)
+  if(direction === 'north' || 
+     direction === 'up') return gg.nextCellNorth(grid, currentCell)
+  if(direction === 'west' ||
+     direction === 'left') return gg.nextCellWest(grid, currentCell)
+  if(direction === 'south' ||
+     direction === 'down') return gg.nextCellSouth(grid, currentCell)
+  if(direction === 'east'  ||
+     direction === 'right') return gg.nextCellEast(grid, currentCell)
 }
 
 gg.openCellsEast = (grid, startCell) => {
