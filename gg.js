@@ -142,17 +142,21 @@ gg.move = function(...args) {
   if(intendedPosition == 'map edge') {
     enty.onMapEdge = true
     if(grid._render) gg.render(grid)
-    return this.type == 'grid' ? undefined : grid
+    if(this && this.type === 'grid') return undefined
+    return grid          
   }
 
   //Prevent movement (but update facing) if the object we are facing is impassable:
   enty.facing = gg.examine(grid, intendedPosition)
   if(enty.facing && enty.facing.length) {
     let nonPassableEnties = _.some(enty.facing, enty => enty.passable === false)
-    if(nonPassableEnties) return this.type == 'grid' ? undefined : grid
+    if(nonPassableEnties) {
+      if(this && this.type === 'grid') return undefined
+      return grid         
+    }
   } else if(enty.facing && enty.facing.passable === false) {
-    if(grid._render) gg.render(grid)
-    return this.type == 'grid' ? undefined : grid
+    if(this && this.type === 'grid') return undefined
+    return grid              
   }
 
   //Modify the enty's cell to simulate the movement:
@@ -166,7 +170,8 @@ gg.move = function(...args) {
 
   //return grid (which contains enty):
   if(grid._render) gg.render(grid)
-  return this.type == 'grid' ? undefined : grid
+  if(this && this.type === 'grid') return undefined
+  return grid
 }
 
 
