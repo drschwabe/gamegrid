@@ -19,7 +19,8 @@ gg.getDirection = function(keyCode) {
 
 gg.move = function(...args) {
   //grid, entyOrCellOrIdOrLabel, direction
-  let grid, enty, enties, cell, idOrLabel, direction, loopGrid
+  let grid, enty, enties, cell, idOrLabel, direction, loopGrid, 
+    loopRow, options 
 
   if( _.isObject(args[0]) && args[0].type == 'grid') {
     grid = args[0]
@@ -52,6 +53,18 @@ gg.move = function(...args) {
 
   loopGrid = _.find( args, arg => 
     _.isBoolean(arg) && arg === _.last(args) && arg === true )  
+
+
+  options = _.find( args, arg => _.isObject(arg) && !_.isArray(arg)
+    && arg !== grid && arg !== enty ) 
+
+  if(options) {
+    if(options.loop) {
+      if(_.isBoolean(options.loop) 
+        && options.loop === true) loopGrid = true 
+      if(options.loop === 'row') loopRow = true 
+    }
+  }
 
   if( !enty && _.isNumber(cell)) {
     enty = gg.find(grid, cell)
@@ -93,14 +106,18 @@ gg.move = function(...args) {
         break
       case 'east':
         if( enty.cell % grid.width == grid.width - 1) {
-          if(!loopGrid) { //only break if loopGrid falsey
+          if(!loopGrid && !loopRow) { //only break if loopGrid falsey
             nextCell = 'map edge'
             break
           }
-        }
+        } //end cell handling: 
         nextCell = enty.cell + 1
-        if(loopGrid && nextCell > (grid.cells.length -1)) {
-          nextCell = 0
+        if(nextCell > (gridSize -1)) {
+          if(!loopRow && loopGrid) {
+            nextCell = 0 
+          } else {  //revert the next cell to original enty pos: 
+            nextCell = enty.cell 
+          }    
         }   
         break
       case 'south':
@@ -112,29 +129,36 @@ gg.move = function(...args) {
         break
       case 'west':
         if( enty.cell % grid.width == 0) {
-          if(!loopGrid) { 
+          if(!loopGrid && !loopRow) { 
             nextCell = 'map edge'
             break
           }
-        }
+        } //end cell handling: 
         nextCell = enty.cell - 1
-        if(loopGrid && nextCell === -1) {
-          nextCell = grid.cells.length - 1 
+        if(nextCell === -1) {
+          if(!loopRow && loopGrid) {
+            nextCell = gridSize.length - 1 
+          } else {  //revert the next cell to original enty pos: 
+            nextCell = 0  
+          }
         }  
         break
       default :
         //If no direction supplied, just do a linear increment east
         if( enty.cell % grid.width == grid.width - 1) {
-          if(!loopGrid) { //only break if loopGrid falsey
+          if(!loopGrid && !loopRow) { 
             nextCell = 'map edge'
             break
           }
         }
         nextCell = enty.cell + 1
         //loop around if loopGrid option specified: 
-        if(!grid.cells) grid = gg.populateCells(grid) 
-        if(loopGrid && nextCell > (grid.cells.length -1)) {
-          nextCell = 0
+        if(nextCell > (gridSize -1)) {
+          if(!loopRow && loopGrid) {
+            nextCell = 0 
+          } else {  //revert the next cell to original enty pos: 
+            nextCell = enty.cell 
+          }                     
         }
         break
     }
