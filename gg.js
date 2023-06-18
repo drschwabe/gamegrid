@@ -165,7 +165,10 @@ gg.move = function(...args) {
     return nextCell
   }
 
-  if(_.isString(enty)) enty = _.findWhere(grid.enties, { name: enty })
+  if(_.isString(enty)) {
+    enty = _.findWhere(grid.enties, { name: enty })
+    if(!enty) enty = _.findWhere(grid.enties, { label: enty })   
+  }
 
   //Mark as revised so it's re-rendered next step.
   enty.revised = true
