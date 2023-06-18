@@ -93,10 +93,15 @@ gg.move = function(...args) {
         break
       case 'east':
         if( enty.cell % grid.width == grid.width - 1) {
-          nextCell = 'map edge'
-          break
+          if(!loopGrid) { //only break if loopGrid falsey
+            nextCell = 'map edge'
+            break
+          }
         }
         nextCell = enty.cell + 1
+        if(loopGrid && nextCell > (grid.cells.length -1)) {
+          nextCell = 0
+        }   
         break
       case 'south':
         if( enty.cell > gridSize - (grid.width +1)) {
@@ -107,10 +112,15 @@ gg.move = function(...args) {
         break
       case 'west':
         if( enty.cell % grid.width == 0) {
-          nextCell = 'map edge'
-          break
+          if(!loopGrid) { 
+            nextCell = 'map edge'
+            break
+          }
         }
         nextCell = enty.cell - 1
+        if(loopGrid && nextCell === -1) {
+          nextCell = grid.cells.length - 1 
+        }  
         break
       default :
         //If no direction supplied, just do a linear increment east
@@ -122,6 +132,7 @@ gg.move = function(...args) {
         }
         nextCell = enty.cell + 1
         //loop around if loopGrid option specified: 
+        if(!grid.cells) grid = gg.populateCells(grid) 
         if(loopGrid && nextCell > (grid.cells.length -1)) {
           nextCell = 0
         }

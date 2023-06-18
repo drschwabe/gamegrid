@@ -1104,3 +1104,23 @@ test('Can combine multiple grids', t => {
   t.equals(entyD.cell, 368, 'entyD is at cell 368')
 
 })
+
+
+
+test('Can loop around a grid',  t => {
+  t.plan(1) 
+  let player = { cell: 0, name : 'player', label :'*' } 
+
+  let board = gg.createGrid(4,4)
+  board = gg.insertEnty(board, player)             
+
+  //we starting in cell zero on a 16 (15) cell grid 
+  //so 19 moves should loop us once, landing on the fourth (3) cell
+  _.range(19).forEach( () => 
+    board = gg.move(board, player, true)    
+  )
+
+  player = _.findWhere(board.enties, { name : 'player' }) 
+
+  t.equals(player.cell, 3) 
+}) 
