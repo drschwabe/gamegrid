@@ -627,6 +627,13 @@ gg.expandGrid = (...args) => {
     oldGrid = this
   }
 
+  let expandX, expandY 
+
+  let options = args[1] 
+  if(options && options.x) expandX = true  
+  if(options && options.y) expandY = true  
+
+  
   //Perform a single cell top-left diagonal expansion)...
   //store reference to original x and y coordinates:
   oldGrid.enties = _.map(oldGrid.enties, (enty) => {
@@ -636,7 +643,11 @@ gg.expandGrid = (...args) => {
   })
 
   //create a blank new, larger grid...
-  var newGrid = gg.createGrid(oldGrid.height + 1 , oldGrid.width + 1)
+  let newGrid
+  if(!options) newGrid = gg.createGrid(oldGrid.width + 1 , oldGrid.height + 1)
+  if(expandY) newGrid = gg.createGrid(oldGrid.width, oldGrid.height + 1)
+  if(expandX) newGrid = gg.createGrid(oldGrid.width + 1, oldGrid.height + 1 )
+  
 
   //apply original x and y coordinates; correcting cell numbers:
   newGrid.enties = _.chain(oldGrid.enties).clone().map((enty) => {
