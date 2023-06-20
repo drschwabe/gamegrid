@@ -922,7 +922,10 @@ gg.nextCellSouth = (grid, currentCell) => {
   return currentCell + grid.width
 }
 
-gg.row = (grid, cell) => {
+gg.row = (grid, cellOrEnty) => {
+  let cell = _.isNumber(cellOrEnty) ? 
+    cellOrEnty : cellOrEnty.cell 
+
   //Return the row of the given cell
   return gg.indexToRc(grid, cell)[0]
 }
