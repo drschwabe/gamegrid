@@ -588,6 +588,13 @@ gg.isEastEdge = (grid, cell) => {
   if(cell % grid.width == grid.width - 1) return true
   return false
 }
+
+gg.isWestEdge = (grid, cell) => {
+  if(cell % grid.width == 0) return true
+  return false
+}   
+
+
 gg.isSouthEdge = (grid, cell, rowOffset) => {
   if(!rowOffset) rowOffset = 0
   if((cell) > (grid.width * (grid.height + rowOffset)) - (grid.width +1)) return true
@@ -671,10 +678,11 @@ gg.nextOccupiedCellWest = (grid, startCell) => {
   var nextOccupiedCellWest
   var nextCell = startCell
   while (_.isUndefined(nextOccupiedCellWest)) {
+    if(gg.isWestEdge(grid, nextCell)) nextOccupiedCellWest = null 
     nextCell = nextCell - 1
     var nextCellContents = gg.examine(grid, nextCell)
     if(nextCellContents) return nextOccupiedCellWest = nextCell
-    //if(gg.isWestEdge(grid,nextCell)) return nextOccupiedCellEast = null //< Prevent infinity.
+    if(gg.isWestEdge(grid, nextCell)) nextOccupiedCellWest = null 
   }
   return nextOccupiedCellWest
 }
