@@ -338,6 +338,7 @@ gg.insertEnty  = gg.insert
 gg.remove = function(...args) {
   //grid, cellOrEntyOrIdOrLabel
 
+  let grid 
   if( _.isObject(args[0]) && args[0].type == 'grid') {
     grid = args[0]
   } else {
