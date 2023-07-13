@@ -1,6 +1,8 @@
-var gg = require('./gg.js'),
-    test = require('tape'),
-    _ = require('underscore')
+let gg = require('./gg.js')
+const test = require('tape')
+const _ = require('underscore')
+const childProcess = require('child_process')
+const _s = require('underscore.string')        
 
 test('Grid is created', (t) => {
   t.plan(3)
@@ -174,11 +176,11 @@ test('Return accurate xy coordinates from a given index', (t) => {
   var cellZero = gg.indexToRc(grid, 0), //< should be 0, 0
       cellOne =  gg.indexToRc(grid, 1), //< 0, 1
       cellTwo =  gg.indexToRc(grid, 2), //< 0, 1
-      cellThree = gg.indexToRc(grid, 3) //< 1, 2
-      cellFour = gg.indexToRc(grid, 4) //< 1, 2
-      cellFive = gg.indexToRc(grid, 5) //< 1, 2
-      cellSix = gg.indexToRc(grid, 6) //< 1, 2
-      cellSeven = gg.indexToRc(grid, 7) //< 1, 2
+      cellThree = gg.indexToRc(grid, 3), //< 1, 2
+      cellFour = gg.indexToRc(grid, 4),  //< 1, 2
+      cellFive = gg.indexToRc(grid, 5),  //< 1, 2
+      cellSix = gg.indexToRc(grid, 6),  //< 1, 2
+      cellSeven = gg.indexToRc(grid, 7), //< 1, 2
       cellEight = gg.indexToRc(grid, 8) //< 1, 2
 
   var expect = [0,0]
@@ -693,9 +695,6 @@ test('Can use a grid as gg API', (t) => {
   t.equals(width, 3 )
 })
 
-
-const childProcess = require('child_process')
-const _s = require('underscore.string')
 
 
 test(`gg.render renders as expected`, (t) => {
