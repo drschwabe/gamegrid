@@ -1,4 +1,4 @@
-import gg from './dist/gamegrids-0.9.1.mjs' 
+import gg from './dist/gamegrids-1.0.0-alpha.mjs' 
 import { test } from 'tape' 
 import _ from 'underscore' 
 import _s from 'underscore.string' 
