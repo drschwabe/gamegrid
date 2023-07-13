@@ -362,6 +362,10 @@ gg.remove = function(...args) {
   if(!enty && _.isObject(args[0]) && args[0].type == 'grid') {
     enty = args[1]
   }
+  if(enty.irremovable) {
+    console.warn("can't remove this enty")  
+    return grid 
+  }
   grid.enties = _.without(grid.enties, enty)
   if(grid._render) gg.render(grid)
   if(this && this.type === 'grid') return undefined
