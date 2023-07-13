@@ -35,7 +35,8 @@
     "underscore.string": "3.3.5"
   },
   "scripts": {
-    "test": "tape test.js | tap-spek",
-    "build": "vite build; mv dist/gamegrids.mjs dist/gamegrids-0.9.mjs"
+    "test": "node test.js | tap-spek",
+    "test-es": "node test.mjs | tap-spek",
+    "build": "vite build; mv dist/gamegrids.mjs dist/gamegrids-0.9.1.mjs"
   }
 }
