@@ -8,9 +8,23 @@ a library for creating 2D grids for games (or apps)
 npm install gamegrids
 ```
 
+Require or import the library: 
+
 ```javascript
+//CommonJS
 const gg = require('gamegrids')
 //don't forget the 's'     ^
+```
+
+```js
+//ES
+import gg from 'gamegrids'
+```
+
+Or destructure only the functions you want (CJS or ES): 
+
+```js
+const { create, insert, move } = require('gamegrids')
 ```
 
 #### introduction
@@ -56,8 +70,8 @@ let grid2 = gg.create(3,3)
 
 
 **insert**  
-`grid.insert(label, cellOrEnty, extras)`  
-Creates an enty inserted to specified cell with an optional object for extra properties.
+`grid.insert(label, enty, cell, extras)`  
+Creates an enty inserted to specified cell with an optional object for extra properties.  
 
 ```javascript
 grid.insert('h', 1)
@@ -69,9 +83,14 @@ grid.insert('h', 1)
   //{ width: 3, height: 3, enties: [ { label: 'h', cell: 1 } ] }
 ```
 
+Arguments can be in any order: 
+`string` label - the `label` property of the enty
+`object` enty - an plain object containing key/values, if `.cell` (`int`) is supplied the enty will be inserted there
+`int` cell - the cell to insert the enty
+
 
 **move**  
-`grid.move(enty, direction)`  
+`grid.move(enty, direction, enties, loopGrid, loopRow)`  
 
 Move a given enty (an enty object or its label `string`) to the next adjacent cell in the given direction.
 
@@ -83,7 +102,9 @@ grid.move('h', 'south')
   [  .  .  .  ]
 ```
 
-Enty will not be moved if destination cell is either beyond grid's edge (ie- bottom of map) or if the cell is occupied by an existing enty and said enty has property `{ passable : false }`
+Enty will not be moved if destination cell is either beyond grid's edge (ie- bottom of map) unless loopGrid argument is supplied. 
+
+Enty will also not be moved if the destination cell is occupied by an existing enty and said enty has property `{ passable : false } (ex: said enty is a tree or an NPC)
 
 
 **examine**  
