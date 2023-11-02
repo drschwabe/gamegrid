@@ -2,7 +2,6 @@ const gg = {}
 const _ = require('underscore')
 const math = require('mathjs')
 const ArrayGrid = require('array-grid')
-const cloneDeep = require('clone-deep')
 
 
 gg.isArrowKey = function(keyCode) {
