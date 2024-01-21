@@ -421,6 +421,16 @@ gg.randomMapEdge = function(min, max, grid) {
   return randomNum - math.mod(randomNum, grid.width)
 }
 
+gg.randomOpenCell = grid => {
+  let cell 
+  while(!cell) {
+    let randomCell = Math.floor(Math.random() * grid.cells.length)
+    let cellContents = gg.examine(grid, randomCell) 
+    if(!cellContents) cell = randomCell
+  } 
+  return cell
+}
+
 gg.populateCells = function(...args) {
   //(grid, fill)
   let grid = _.isObject(args[0]) && args[0].type == 'grid' ? args[0] : this
