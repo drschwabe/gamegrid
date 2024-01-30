@@ -1,6 +1,8 @@
 const gg = {}
 const _ = require('underscore')
 const math = require('mathjs')
+const { without, find, range, sample, 
+  isUndefined, isMatch } = require('lodash')  
 const ArrayGrid = require('array-grid')
 
 
@@ -421,14 +423,28 @@ gg.randomMapEdge = function(min, max, grid) {
   return randomNum - math.mod(randomNum, grid.width)
 }
 
-gg.randomOpenCell = grid => {
+gg.randomOpenCell = (grid, ignore) => {
   let cell 
-  while(!cell) {
-    let randomCell = Math.floor(Math.random() * grid.cells.length)
+  let rangeArr = range(grid.cells.length) 
+  while(isUndefined(cell) && cell !== false) {
+    //prevent infiloop
+    if(!rangeArr.length) return cell = false   
+
+    let randomCell = sample(rangeArr)
+    rangeArr = without(randomCell) 
     let cellContents = gg.examine(grid, randomCell) 
-    if(!cellContents) cell = randomCell
+    if(!cellContents) return cell = randomCell
+    if(!ignore) return 
+    if(isMatch(cellContents, ignore)) return cell = randomCell
+    if(cellContents.length) {
+      const ignored = find(cellContents, ignore) 
+      cellContents = without(cellContents, ignored) 
+      if(!cellContents.length) return cell = randomCell
+    }
+
   } 
   return cell
+  //todo: make this better so you dont have to recall it
 }
 
 gg.populateCells = function(...args) {
