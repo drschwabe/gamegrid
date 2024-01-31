@@ -1,6 +1,6 @@
 {
   "name": "gamegrids",
-  "version": "1.0.0-alpha",
+  "version": "1.0.0-alpha2",
   "description": "a utility toolbelt for making grids for games (or apps)",
   "main": "gg.js",
   "module": "dist/gamegrids.mjs",
@@ -33,13 +33,12 @@
     "require-uncached": "2.0.0",
     "tape": "4.6.3",
     "underscore.string": "3.3.5",
-    "vite": "3.2.7"
+    "vite": "3.2.8"
   },
   "scripts": {
     "test": "node test.js | tap-spek",
     "test-es": "node test.mjs | tap-spek",
-    "build": "vite build; mv dist/gamegrids.mjs dist/gamegrids-1.0.0-alpha.mjs", 
-    "postinstall": "npm run build"
+    "build": "vite build; mv dist/gamegrids.mjs dist/gamegrids-1.0.0-alpha2.mjs"
   },
   "files": [
     "dist/",
