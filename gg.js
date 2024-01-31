@@ -250,7 +250,7 @@ gg.find = (grid, cellOrRc, predicate) => {
 }
 //WIP / TODO factor in predicate
 
-gg.create = function(width, height, mapType, name) {
+gg.create = (width, height, mapType, name) => {
   var id
   if(name) id = name
   else id = 'grid_0'
