@@ -38,11 +38,15 @@
   "scripts": {
     "test": "node test.js | tap-spek",
     "test-es": "node test.mjs | tap-spek",
-    "build": "vite build; mv dist/gamegrids.mjs dist/gamegrids-1.0.0-alpha.mjs"
-  }, 
+    "build": "vite build; mv dist/gamegrids.mjs dist/gamegrids-1.0.0-alpha.mjs", 
+    "postinstall": "npm run build"
+  },
   "files": [
-    "dist/", 
+    "dist/",
     "gg.js",
     "README.md"
-  ]
+  ],
+  "exports": {
+    "./es": "./dist/gamegrids.mjs"
+  }
 }
