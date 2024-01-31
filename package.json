@@ -38,7 +38,7 @@
   "scripts": {
     "test": "node test.js | tap-spek",
     "test-es": "node test.mjs | tap-spek",
-    "build": "vite build; mv dist/gamegrids.mjs dist/gamegrids-1.0.0-alpha2.mjs"
+    "build": "vite build"
   },
   "files": [
     "dist/",
