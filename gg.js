@@ -1,9 +1,10 @@
 const gg = {}
-
 const _ = require('underscore')
 const math = require('mathjs')
+const { without, find, range, sample, 
+  isUndefined, isMatch } = require('lodash')  
 const ArrayGrid = require('array-grid')
-const cloneDeep = require('clone-deep')
+
 
 gg.isArrowKey = function(keyCode) {
   return _.contains([38, 39, 40, 37], keyCode)
@@ -19,7 +20,8 @@ gg.getDirection = function(keyCode) {
 
 gg.move = function(...args) {
   //grid, entyOrCellOrIdOrLabel, direction
-  let grid, enty, enties, cell, idOrLabel, direction
+  let grid, enty, enties, cell, idOrLabel, direction, loopGrid, 
+    loopRow, options 
 
   if( _.isObject(args[0]) && args[0].type == 'grid') {
     grid = args[0]
@@ -37,14 +39,33 @@ gg.move = function(...args) {
     return this.type == 'grid' ? undefined : grid
   }
 
-  enty = _.find( args, (arg) => _.isObject( arg ) && arg.type != 'grid' && !_.isArray(arg)  )
+  enty = _.find( args, (arg) =>
+    _.isObject( arg ) && arg.type != 'grid' && !_.isArray(arg))
 
   cell = _.find( args, (arg) => _.isNumber( arg ))
   if(_.isUndefined(cell) && enty) cell = enty.cell
 
-  direction = _.find( args, (arg) => _.isString(arg) && _.contains(['north', 'south', 'east', 'west'], arg))
+  direction = _.find( args, (arg) =>
+    _.isString(arg) &&
+    _.contains(['north', 'south', 'east', 'west'], arg))
 
-  idOrLabel = _.find( args, (arg) => _.isString( arg ) && arg != direction )
+  idOrLabel = _.find( args, (arg) => 
+    _.isString( arg ) && arg != direction )
+
+  loopGrid = _.find( args, arg => 
+    _.isBoolean(arg) && arg === _.last(args) && arg === true )  
+
+
+  options = _.find( args, arg => _.isObject(arg) && !_.isArray(arg)
+    && arg !== grid && arg !== enty ) 
+
+  if(options) {
+    if(options.loop) {
+      if(_.isBoolean(options.loop) 
+        && options.loop === true) loopGrid = true 
+      if(options.loop === 'row') loopRow = true 
+    }
+  }
 
   if( !enty && _.isNumber(cell)) {
     enty = gg.find(grid, cell)
@@ -86,10 +107,19 @@ gg.move = function(...args) {
         break
       case 'east':
         if( enty.cell % grid.width == grid.width - 1) {
-          nextCell = 'map edge'
-          break
-        }
+          if(!loopGrid && !loopRow) { //only break if loopGrid falsey
+            nextCell = 'map edge'
+            break
+          }
+        } //end cell handling: 
         nextCell = enty.cell + 1
+        if(nextCell > (gridSize -1)) {
+          if(!loopRow && loopGrid) {
+            nextCell = 0 
+          } else {  //revert the next cell to original enty pos: 
+            nextCell = enty.cell 
+          }    
+        }   
         break
       case 'south':
         if( enty.cell > gridSize - (grid.width +1)) {
@@ -100,24 +130,46 @@ gg.move = function(...args) {
         break
       case 'west':
         if( enty.cell % grid.width == 0) {
-          nextCell = 'map edge'
-          break
-        }
+          if(!loopGrid && !loopRow) { 
+            nextCell = 'map edge'
+            break
+          }
+        } //end cell handling: 
         nextCell = enty.cell - 1
+        if(nextCell === -1) {
+          if(!loopRow && loopGrid) {
+            nextCell = gridSize.length - 1 
+          } else {  //revert the next cell to original enty pos: 
+            nextCell = 0  
+          }
+        }  
         break
       default :
         //If no direction supplied, just do a linear increment east
         if( enty.cell % grid.width == grid.width - 1) {
-          nextCell = 'map edge'
-          break
+          if(!loopGrid && !loopRow) { 
+            nextCell = 'map edge'
+            break
+          }
         }
         nextCell = enty.cell + 1
+        //loop around if loopGrid option specified: 
+        if(nextCell > (gridSize -1)) {
+          if(!loopRow && loopGrid) {
+            nextCell = 0 
+          } else {  //revert the next cell to original enty pos: 
+            nextCell = enty.cell 
+          }                     
+        }
         break
     }
     return nextCell
   }
 
-  if(_.isString(enty)) enty = _.findWhere(grid.enties, { name: enty })
+  if(_.isString(enty)) {
+    enty = _.findWhere(grid.enties, { name: enty })
+    if(!enty) enty = _.findWhere(grid.enties, { label: enty })   
+  }
 
   //Mark as revised so it's re-rendered next step.
   enty.revised = true
@@ -129,17 +181,21 @@ gg.move = function(...args) {
   if(intendedPosition == 'map edge') {
     enty.onMapEdge = true
     if(grid._render) gg.render(grid)
-    return this.type == 'grid' ? undefined : grid
+    if(this && this.type === 'grid') return undefined
+    return grid          
   }
 
   //Prevent movement (but update facing) if the object we are facing is impassable:
   enty.facing = gg.examine(grid, intendedPosition)
   if(enty.facing && enty.facing.length) {
     let nonPassableEnties = _.some(enty.facing, enty => enty.passable === false)
-    if(nonPassableEnties) return this.type == 'grid' ? undefined : grid
+    if(nonPassableEnties) {
+      if(this && this.type === 'grid') return undefined
+      return grid         
+    }
   } else if(enty.facing && enty.facing.passable === false) {
-    if(grid._render) gg.render(grid)
-    return this.type == 'grid' ? undefined : grid
+    if(this && this.type === 'grid') return undefined
+    return grid              
   }
 
   //Modify the enty's cell to simulate the movement:
@@ -153,7 +209,8 @@ gg.move = function(...args) {
 
   //return grid (which contains enty):
   if(grid._render) gg.render(grid)
-  return this.type == 'grid' ? undefined : grid
+  if(this && this.type === 'grid') return undefined
+  return grid
 }
 
 
@@ -193,7 +250,7 @@ gg.find = (grid, cellOrRc, predicate) => {
 }
 //WIP / TODO factor in predicate
 
-gg.create = function(width, height, mapType, name) {
+gg.create = (width, height, mapType, name) => {
   var id
   if(name) id = name
   else id = 'grid_0'
@@ -202,6 +259,11 @@ gg.create = function(width, height, mapType, name) {
     height: parseInt(height),
     enties: [],
     type : 'grid'
+  }
+  if(!mapType) return this.type == 'grid' ? null : grid
+  if(this.type == 'grid') {
+    this.map_type = mapType
+    return null
   }
   return grid
 }
@@ -268,7 +330,8 @@ gg.insert = function(...args) {
   if(grid._render) gg.render(grid)
   //if this operation was called from an instance of GG do not return
   //(since said instance is also the grid) otherwise return the grid:
-  return this.type == 'grid' ? undefined : grid
+  if(this && this.type === 'grid') return undefined
+  return grid
 }
 
 gg.insertEnty  = gg.insert
@@ -276,6 +339,7 @@ gg.insertEnty  = gg.insert
 gg.remove = function(...args) {
   //grid, cellOrEntyOrIdOrLabel
 
+  let grid 
   if( _.isObject(args[0]) && args[0].type == 'grid') {
     grid = args[0]
   } else {
@@ -300,9 +364,14 @@ gg.remove = function(...args) {
   if(!enty && _.isObject(args[0]) && args[0].type == 'grid') {
     enty = args[1]
   }
+  if(enty.irremovable) {
+    console.warn("can't remove this enty")  
+    return grid 
+  }
   grid.enties = _.without(grid.enties, enty)
   if(grid._render) gg.render(grid)
-  return this.type == 'grid' ? undefined : grid
+  if(this && this.type === 'grid') return undefined
+  return grid
 }
 gg.removeEnty = gg.remove
 
@@ -340,8 +409,8 @@ gg.makeRegion = function(...args) {
 
   let output = []
 
-  for (i = 0; i < height; i++) {
-    for (j = 0; j < width; j++) {
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
        output.push(gg.rcToIndex(grid,i + starter.row,j + starter.column))
      }
    }
@@ -352,6 +421,30 @@ gg.makeRegion = function(...args) {
 gg.randomMapEdge = function(min, max, grid) {
   var randomNum = _.random(min, max)
   return randomNum - math.mod(randomNum, grid.width)
+}
+
+gg.randomOpenCell = (grid, ignore) => {
+  let cell 
+  let rangeArr = range(grid.cells.length) 
+  while(isUndefined(cell) && cell !== false) {
+    //prevent infiloop
+    if(!rangeArr.length) return cell = false   
+
+    let randomCell = sample(rangeArr)
+    rangeArr = without(randomCell) 
+    let cellContents = gg.examine(grid, randomCell) 
+    if(!cellContents) return cell = randomCell
+    if(!ignore) return 
+    if(isMatch(cellContents, ignore)) return cell = randomCell
+    if(cellContents.length) {
+      const ignored = find(cellContents, ignore) 
+      cellContents = without(cellContents, ignored) 
+      if(!cellContents.length) return cell = randomCell
+    }
+
+  } 
+  return cell
+  //todo: make this better so you dont have to recall it
 }
 
 gg.populateCells = function(...args) {
@@ -423,7 +516,6 @@ gg.populateCell = (grid, cellNum) => {
   }
   return grid 
 }
-
 
 gg.rcToIndex = (grid, param1, param2) => {
   var row, col //<^ Accept either an array [row,col] or row, col as plain numbers
@@ -526,6 +618,13 @@ gg.isEastEdge = (grid, cell) => {
   if(cell % grid.width == grid.width - 1) return true
   return false
 }
+
+gg.isWestEdge = (grid, cell) => {
+  if(cell % grid.width == 0) return true
+  return false
+}   
+
+
 gg.isSouthEdge = (grid, cell, rowOffset) => {
   if(!rowOffset) rowOffset = 0
   if((cell) > (grid.width * (grid.height + rowOffset)) - (grid.width +1)) return true
@@ -558,6 +657,13 @@ gg.expandGrid = (...args) => {
     oldGrid = this
   }
 
+  let expandX, expandY 
+
+  let options = args[1] 
+  if(options && options.x) expandX = true  
+  if(options && options.y) expandY = true  
+
+  
   //Perform a single cell top-left diagonal expansion)...
   //store reference to original x and y coordinates:
   oldGrid.enties = _.map(oldGrid.enties, (enty) => {
@@ -567,7 +673,11 @@ gg.expandGrid = (...args) => {
   })
 
   //create a blank new, larger grid...
-  var newGrid = gg.createGrid(oldGrid.height + 1 , oldGrid.width + 1)
+  let newGrid
+  if(!options) newGrid = gg.createGrid(oldGrid.width + 1 , oldGrid.height + 1)
+  if(expandY) newGrid = gg.createGrid(oldGrid.width, oldGrid.height + 1)
+  if(expandX) newGrid = gg.createGrid(oldGrid.width + 1, oldGrid.height + 1 )
+  
 
   //apply original x and y coordinates; correcting cell numbers:
   newGrid.enties = _.chain(oldGrid.enties).clone().map((enty) => {
@@ -577,7 +687,7 @@ gg.expandGrid = (...args) => {
     return enty
   }).value()
 
-  if( this.type == 'grid' ) {
+  if( this && this.type == 'grid' ) {
     oldGrid.enties = newGrid.enties
     //this is where we would cache the previous one optionally
     return undefined
@@ -609,10 +719,11 @@ gg.nextOccupiedCellWest = (grid, startCell) => {
   var nextOccupiedCellWest
   var nextCell = startCell
   while (_.isUndefined(nextOccupiedCellWest)) {
+    if(gg.isWestEdge(grid, nextCell)) nextOccupiedCellWest = null 
     nextCell = nextCell - 1
     var nextCellContents = gg.examine(grid, nextCell)
     if(nextCellContents) return nextOccupiedCellWest = nextCell
-    //if(gg.isWestEdge(grid,nextCell)) return nextOccupiedCellEast = null //< Prevent infinity.
+    if(gg.isWestEdge(grid, nextCell)) nextOccupiedCellWest = null 
   }
   return nextOccupiedCellWest
 }
@@ -771,10 +882,14 @@ gg.nextCellNorth = (grid, currentCell) => {
 }
 
 gg.nextCell = (grid, currentCell, direction) => {
-  if(direction === 'north') return gg.nextCellNorth(grid, currentCell)
-  if(direction === 'west') return gg.nextCellWest(grid, currentCell)
-  if(direction === 'south') return gg.nextCellSouth(grid, currentCell)
-  if(direction === 'east') return gg.nextCellEast(grid, currentCell)
+  if(direction === 'north' || 
+     direction === 'up') return gg.nextCellNorth(grid, currentCell)
+  if(direction === 'west' ||
+     direction === 'left') return gg.nextCellWest(grid, currentCell)
+  if(direction === 'south' ||
+     direction === 'down') return gg.nextCellSouth(grid, currentCell)
+  if(direction === 'east'  ||
+     direction === 'right') return gg.nextCellEast(grid, currentCell)
 }
 
 gg.openCellsEast = (grid, startCell) => {
@@ -837,7 +952,10 @@ gg.nextCellSouth = (grid, currentCell) => {
   return currentCell + grid.width
 }
 
-gg.row = (grid, cell) => {
+gg.row = (grid, cellOrEnty) => {
+  let cell = _.isNumber(cellOrEnty) ? 
+    cellOrEnty : cellOrEnty.cell 
+
   //Return the row of the given cell
   return gg.indexToRc(grid, cell)[0]
 }
@@ -962,7 +1080,8 @@ gg.enter = function(...args) {
     gg.render(grid) //also render the destination grid:
     gg.render(destinationGrid)
   }
-  return this.type == 'grid' ? undefined : grid
+  if(this && this.type === 'grid') return undefined
+  return grid 
 }
 
 gg.divide = (originalGrid, width, height) => {
@@ -1070,9 +1189,9 @@ gg.zoomOut = (...args)  => {
     }
     return enty
   })
-  return this.type == 'grid' ? undefined : grid
+  if(this && this.type === 'grid') return undefined
+  return grid         
 }
-
 
 gg.combine = (grids, width, height) => {
   //^ ie- 4 grids (of 16x11) with target size of 32x22 will result in a single grid 32x22
@@ -1225,7 +1344,9 @@ gg.render = function(...args) {
     grid = this
   }
   let autoRender = _.find( args, (arg) => _.isBoolean(arg) )
-  if(autoRender) grid._render = true //< turn on auto-rendering
+  if(autoRender) grid._render = autoRender //< turn on auto-rendering
+  let numbered = _.find( 
+    args, arg => _.isBoolean(arg) && arg !== autoRender ) 
 
   console.log('')
   grid = gg.populateCells(grid)
@@ -1240,7 +1361,12 @@ gg.render = function(...args) {
       if(cell.enties.length) {
         output = output + ` ${cell.enties[0].label} `
       } else {
-        output = output + ` . `
+        if(numbered) {
+          output = output + 
+            ` ${gg.rcToIndex(grid, rowIndex, colIndex)} `
+        } else {
+          output = output + ` . `
+        }
       }
       cellCount++
     }) //output the value of the row:

@@ -1,8 +1,9 @@
 {
   "name": "gamegrids",
-  "version": "0.9.0",
+  "version": "1.0.0-alpha2",
   "description": "a utility toolbelt for making grids for games (or apps)",
-  "source": "gg.js",
+  "main": "gg.js",
+  "module": "dist/gamegrids.mjs",
   "author": "Derrick Schwabe <admin@nerdbusiness.com>",
   "homepage": "https://github.com/drschwabe/gamegrid",
   "repository": {
@@ -20,23 +21,31 @@
     "rpg"
   ],
   "dependencies": {
-    "@rollup/plugin-commonjs": "^22.0.1",
-    "@rollup/plugin-node-resolve": "^13.3.0",
     "array-grid": "1.5.0",
-    "clone-deep": "^4.0.1",
+    "lodash": "^4.17.21",
     "mathjs": "8.1.1",
-    "underscore": "^1.13.1"
-  },
-  "scripts": {
-    "parcel": "npx parcel build",
-    "test": "tape test.js | tap-spek",
-    "build": "vite build"
+    "tap-spek": "0.0.12",
+    "underscore": "1.13.6"
   },
   "devDependencies": {
-    "vite": "^3.0.0",
+    "@rollup/plugin-commonjs": "22.0.2",
+    "@rollup/plugin-node-resolve": "13.3.0",
     "require-uncached": "2.0.0",
     "tape": "4.6.3",
-    "underscore.string": "3.3.5"
+    "underscore.string": "3.3.5",
+    "vite": "3.2.8"
   },
-  "type": "module"
+  "scripts": {
+    "test": "node test.js | tap-spek",
+    "test-es": "node test.mjs | tap-spek",
+    "build": "vite build"
+  },
+  "files": [
+    "dist/",
+    "gg.js",
+    "README.md"
+  ],
+  "exports": {
+    "./es": "./dist/gamegrids.mjs"
+  }
 }

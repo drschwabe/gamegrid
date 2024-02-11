@@ -1,8 +1,8 @@
-let gg = require('./gg.js')
-const test = require('tape')
-const _ = require('underscore')
-const childProcess = require('child_process')
-const _s = require('underscore.string')        
+import gg from './dist/gamegrids.mjs' 
+import { test } from 'tape' 
+import _ from 'underscore' 
+import _s from 'underscore.string' 
+import { execSync } from 'child_process';
 
 test('Grid is created', (t) => {
   t.plan(3)
@@ -51,7 +51,6 @@ test('Can determine a linear cell # based on xy coordinates', (t) => {
 
 test('Can find the next open cell', (t) => {
   t.plan(6)
-  var gg = requireUncached('./gg.js')
   var grid = gg.createGrid(3,3)
   // [apple,   pear,   2,  <-- row0
   //  banana,   4,   5   <-- row1
@@ -65,7 +64,6 @@ test('Can find the next open cell', (t) => {
   t.equals( gg.nextOpenCell(grid), 2, 'found the next open cell')
 
   //try with portable API:
-  var gg = requireUncached('./gg.js')
   var grid = new gg.grid(3,3)
   grid.insert({ name : 'apple', cell : 0 })
   grid.insert({ name : 'pear', cell : 1 })
@@ -77,7 +75,6 @@ test('Can find the next open cell', (t) => {
 
 
   //try with portable API, passing string and integers instead of object:
-  var gg = requireUncached('./gg.js')
   var grid = new gg.grid(3,3)
   grid.insert('apple', 0)
   grid.insert('pear', 1)
@@ -177,9 +174,9 @@ test('Return accurate xy coordinates from a given index', (t) => {
       cellOne =  gg.indexToRc(grid, 1), //< 0, 1
       cellTwo =  gg.indexToRc(grid, 2), //< 0, 1
       cellThree = gg.indexToRc(grid, 3), //< 1, 2
-      cellFour = gg.indexToRc(grid, 4),  //< 1, 2
-      cellFive = gg.indexToRc(grid, 5),  //< 1, 2
-      cellSix = gg.indexToRc(grid, 6),  //< 1, 2
+      cellFour = gg.indexToRc(grid, 4), //< 1, 2
+      cellFive = gg.indexToRc(grid, 5), //< 1, 2
+      cellSix = gg.indexToRc(grid, 6), //< 1, 2
       cellSeven = gg.indexToRc(grid, 7), //< 1, 2
       cellEight = gg.indexToRc(grid, 8) //< 1, 2
 
@@ -439,7 +436,6 @@ test('Can move an enty to another cell in grid based on direction', (t) => {
 test('Can move an enty to another cell in grid based on direction (with portable API)', (t) => {
   t.plan(3)
   //same as above test but with "portable API/grid in one":
-  var gg = requireUncached('./gg.js')
   let grid = new gg.grid(4,4)
   grid.insertEnty(5)
   t.equals(grid.enties[0].cell, 5, 'Enty inserted to initial position on the grid')
@@ -685,23 +681,20 @@ test('gg.someEntyIsOnRightEdge', (t) => {
 })
 
 
-requireUncached = require('require-uncached')
 
 test('Can use a grid as gg API', (t) => {
   t.plan(1)
-  var gg = requireUncached('./gg.js')
   var grid = new gg.grid(3,3)
   var width =  grid.width
   t.equals(width, 3 )
 })
 
 
-
 test(`gg.render renders as expected`, (t) => {
   t.plan(5)
 
   //run the demo and collect output as a string:
-  var output = childProcess.execSync('node ./demos/render.js').toString()
+  var output = execSync('node ./demos/render.js').toString()
 
   //in the demo grids are separated with the below string:
   var grids = output.split('-------------')
@@ -734,7 +727,6 @@ test(`gg.render renders as expected`, (t) => {
 test(`gg.makeRegion can return a square region of grid`, (t) => {
   t.plan(5)
 
-  let gg = requireUncached('./gg.js')
   let grid = new gg.grid(6,6)
 
   //create a 2x6 region from the top left corner:
@@ -790,7 +782,6 @@ test(`gg.makeRegion can return a square region of grid`, (t) => {
 test(`gg.move can move a region`, t => {
   t.plan(5)
 
-  let gg = requireUncached('./gg.js')
   let grid = new gg.grid(6,6)
 
   //create a 2x2 region from the top left corner:
@@ -951,7 +942,6 @@ test('gg.divide again', (t) => {
 
 test('gg.zoomOut', t => {
   t.plan(2)
-  let gg = requireUncached('./gg.js')
   let grid = gg.createGrid(5,5)
 
   //insert a tree along every edge of the grid so we can visualize the expansion 'zoomout' after it occurs
@@ -995,7 +985,6 @@ test('gg.zoomOut', t => {
 
 test.skip('gg.zoomOut (grid as library)', t => {
   t.plan(2)
-  let gg = requireUncached('./gg.js')
   let grid = new gg.grid(5,5)
 
   //first row #####

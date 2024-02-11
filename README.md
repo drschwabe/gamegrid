@@ -8,9 +8,29 @@ a library for creating 2D grids for games (or apps)
 npm install gamegrids
 ```
 
+Require or import the library: 
+
 ```javascript
+//CommonJS
 const gg = require('gamegrids')
 //don't forget the 's'     ^
+```
+
+```js
+//ES
+import gg from 'gamegrids'
+```
+
+Or destructure only the functions you want 
+(noting that ES needs an extra step here): 
+
+```js
+//CommonJS: 
+const { create, insert, move } = require('gamegrids')
+
+//ES: 
+import gg from './dist/gamegrids.mjs' 
+const { create, insert, move } = gg
 ```
 
 #### introduction
@@ -56,8 +76,8 @@ let grid2 = gg.create(3,3)
 
 
 **insert**  
-`grid.insert(label, cellOrEnty, extras)`  
-Creates an enty inserted to specified cell with an optional object for extra properties.
+`grid.insert(label, enty, cell, extras)`  
+Creates an enty inserted to specified cell with an optional object for extra properties.  
 
 ```javascript
 grid.insert('h', 1)
@@ -69,9 +89,14 @@ grid.insert('h', 1)
   //{ width: 3, height: 3, enties: [ { label: 'h', cell: 1 } ] }
 ```
 
+Arguments can be in any order: 
+`string` label - the `label` property of the enty
+`object` enty - an plain object containing key/values, if `.cell` (`int`) is supplied the enty will be inserted there
+`int` cell - the cell to insert the enty
+
 
 **move**  
-`grid.move(enty, direction)`  
+`grid.move(enty, direction, enties, loopGrid, loopRow)`  
 
 Move a given enty (an enty object or its label `string`) to the next adjacent cell in the given direction.
 
@@ -83,7 +108,10 @@ grid.move('h', 'south')
   [  .  .  .  ]
 ```
 
-Enty will not be moved if destination cell is either beyond grid's edge (ie- bottom of map) or if the cell is occupied by an existing enty and said enty has property `{ passable : false }`
+Enty will not be moved if destination cell is either beyond grid's edge (ie- bottom of map) unless loopGrid argument is supplied (pass extra parameter `true`)  
+
+Enty will also not be moved if the destination cell is occupied by an existing enty and said enty has property `{ passable : false } (ex: said enty is a tree or an NPC)
+
 
 
 **examine**  
@@ -156,11 +184,16 @@ region.forEach((cellNum) => grid.insert(cellNum, '#'))
 [  .  .  .  ]
 ```
 
+#### more functions & examples
+ 
+see [test.js](./test.js) for more examples and [gg](gg.js) itself for a number of other functions not yet documented. 
+
+
 #### Functional style vs portable API + grid object in 1  
 
 Functions can also accept a grid as a parameter.  If a grid param is supplied a grid will be returned.  
 
-Otherwise the instance/portable API will be modified in place*
+Otherwise the class-like instance/portable API will modify itself. 
 
 Ex:
 ```javascript
@@ -180,9 +213,43 @@ grid2 = gg.insert('zombie')
 
 *WIP as not all functions support the single instance/portable API technique
 
-#### TODO
+#### hacking & testing
+
+Feel free to contribute to making this library better/faster! 
+
+```
+git clone git@github.com:drschwabe/gamegrid.git
+```
+
+There is lot's of room for improvement in the performance deparment
+for example.  
+
+If you do make a change, please run the test suite to make sure
+no existing functionality breaks.  
+
+The library currently has [130 tests ](./test.js) that check core features
+and various other functions.  Ideally, you can also write a test that checks
+your newly intended functionality (if any) works too. 
+
+```
+npm test
+```
+
+To build and test the ES version do: 
+```
+npm run build
+npm run test-es
+```
+
+#### TODO / need help 
 - finish documentation (refer to ./gg.js for other functions/features not yet documented)
 - fully integrate portable API with all functions (not all functions support grid as standalone API; when in doubt use functional style outlined above)
 - write tests for functions that are not yet tested
 - write more tests for functions that are not thoroughly tested
-- world domination
+- consider an improved data model and/or approach to caching the grid enties 
+ie- instead of calling `populateCells`
+- improve performance
+- write tests to check performance
+
+
+
